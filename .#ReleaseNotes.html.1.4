@@ -1,0 +1,53 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>The FreeHEP Java Library - Release Notes</title>
+</head>
+
+<body>
+
+      <h1>Release Notes</h1>
+
+      <p>These release notes are in reverse chronological order.</p>
+      <h2>Latest Version</h2>
+      <p>Head of CVS</p>
+      <h3>FreeHEP IO</h3>
+      <ul>
+        <li>Added Base64 Input and Output Streams.</li>
+        <li>Added ReaderInputStream and WriterOutputStream.</li>
+      </ul>
+      <h3>ROOTIO</h3>
+      <ul>
+        <li>Added latest version of ROOTIO.</li>
+      </ul>
+      <h3>VectorGraphics</h3>
+      <ul>
+        <li>PNG images now embedded into SVG format.</li>
+        <li>Added transparency for normal (non-image) drawing to the PDF and SVG formats.
+            FreeHEP-185 and FreeHEP-187</li>
+        <li>Cleaned up the PDF output regarding empty objects</li>
+        <li>Fixed a problem with curved shapes in the SWF format. FreeHEP-74</li>
+        <li>Added imaging (including transparency) to the SWF format.
+        It also handled setPaint(TexturePaint) now.
+        FreeHEP-24, FreeHEP-119 and FreeHEP-171</li>
+        <li>Fixed PrintColor class to rely on JDK 1.4 Color constants.</li>
+        <li>Added WebColor class to create Colors following the 216-web color
+        scheme.</li>
+        <li>The drawSymbol and fillSymbol methods in PixelGraphics2D will use
+        image blitting of cached symbol images of max size 32x32, in the case
+        the display is local (Windows32, MacOSX and X11local). In the X11 Remote
+        case normal drawing procedures are used. The colors are converted to
+        WebColors. For VectorGraphics export everything stays as normal.</li>
+      </ul>
+      <h2>Version 1.1 (March 20, 2003)</h2>
+      <ul>
+        <li>Initial public release.</li>
+      </ul>
+
+</body>
+
+</html>

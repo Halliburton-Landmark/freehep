@@ -1,0 +1,12 @@
+WIN32-g++
+WIN32-VC
+WIN32-VC7
+SUN-CC
+SUN-CC5
+SUN-g++
+Linux-g++
+Linux-g++2
+Linux-g++3
+Darwin-g++
+Darwin-g++3
+Darwin-g++2

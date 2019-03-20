@@ -1,0 +1,56 @@
+##############################################################
+# Copyright 2001, CERN, Geneva, Swizterland.
+#
+# distribute.frisbee
+# Test frisbee release configuration, using WIRED CVS repository
+#
+# @author Mario Ruggier
+# @author Mark Donszelmann
+# @version $Id: distribute.frisbee,v 1.37 2003/12/11 08:24:43 duns Exp $
+##############################################################
+# Reserved (target.)variables names:
+#   module, submodule, antrundir, tag, version
+# Plus, the <tag> and <version> are not explicit variables
+# and should appear only as part of the target lines.
+# They are passed on to ant as:
+# -Dtarget.tag=value -Dtarget.version=value
+##############################################################
+
+# Parameters for all distributions
+
+*       *.module = freehep
+*       *.antrundir = freehep
+
+
+# FreeHEP dist
+
+current clean,all,sysdoc  *
+
+#
+# release dist <version tag> <version#>
+#
+# Due to space problems, release v1r1 (v1.1) was made by hand and copied to the ftp site.
+#
+
+#
+# Version 1.2
+#
+release dist.dst     = /afs/slac.stanford.edu/public/software/freehep/release
+release dist.doc.dst = /nfs/slac/g/jas/workspace/freehep/doc
+release dist    v1r2     v1.2
+
+#
+# Version 1.2.1
+#
+release dist.dst     = /afs/slac.stanford.edu/public/software/freehep/release
+release dist.doc.dst = /nfs/slac/g/jas/workspace/freehep/doc
+release dist    v1r2p1     v1.2.1
+
+#
+# Version 1.2.2
+#
+release dist.dst     = /afs/slac.stanford.edu/public/software/freehep/release
+release dist.doc.dst = /nfs/slac/g/jas/workspace/freehep/doc
+release dist    v1r2p2     v1.2.2
+
+##############################################################

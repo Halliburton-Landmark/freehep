@@ -1,0 +1,15 @@
+api
+dist
+release
+reports
+slib
+web
+*-*.tar.gz
+*-*.zip
+<<<<<<< .cvsignore
+test*.aida
+=======
+test*.aida
+thumbs.db
+setclasspath.bat
+>>>>>>> 1.16

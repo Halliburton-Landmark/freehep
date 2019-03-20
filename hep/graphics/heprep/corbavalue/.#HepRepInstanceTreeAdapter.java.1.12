@@ -1,0 +1,102 @@
+package hep.graphics.heprep.corbavalue;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import hep.graphics.heprep.*;
+import hep.graphics.heprep.ref.*;
+import hep.graphics.heprep.util.*;
+
+/**
+ *
+ * @author Mark Donszelmann
+ *
+ * @version $Id: HepRepInstanceTreeAdapter.java,v 1.13 2003/11/24 22:34:48 duns Exp $
+ */
+
+public class HepRepInstanceTreeAdapter extends HepRepTreeIDAdapter implements HepRepInstanceTree {
+    public static final String cvsId = "$Id: HepRepInstanceTreeAdapter.java,v 1.13 2003/11/24 22:34:48 duns Exp $";
+
+    private hep.graphics.heprep.corbavalue.idl.HepRepInstanceTree hepRepInstanceTree;
+    private transient List instances;
+
+    public HepRepInstanceTreeAdapter(hep.graphics.heprep.corbavalue.idl.HepRepInstanceTree hepRepInstanceTree) {
+        super(hepRepInstanceTree);
+        this.hepRepInstanceTree = hepRepInstanceTree;
+    }
+
+    public void overlay(HepRepInstanceTree instanceTree) {
+        throw new RuntimeException("HepRepInstanceTreeAdapter.overlay is not implemented.");
+    }
+
+    public HepRepTreeID copy() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException("Use call copy(HepRep)");
+    }
+
+    public HepRepInstanceTree copy(HepRep heprep) throws CloneNotSupportedException {
+        return copy(heprep, null);
+    }
+
+    public HepRepInstanceTree copy(HepRep heprep, HepRepSelectFilter filter) throws CloneNotSupportedException {
+        DefaultHepRepInstanceTree copy = new DefaultHepRepInstanceTree(getName(), getVersion(), getTypeTree());
+        // copy instances
+        for (Iterator i=getInstances().iterator(); i.hasNext(); ) {
+            HepRepInstance instance = (HepRepInstance)i.next();
+            if ((filter == null) || (filter.select(instance))) {
+                copy.addInstance(instance.copy(heprep, copy, filter));
+            }
+        }
+
+        // copy referred instance tree names
+        for (Iterator i=getInstanceTrees().iterator(); i.hasNext(); ) {
+            copy.addInstanceTree(((HepRepTreeID)i.next()).copy());
+        }
+
+        return copy;
+    }
+
+    public List getInstances() {
+        if (instances == null) {
+            instances = new LinkedList();
+            int n = hepRepInstanceTree.instances.length;
+            for (int i=0; i<n; i++) {
+                instances.add(new HepRepInstanceAdapter(hepRepInstanceTree.instances[i], null));
+            }
+        }
+        return instances;
+    }
+
+    public void addInstance(HepRepInstance instance) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("HepRepInstanceTreeAdapter.addInstance is not implemented.");
+    }
+
+    public void addInstanceTree(HepRepTreeID instanceTree) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("HepRepInstanceTreeAdapter.addInstanceTree is not implemented.");
+    }
+
+    public void removeInstance(HepRepInstance instance) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("HepRepInstanceAdapter.removeInstance is not implemented.");
+    }
+
+    public HepRepTreeID getTypeTree() {
+        return new HepRepTreeIDAdapter(hepRepInstanceTree.typeTreeID);
+    }
+
+    public Collection getInstanceTrees() {
+        Collection out = new ArrayList();
+        int n = hepRepInstanceTree.instanceTreeIDs.length;
+        for (int i=0; i<n; i++) {
+            out.add(new HepRepTreeIDAdapter(hepRepInstanceTree.instanceTreeIDs[i]));
+        }
+        return out;
+    }
+
+    public String toString() {
+        return "[HepRepInstanceTree (corba):"+getQualifier()+":"+getName()+":"+getVersion()+"]";
+    }
+
+}
+

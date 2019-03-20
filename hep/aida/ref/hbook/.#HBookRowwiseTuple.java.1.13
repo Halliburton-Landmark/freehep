@@ -1,0 +1,190 @@
+package hep.aida.ref.hbook;
+
+import hep.io.hbook.RowwiseTuple;
+import hep.aida.ref.tuple.ReadOnlyAbstractTuple;
+import hep.io.hbook.RowwiseTupleColumn;
+import org.freehep.util.Value;
+import hep.tuple.interfaces.*;
+import hep.tuple.Cursor;
+
+/**
+ * An implementation of ITuple backed by a PAW rowwise tuple.
+ * @author tonyj
+ * @version $Id: HBookRowwiseTuple.java,v 1.13 2005/06/04 00:38:01 turri Exp $
+ */
+class HBookRowwiseTuple extends ReadOnlyAbstractTuple {
+    private RowwiseTuple tuple;
+    private Cursor cursor;
+    private HBookRowwiseTupleColumn[] columns;
+    
+    HBookRowwiseTuple(RowwiseTuple tuple) {
+        super(String.valueOf(tuple.id()));
+        setTitle(tuple.getName());
+        this.tuple = tuple;
+        
+        int nCols = tuple.nChildren();
+        columns = new HBookRowwiseTupleColumn[nCols];
+        for ( int i = 0; i < nCols; i++ )
+            columns[i] = new HBookRowwiseTupleColumn( (RowwiseTupleColumn) tuple.getChild(i), tuple );
+        
+        cursor = new Cursor(0,rows(),true);
+    }
+    
+    public double columnMax(int column) throws java.lang.IllegalArgumentException {
+        RowwiseTupleColumn child = (RowwiseTupleColumn) tuple.getChild(column);
+        return child.getMax();
+    }
+    
+    public double columnMean(int column) throws java.lang.IllegalArgumentException {
+        return Double.NaN;
+    }
+    
+    public double columnMin(int column) throws java.lang.IllegalArgumentException {
+        RowwiseTupleColumn child = (RowwiseTupleColumn) tuple.getChild(column);
+        return child.getMin();
+    }
+    
+    public String columnName(int column) throws java.lang.IllegalArgumentException {
+        return tuple.getChild(column).getName();
+    }
+    
+    public double columnRms(int column) throws java.lang.IllegalArgumentException {
+        return Double.NaN;
+    }
+    
+    public Class columnType(int column) throws java.lang.IllegalArgumentException {
+        return Float.TYPE;
+    }
+    
+    public int columns() {
+        return tuple.nChildren();
+    }
+    
+    public int findColumn(String name) throws java.lang.IllegalArgumentException {
+        int index = tuple.getIndex(name);
+        if ( index < 0 ) throw new IllegalArgumentException("Column "+name+" does not exist");
+        return index;
+    }
+    
+    public boolean getBoolean(int param) throws java.lang.ClassCastException {
+        throw new ClassCastException();
+    }
+    
+    public byte getByte(int param) throws java.lang.ClassCastException {
+        throw new ClassCastException();
+    }
+    
+    public char getChar(int param) throws java.lang.ClassCastException {
+        throw new ClassCastException();
+    }
+    
+    public double getDouble(int column) throws java.lang.ClassCastException {
+        RowwiseTupleColumn child = (RowwiseTupleColumn) tuple.getChild(column);
+        return child.getDouble();
+    }
+    
+    public float getFloat(int column) throws java.lang.ClassCastException {
+        RowwiseTupleColumn child = (RowwiseTupleColumn) tuple.getChild(column);
+        return (float) child.getDouble();
+    }
+    
+    public int getInt(int param) throws java.lang.ClassCastException {
+        throw new ClassCastException();
+    }
+    
+    public long getLong(int param) throws java.lang.ClassCastException {
+        throw new ClassCastException();
+    }
+    
+    public Object getObject(int param) throws java.lang.ClassCastException {
+        throw new ClassCastException();
+    }
+    
+    public short getShort(int param) throws java.lang.ClassCastException {
+        throw new ClassCastException();
+    }
+    
+    public String getString(int param) throws java.lang.ClassCastException {
+        throw new ClassCastException();
+    }
+    
+    public hep.aida.ITuple findTuple(int param) {
+        throw new UnsupportedOperationException();
+    }
+    
+    public boolean next() {
+        boolean advanced = cursor.next();
+        if ( advanced ) tuple.setCurrentRow( cursor.row()+1 );
+        return advanced;
+    }
+    
+    public int rows() {
+        return tuple.getRows();
+    }
+    
+    public void setRow(int row) throws java.lang.IllegalArgumentException {
+        if (row < 0 || row >= rows()) throw new IllegalArgumentException("Invalid ntuple row: "+row);
+        tuple.setCurrentRow(row+1);
+    }
+    
+    public void skip(int n) throws java.lang.IllegalArgumentException {
+        cursor.skip(n);
+        tuple.setCurrentRow(cursor.row()+1);
+    }
+    
+    public void start() {
+        cursor.start();
+    }
+    
+    public int getRow() {
+        return cursor.row();
+    }
+    
+    public int columnIndexByName(String name) {
+        return findColumn( name );
+    }
+
+    public String columnDefaultString(int index) {
+        throw new UnsupportedOperationException();
+    }
+    
+    public Object columnDefaultValue(int index) {
+        throw new UnsupportedOperationException();        
+    }
+    
+    /*
+    public FTuple tuple( int index ) {
+        return (FTuple)getTuple( index );
+    }
+    
+    public boolean supportsRandomAccess() {
+        return true;
+    }
+    public boolean supportsMultipleCursors() {
+        return true;
+    }
+    
+    public FTupleColumn column(int index) {
+        return columns[index];
+    }
+    
+    public FTupleColumn columnByName(String name) {
+        return columns[ columnIndexByName( name ) ];
+    }
+    
+    public void columnValue(int column, FTupleCursor cursor, Value value) {
+        columns[column].value( cursor, value );
+    }
+    
+    public FTupleCursor cursor() {
+        return new Cursor(0,rows(),supportsRandomAccess());
+    }
+    
+    public void close() {
+    }
+
+    public boolean isInMemory() {
+        return false;
+    }
+*/
+}

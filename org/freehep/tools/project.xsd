@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- $Id: project.xsd,v 1.2 2002/07/16 17:21:13 duns Exp $ -->
+<!-- XML Schema Definition for the Project Status -->
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified">
+
+    <xsd:element name="PROJECT">
+        <xsd:complexType>
+            <xsd:sequence maxOccurs="unbounded">
+                <xsd:element name="JAR">
+                    <xsd:complexType>
+                        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                            <xsd:element name="PATTERN">
+                                <xsd:complexType>
+                                    <xsd:attribute name="NAME" type="xsd:string" use="required"/>
+                                </xsd:complexType>
+                            </xsd:element>
+                            <xsd:element name="PACKAGE">
+                                <xsd:complexType>
+                                    <xsd:all>
+                                        <xsd:element name="DESCRIPTION"/>
+                                        <xsd:element name="STATUS"/>
+                                    </xsd:all>
+                                    <xsd:attribute name="NAME" type="xsd:string" use="required"/>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:choice>
+                        <xsd:attribute name="NAME" type="xsd:string" use="required"/>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+            <xsd:attribute name="NAME" type="xsd:string" use="required"/>
+            <xsd:attribute name="VERSION" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>
+

@@ -1,0 +1,81 @@
+#
+# WIN32 - VC
+#
+
+ARCH = i386
+
+INCFLAGS += -I$(JDK_HOME)/include/win32
+
+#
+# Compiler
+#
+ifneq ($(DEBUG),)
+	CFLAGS += -Zi -Od
+	DEBUGSUFFIX =
+	PDBTARGET = -Fd
+    LINKFLAGS += -debug
+else
+	CFLAGS += -Og
+	DEBUGSUFFIX =
+	PDBTARGET =
+endif
+
+CXX = cl -c -TP
+CC = cl -c -TC
+F77 = df
+F77FLAGS += -Ox -G5 -Zd -nologo -4Nportlib -dll -c -MD
+CFLAGS += -W1 -WX -nologo -MD -G5 -GX -GR -Zm200 -DVC6 -DWINVER=0x0400 -DWIN32 -D_WIN32 -D_CONSOLE -D_X86_=1 -D_NTSDK -D_DLL -DVISUAL_CPLUSPLUS -DCERNLIB_WINNT -DCERNLIB_UNIX -DCERNLIB_QFMSOFT -DCERNLIB_MSSTDCALL
+CXXTARGET = -Fo
+F77TARGET = -object:
+SEPARATOR = \\
+
+#
+# Librarian
+#
+LIB = lib
+LIBFLAGS += -nologo
+LIBTARGET = -out:
+
+#
+# Linker
+#
+LINK = link
+LINKCC = link
+LINKFLAGS += -nologo
+DLL = link
+DLLFLAGS += -dll
+LINKTARGET = -out:
+LINKFLAGS += $(addsuffix  /$(REF), $(addprefix -LIBPATH:, $(EXTLIBDIRS)))
+LINKFLAGS += $(addsuffix  /$(DST), $(addprefix -LIBPATH:, $(LIBDIRS)))
+LINKFLAGS += $(addprefix -LIBPATH:, $(UNIXLIBDIRS))
+ifeq ($(LINKNOJAVA),)
+    LINKLIBS += $(subst \,/,$(JDK_HOME))/lib/jvm.lib
+endif   # LINKNOJAVA
+LINKLIBS += $(addsuffix $(DEBUGSUFFIX).lib, $(INCLUDELIBS))
+LINKLIBS += $(addsuffix .a, $(addprefix lib, $(INCLUDEUNIXLIBS)))
+
+#
+# CERN Lib
+#
+ifneq ($(CERN_ROOT),)
+    LINKLIBS += packmd.lib shiftmd.lib ws2_32.lib advapi32.lib geantmd.lib
+    LINKFLAGS += -LIBPATH:$(subst \,/,$(CERN_ROOT))/lib
+endif   # CERN_ROOT
+
+#
+# System
+#
+OBJEXT = .obj
+LIBEXT = .lib
+DLLEXT = .dll
+LIBPRE =
+EXEEXT = .exe
+TAREXT = .zip
+ifdef LIBS
+    ifdef DEBUG
+	    PDB = $(DST)/$(LIBS)$(DEBUGSUFFIX).pdb
+	endif
+    EXP = $(DST)/$(LIBS)$(DEBUGSUFFIX).exp
+endif
+DTMP = $(subst \,/,$(TMP))/$(DST)
+DTAR = jar M

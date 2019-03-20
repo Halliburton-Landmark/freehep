@@ -1,0 +1,3 @@
+#!/bin/sh
+
+java -classpath "$FREEHEP/lib/freehep-tools.jar:$FREEHEP/lib/freehep-base.jar:$CLASSPATH" org.freehep.tools.JarSize $*

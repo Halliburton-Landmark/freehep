@@ -1,0 +1,155 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Introduction</title>
+</head>
+
+<body>
+
+<p>This release of Jaco is very preliminary, as is this documentation. Items in
+the documentation in <font color="#FF0000">red</font> are planned but not yet
+implemented.</p>
+<h2>Introduction</h2>
+<p>The goal of Jaco is to make it easy to access C++ objects from Java. All Java
+virtual machines include a mechanism for calling routines written in other
+languages, called the Java Native Interface (JNI). The JNI is fine for calling
+routines written in C (or event Fortran) from Java, but it does not by itself
+provide a convenient mechanism for making C++ objects accessible to the Java
+programmer as Java objects. Accessing a C++ object from Java using JNI typically
+involves hand coding a combination of C and Java code for each method in the C++
+object, a tedious and error-prone task.</p>
+<p>Jaco addresses this problem by automating the generation of this glue code,
+and in addition provides some extra functionality to aid in managing objects in
+a cross-language environment. The basic OO functionality of Java and C++ is very
+similar, so there is a fairly natural mapping between C++ objects and Java
+objects. C++ does support a number of features which are not supported by Java
+and currently these features are not supported by Jaco. Limitations currently
+imposed by Jaco include:</p>
+<ul>
+  <li>No support for templates</li>
+  <li>No support for operator overloading</li>
+  <li>Only C++ methods that accept primitives, or simple object references
+    supported</li>
+  <li>Only methods that return void, primitives or simple object references
+    supported</li>
+  <li>No access to C++ member variables from Java (they should be private
+    anyway)</li>
+  <li>It is not possible to subclass a C++ class from Java.</li>
+</ul>
+<p>Jaco does support</p>
+<ul>
+  <li>Multiple inheritance of C++ objects</li>
+</ul>
+<p>Jaco maps each C++ object to a Java object, called a proxy. Each Java proxy
+will implement an interface of the same name as the C++ class, and with the same
+public methods as the corresponding C++ class. Jaco supports multiple
+inheritance, so for each superclass of the C++ class the Java object will
+implement a super-interface of the C++ class. Each Java proxy object will also
+implement a CPPProxy interface, which has a few utility methods in it applicable
+to all proxy classes. This is illustrated below.</p>
+<p>Jaco maintains a table which maps C++ classes to their Java Proxy (and
+vice-versa). This enables Jaco to guarantee that if two references to the same
+C++ object exist in the Java program, they will both refer to the same Java
+proxy object. Java proxy objects will be automatically garbage when they are no
+longer in use, and the entry in the Jaco map will be automatically cleaned up
+too. Various objection exist for handling the C++ objects when their Java proxy
+is garbage collected.</p>
+<p>Jaco is designed to be used in two different ways:</p>
+<ol>
+  <li>Where the main routine of the program is written in Java, and C++ code is
+    called from Java.</li>
+  <li>Where the main routine is written in C++ (or some other native language),
+    and Java code is invoked from C++.</li>
+</ol>
+<p>The details of how Jaco is used is slightly different in these two cases, and
+is described separately below.</p>
+<h2>Miscellaneous Topics</h2>
+<h3>Using the Jaco Command Line Tool</h3>
+<p>To be written.</p>
+<h3>Creating C++ objects from Java</h3>
+<p>C++ objects can be created from a Java program, but the mechanism is not as
+simple as using the normal Java new operator. Since each C++ class is
+represented in the Java program by a Java interface, a compile time error will
+occur if an attempt is made to use the new operator. (Java interfaces can not be
+created with the new operator).</p>
+<p>Instead the create method in the corresponding Proxy class must be called
+(the proxy class has the same name as the C++ class, but with the postfix
+Proxy). One create method will exist for each (overloaded) public constructor in
+the C++ class.</p>
+<pre>Track t = TrackProxy.create();</pre>
+<h3>Deleting C++ objects from Java</h3>
+<p>C++ objects can be deleted from Java by calling the delete method in the
+CPPProxy interface which all Java proxy objects implement. <font color="#FF0000">Once
+a C++ object has been explicitly deleted any attempt to call a method of the
+proxy object will result in a NoSuchObject exception.</font></p>
+<pre>Track t = TrackProxy.create();
+t.delete();</pre>
+<h3>Calling static methods of C++ classes from Java</h3>
+<p>Static methods in C++ classes can be called by invoking the static method
+with the same name on the Java proxy class, e.g.:</p>
+<pre>TrackProxy.setPrimaryVertex(v);</pre>
+<h3>Lifetime of C++ objects</h3>
+<p>C++ objects allocated on the heap, must be explicitly deleted by the user
+when they are no longer needed. Java objects on the other hand are automatically
+deleted by the system when they are no longer in use (a process called garbage
+collection). Jaco allows C++ objects to be explicitly created and deleted using
+the mechanisms discussed above. <font color="#FF0000">In addition a Java proxy
+can be set to automatically delete its corresponding C++ object when the Java
+object is no longer in use, using the setDeleteCPPObjectWhenProxyFinalized()
+method in the CPPProxy interface which all Java proxy objects implement. This
+must be used with care since there is no check whether other C++ objects have
+references to the C++ object being deleted.</font></p>
+<pre><font color="#FF0000">Track t = TrackProxy.create();
+t.setDeleteCPPObjectWhenProxyFinalized();</font></pre>
+<h3>Java Access to C++ Objects Which No Longer Exist</h3>
+<p><font color="#FF0000">In the case where a C++ object is deleted explicitly <i>from
+Java,</i> any further attempt to invoke methods of its Java proxy class will
+result in a NoSuchObject exception being throw.</font> Unfortunately if the C++
+object is deleted from C++ code, the Jaco interface has no way to know that the
+object has been deleted, and most likely the entire program will core dump.</p>
+<p><font color="#FF0000">To avoid this possibility it is possible to modify the
+C++ classes which will have Java proxies to extend JacoProxy. In this case when
+the C++ object is deleted, the Jaco manager will be informed, and the entry in
+the C++&lt;--&gt;Java map modified so that any future attempt to access the C++
+object from Java will result in a NoSuchObject exception.</font></p>
+<h2>Examples</h2>
+<h3>Using C++ classes from a program with a Java main routine.</h3>
+<p>When used in this way all of the C++ (and any other native) code must be
+compiled and linked into one or more dynamic load libraries (typically .so file
+on Unix, and .dll files under Windows). These libraries are then loaded from
+Java using the System.loadLibrary() method. Once the native code is loaded new
+C++ objects can be created as described above.</p>
+<p>The steps involved are:</p>
+<ol>
+  <li>Use the Jaco command line tool on the .h file for each C++ object which
+    will be accessed from java.</li>
+  <li>Compile all of the C++ code, plus the C++ code generated by Jaco in step
+    1.</li>
+  <li>Link all of the C++ code into one of more dynamic load libraries. You will
+    need to include a reference to the jaco library in your link.</li>
+  <li>Compile all of your Java code.</li>
+  <li>Make sure that all required libraries are located in your PATH, or
+    LD_LIBRARY_PATH</li>
+  <li>Run the Java program.</li>
+</ol>
+<h3>Using Java classes from a program with a C++ main routine.</h3>
+<p>Before invoking any Java code you must create an instance of JacoManager.
+When used in this way your C++ program will dynamically start the Java Virtual
+Machine (JVM) when JacoManager is created. You can specify the path to the JVM
+to be started, and the CLASSPATH to use, as arguments to JacoManager, otherwise
+default will be used.</p>
+<p><font color="#FF0000">Not yet supported. </font></p>
+<h3>Documentation ToDo</h3>
+<ol>
+  <li>Should we have a different naming convention for the xxxProxy classes. It
+    is confusing since we refer to the objects as proxies even when we refer to
+    them by their interfaces. </li>
+</ol>
+
+</body>
+
+</html>

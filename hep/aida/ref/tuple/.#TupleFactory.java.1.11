@@ -1,0 +1,174 @@
+package hep.aida.ref.tuple;
+
+import hep.aida.*;
+import hep.aida.ref.tree.*;
+import hep.tuple.interfaces.FTuple;
+import hep.tuple.interfaces.FillableTuple;
+import hep.tuple.interfaces.FTupleFactory;
+import org.freehep.util.FreeHEPLookup;
+import org.openide.util.Lookup;
+
+/**
+ *
+ * @author The FreeHEP Team @ SLAC.
+ *
+ */
+public class TupleFactory implements ITupleFactory {
+    
+    private Tree tree;
+    private FTupleFactory fTupleFactory;
+    
+    public TupleFactory(ITree tree) {
+        this.tree = tree instanceof Tree ? (Tree) tree : null;
+
+        Lookup.Template template = new Lookup.Template(hep.tuple.interfaces.FTupleFactory.class,"FTupleFactory",null);
+        Lookup.Item item = FreeHEPLookup.instance().lookupItem(template);
+        if (item == null) throw new IllegalArgumentException("Problem loading the FTupleFactory");
+        fTupleFactory = (FTupleFactory)item.getInstance();
+    }
+    
+    /**
+     * Create an NTuple
+     * @param name The persistency name of the n-tuple
+     * @param title The title of the n-tuple
+     * @param columnName The names of the columns
+     * @param columnType The types of  the columns
+     * @param options NTuple options (currently undefined)
+     */
+    public ITuple create(String name, String title, String[] columnName, Class[] columnType, String options) {
+        Tuple tuple = new Tuple(name, title, columnName, columnType, options, fTupleFactory);
+        if ( tree != null ) tree.add(tuple);
+        return tuple;
+    }
+
+    public ITuple create(String name, String title, String[] columnName, Class[] columnType) {
+        return create(name,title,columnName,columnType,"");
+    }
+    
+    /**
+     * Create an NTuple
+     * @param name The persistency name of the n-tuple
+     * @param title The title of the n-tuple
+     * @param columns The names and types of the columns e.g. "float px, py, pz, float energy, int charge"
+     * @param options NTuple options (currently undefined)
+     */
+    public ITuple create(String name, String title, String columns, String options) {
+        Tuple tuple = new Tuple(name, title, columns, options, fTupleFactory);
+        if ( tree != null ) tree.add(tuple);
+        return tuple;
+    }
+    public ITuple create(String name, String title, String columns) {
+        return create(name,title,columns,"");
+    }
+
+    /**
+     * Create a logical chain of ITuples. All ITuples in the set must
+     * have the same structure. Chained ITuple can not be filled.
+     * @param name The persistency name of the new n-tuple
+     * @param title The title of the new n-tuple
+     * @param set The array of ITuples to chain
+     */
+    public ITuple createChained(String name, String title, ITuple[] set) {
+        ITuple tuple = new ChainedTuple(name, title, set);
+        if ( tree != null ) tree.add((IManagedObject) tuple);
+        return tuple;
+    }
+    public ITuple createChained(String name, String title, String[] setName) {
+	if ( tree == null ) 
+	    throw new IllegalArgumentException("This TupleFactory does not have a Tree. Can not find Tuple by name.");
+
+	ITuple[] tupleSet = new ITuple[setName.length];
+	for (int i=0; i<setName.length; i++) {
+	    Object t = tree.find(setName[i]);
+	    if (t instanceof ITuple) tupleSet[i] = (ITuple) t;
+	    else throw new IllegalArgumentException("ManagedObject \""+setName[i]+"\" is not an ITuple");
+	}
+	return createChained(name, title, tupleSet);
+    }
+
+    public ITuple createFiltered(String name, ITuple tuple, IFilter filter) {
+	int nColumns = tuple.columns();
+	String[] columnNames = new String[nColumns];
+	for (int i=0; i<nColumns; i++) {
+	    columnNames[i] = tuple.columnName(i);
+	}
+	return createFiltered(name,tuple, filter, columnNames);
+    }
+    
+    public ITuple createFiltered(String name, ITuple tuple, IFilter filter, String[] columns) {
+        int nColumns = columns.length;
+	if ( nColumns > tuple.columns() )
+	    throw new IllegalArgumentException("Original ITuple has less columns ("+tuple.columns()+
+					       ") than requested for copy ("+nColumns+")");
+	int[] columnId = new int[nColumns];
+	String[] fullColumnNames = new String[nColumns];
+	Class[] columnTypes = new Class[nColumns];
+	for (int i=0; i<nColumns; i++) {
+	    columnId[i] = tuple.findColumn(columns[i]);
+	    columnTypes[i] = tuple.columnType(columnId[i]);
+
+	    //fullColumnNames[i] = tuple.columnDefaultString(columnId[i]);
+	    if ( columnTypes[i] != ITuple.class) fullColumnNames[i] = columns[i] + " = " + fullColumnNames[i];
+	}
+        String title = tuple.title(); 
+        
+        //Tuple newTuple = new Tuple(name,title, fullColumnNames, columnTypes, null);
+        Tuple newTuple = new Tuple(name,title, columns, columnTypes, null,fTupleFactory);
+        if ( tree != null ) tree.add(newTuple);
+
+	// fill new n-tuple
+	if (tuple.rows() > 0) {
+	   
+	    tuple.start();
+//            filter.initialize(tuple);
+	    while (tuple.next()) {
+		if (filter == null || filter.accept()) {
+		    for (int i=0; i<nColumns; i++) {
+			int j = columnId[i];
+			if ( columnTypes[i] == Integer.TYPE ) newTuple.fill(i, tuple.getInt(j));
+			else if ( columnTypes[i] == Short.TYPE) newTuple.fill(i, tuple.getShort(j));
+			else if ( columnTypes[i] == Long.TYPE) newTuple.fill(i, tuple.getLong(j));
+			else if ( columnTypes[i] == Float.TYPE) newTuple.fill(i, tuple.getFloat(j));
+			else if ( columnTypes[i] == Double.TYPE) newTuple.fill(i, tuple.getDouble(j));
+			else if ( columnTypes[i] == Boolean.TYPE) newTuple.fill(i, tuple.getBoolean(j));
+			else if ( columnTypes[i] == Byte.TYPE) newTuple.fill(i, tuple.getByte(j));
+			else if ( columnTypes[i] == Character.TYPE) newTuple.fill(i, tuple.getChar(j));
+			else if ( columnTypes[i] == ITuple.class) {
+			    Tuple tOld = (Tuple) tuple.getObject(j);
+			    //ITuple tNew = this.copy(tOld.name(), tOld.title(), tOld, null);
+			    newTuple.fill(i, tOld);
+			}
+			else newTuple.fill(i, tuple.getObject(j));
+		    }
+		    newTuple.addRow();
+		}
+	    }
+	}
+        return newTuple;
+    }
+
+    /**
+     * Create IFilter.
+     *
+     */
+    public IFilter createFilter(String expression) {
+        return new Filter(expression);
+    }
+    
+    public IFilter createFilter(String expression, int rowsToProcess, int startingRow) {
+        return new Filter(expression,rowsToProcess,startingRow);
+    }
+    
+    public IFilter createFilter(String expression, int rowsToProcess) {
+        return new Filter(expression,rowsToProcess, 0);
+    }
+
+    /**
+     * Create IEvaluator.
+     *
+     */
+    public IEvaluator createEvaluator(String expression) {
+        return new Evaluator(expression);
+    }
+    
+}

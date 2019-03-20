@@ -1,0 +1,15 @@
+Patrick.Hellwig@CERN.CH
+Version $Id: ToDo.txt,v 1.2 2000/08/04 09:50:18 patrick Exp $
+ToDo - List
+
+Please feel free to add new items !
+------------------------------------------------------------------------------------------
++ XML sample file (data from Paolo) and XML Schema definition file
++ Code a little program in JAS to test the XML sample file
++ implement a Java Interface to Particle Data
++ provide the DefaultDefinition Classes for the interface (look up collection classes)
++ write a parser to create the DefaultDefinition Classes out of the XML file
++ make up a class diagramm of the new classes
++ Java-Servlet and HTML browsing extension
++ Documentation about the Project
++

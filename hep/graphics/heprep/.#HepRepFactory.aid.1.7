@@ -1,0 +1,163 @@
+// Copyright 2000-2002, FreeHEP.
+package hep.graphics.heprep;
+
+@java {
+import org.freehep.util.Factory;
+}
+
+/**
+ * HepRepFactory interface.
+ *
+ * @author Mark Donszelmann
+ */
+@cvs {
+ * @version $Id: HepRepFactory.aid,v 1.8 2003/06/28 20:45:37 duns Exp $
+}
+
+class HepRepFactory {
+@java {
+    /**
+     * Name of the interface for factory for HepRep.
+     */
+    public static final String factoryName = "hep.graphics.heprep.HepRepFactory";
+
+    /**
+     * Properties filename to find out what factory to load for HepRep.
+     */
+    public static final String propertyFile = "heprep.properties";
+
+    /**
+     * Default HepRep factory classname.
+     */
+    public static final String defaultFactoryName = "hep.graphics.heprep.xml.XMLHepRepFactory";
+
+    /**
+     * Creates a heprep factory based on the content of heprep.properties file. If not found
+     * the default HepRepFactory is created.
+     *
+     * @return HepRepFactory.
+     */
+    public static HepRepFactory create()
+           throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+
+        String name = Factory.findFactory(factoryName, propertyFile, defaultFactoryName);
+        Class clazz = Class.forName(name);
+        HepRepFactory factory = (HepRepFactory)clazz.newInstance();
+        return factory;
+    }
+}
+
+    /**
+     * Creates a HepRepReader from a stream.
+     *
+     * @param in input stream.
+     * @throws IOException in case of problems with the stream.
+     */
+    HepRepReader* createHepRepReader (InputStream *in) throws IOException;
+
+    /**
+     * Creates a HepRepReader from a file name.
+     *
+     * @param inputFileName file name.
+     * @throws IOException in case of problems with the stream.
+     */
+    HepRepReader* createHepRepReader (String inputFileName) throws IOException;
+
+    /**
+     * Creates a HepRepWriter.
+     *
+     * @param out output stream.
+     * @param randomAccess create a writer in a format that will allow random access (may be ignored).
+     * @param compress create a writer that uses compression (may be ignored).
+     * @throws IOException in case of problems with the stream.
+     */
+    HepRepWriter* createHepRepWriter (OutputStream *out, boolean randomAccess, boolean compress) throws IOException;
+
+    /**
+     * Creates a HepRepPoint.
+     *
+     * @param instance to add the point to.
+     * @param x x coordinate of point.
+     * @param y y coordinate of point.
+     * @param z z coordinate of point.
+     * @throws IOException only if written immediately to a stream.
+     */
+    HepRepPoint* createHepRepPoint (HepRepInstance* instance,
+                                    double x, double y, double z) throws IOException;
+
+    /**
+     * Creates a HepRepInstance.
+     *
+     * @parent to add the instance to.
+     * @type type the associated type.
+     * @throws IOException only if written immediately to a stream.
+     */
+    HepRepInstance* createHepRepInstance (HepRepInstance* parent, HepRepType* type) throws IOException;
+
+    /**
+     * Creates a HepRepInstance.
+     *
+     * @parent to add the instance to.
+     * @type type the associated type.
+     * @throws IOException only if written immediately to a stream.
+     */
+    HepRepInstance* createHepRepInstance (HepRepInstanceTree* parent, HepRepType* type) throws IOException;
+
+    /**
+     * Creates a HepRepTreeID.
+     *
+     * @param name of the treeID.
+     * @param version of the treeID.
+     * @param qualifier of the treeID.
+     * @throws IOException only if written immediately to a stream.
+     */
+    HepRepTreeID* createHepRepTreeID (String name, String version, String qualifier = "top-level") throws IOException;
+
+    /**
+     * Creates a HepRepAction.
+     *
+     * @param name of the action.
+     * @param expression of the action.
+     * @throws IOException only if written immediately to a stream.
+     */
+    HepRepAction* createHepRepAction (String name, String expression) throws IOException;
+
+    /**
+     * Creates a HepRepInstanceTree.
+     * <p>
+     * The tree needs to be added to the HepRep.
+     *
+     * @param name of the instancetree.
+     * @param version of the instancetree.
+     * @param typeTree associated typetree.
+     * @throws IOException only if written immediately to a stream.
+     */
+    HepRepInstanceTree* createHepRepInstanceTree (String name, String version,
+                                                  HepRepTreeID* typeTree) throws IOException;
+
+    /**
+     * Creates a HepRepType.
+     *
+     * @param parent to add this type to.
+     * @param name of the type to create.
+     * @throws IOException only if written immediately to a stream.
+     */
+    HepRepType* createHepRepType (HepRepType* parent, String name) throws IOException;
+
+    /**
+     * Creates a HepRepTypeTree.
+     * <p>
+     * The tree needs to be added to the HepRep.
+     *
+     * @param treeID to name the tree being created.
+     * @throws IOException only if written immediately to a stream.
+     */
+    HepRepTypeTree* createHepRepTypeTree (HepRepTreeID* treeID) throws IOException;
+
+    /**
+     * Creates a HepRep.
+     *
+     * @throws IOException only if written immediately to a stream.
+     */
+    HepRep* createHepRep () throws IOException;
+}

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+java -cp $FREEHEP/lib/freehep-base.jar:$FREEHEP/lib/freehep-tools.jar:$FREEHEP/lib/velocity.jar:$FREEHEP/lib/servlet.zip:$FREEHEP/lib/commons-collections.jar:$FREEHEP/lib/logkit.jar org.freehep.tools.WebPage $*

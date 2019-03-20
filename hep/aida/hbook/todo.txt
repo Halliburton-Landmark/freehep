@@ -1,0 +1,3 @@
+- add test .bat and shell file
+- run test
+- add test to makefile

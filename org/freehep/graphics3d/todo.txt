@@ -1,0 +1,18 @@
+- fix probem of constraint axes, and initial position of drag, it show a line
+- a particular sequence of ctrl keys, mosue drag keeps showing the constraints when all keys and mouse released.
+- redraw in Canvas3D should distinguish between printing and convert to int by calling the right transform method
+
+ArcBall & GE
+============
+-1 add scaling 
+-2 add translation
+-3 WHEN TRANSLATED THE SELECTION IS OFF
+-4 do not commit GL stuff and change config to old thing
+-a ortho does not work correctly yet, z seems to be inverted
+-b frustum may not work correctly yet, z seems to be inverted
+-c try printing
+-d implement other VectorGraphics primitives!
+-e JDK>1.3 enable the initialization of the caps-lock key
+-f add transform3Dinfo to DefaultTransform3D
+
+

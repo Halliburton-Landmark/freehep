@@ -1,0 +1,36 @@
+**********************************************************************
+ XML Streamer implementation of the HepRep (version 2) driver in c++.
+
+ Author: Mark Donszelmann
+**********************************************************************
+
+This implementation allows a C++ program to write HepRep XML files.
+
+For documentation on HepRep (version 1 and 2) see:
+http://heprep.freehep.org/
+
+The implementation implements the HepRep (version 2) standard
+in write only mode. Although it appears that you are creating a full
+HepRep tree, you are only allowed to add children to the current node
+or any node above. One is not allowed to keep ptr's to nodes of any leaves.
+
+The Streamer does NOT keep the tree in memory, but streams it directly
+to XML.
+
+An example is available under the name: HepRepStreamerExample.cc
+
+The distribution is available for: Linux, Windows and MacOS X.
+
+You need the HEPREP library as well.
+
+There exists also a pure-java version.
+
+Sources are avaliable from:
+http://java.freehep.org/
+
+--
+0.1 initial release
+0.2 fixed "LineColor" to be "Color" in the example and its output.
+
+10-Dec-2002
+Mark Donszelmann

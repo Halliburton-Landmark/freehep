@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="all" name="Build src distribution for AIDAJNI">
+    <target name="init">
+    </target>
+    <target name="all" depends="init, AIDAJNI, PSViewer" />
+    
+    <target name="AIDAJNI">
+        <zip basedir="." compress="true" destfile="AIDAJNI-3.2.5-src.zip">
+            <include name="LICENSE.txt"/>
+            <include name="LGPL.txt"/>
+            <include name="GNUmakefile-AIDAJNI"/>
+            <include name="README-AIDAJNI.html"/>
+            <include name="build.xml"/>
+            <include name="bin/*"/>
+            <include name="config/*"/>
+            <include name="config/sys/*"/>
+            <include name="hep/aida/include/**"/>
+            <include name="hep/aida/jni/*"/>
+            <exclude name="hep/aida/jni/AIDAJNI-*-*-*.*"/>
+            <include name="lib/readme.txt"/>            
+            <include name="lib/aida.jar"/>            
+            <include name="lib/aida-dev.jar"/>            
+            <include name="lib/WIN32-g++/jvm.def"/>            
+            <include name="lib/WIN32-g++/libjvm.dll.a"/>            
+            <include name="lib/WIN32-g++/README.txt"/>            
+            <include name="org/freehep/aid/include/**"/>
+            <include name="org/freehep/jni/*"/>
+            <include name="org/freehep/jni/include/win32-g++/*"/>
+            <include name="org/freehep/jni/sys/*"/>
+            <include name="package/AIDAJNI/bin/**"/>
+            <include name="package/AIDAJNI/examples/**"/>
+            <include name="package/AIDAJNI/src/aida-config/*"/>
+            <include name="package/AIDAJNI/src/runs/*"/>
+            <include name="web/freehep/aidajni/ReleaseNotes-3.2.4.xhtml"/>
+            <include name="tools/readme.txt"/>
+            <include name="tools/ant"/>
+            <include name="tools/ant*.*"/>
+            <include name="tools/freehep-buildtools.jar"/>
+            <include name="tools/junit.jar"/>
+        </zip>
+        <tar basedir="." compression="gzip" destfile="AIDAJNI-3.2.5-src.tar.gz">
+            <include name="LICENSE.txt"/>
+            <include name="LGPL.txt"/>
+            <include name="GNUmakefile-AIDAJNI"/>
+            <include name="README-AIDAJNI.html"/>
+            <include name="build.xml"/>
+            <include name="config/*"/>
+            <include name="config/sys/*"/>
+            <include name="hep/aida/include/**"/>
+            <include name="hep/aida/jni/*"/>
+            <exclude name="hep/aida/jni/AIDAJNI-*-*-*.*"/>
+            <include name="lib/readme.txt"/>            
+            <include name="lib/aida.jar"/>            
+            <include name="lib/aida-dev.jar"/>            
+            <include name="lib/WIN32-g++/jvm.def"/>            
+            <include name="lib/WIN32-g++/libjvm.dll.a"/>            
+            <include name="lib/WIN32-g++/README.txt"/>            
+            <include name="org/freehep/aid/include/**"/>
+            <include name="org/freehep/jni/*"/>
+            <include name="org/freehep/jni/include/win32-g++/*"/>
+            <include name="org/freehep/jni/sys/*"/>
+            <include name="package/AIDAJNI/bin/**"/>
+            <include name="package/AIDAJNI/examples/**"/>
+            <include name="package/AIDAJNI/src/aida-config/*"/>
+            <include name="package/AIDAJNI/src/runs/*"/>
+            <include name="web/freehep/aidajni/ReleaseNotes-3.2.4.xhtml"/>
+            <include name="tools/readme.txt"/>
+            <include name="tools/ant"/>
+            <include name="tools/ant*.*"/>
+            <include name="tools/freehep-buildtools.jar"/>
+            <include name="tools/junit.jar"/>
+        </tar>
+    </target>
+
+    <target name="PSViewer">
+        <zip basedir="." compress="true" destfile="PSViewer-1.1.0-src.zip">
+            <include name="LICENSE.txt"/>
+            <include name="LGPL.txt"/>
+            <include name="build.xml"/>
+            <include name="bin/*"/>
+            <include name="config/*"/>
+            <include name="config/sys/*"/>
+            <include name="lib/readme.txt"/>            
+            <include name="lib/aida.jar"/>            
+            <include name="lib/bcel.jar"/>            
+            <include name="lib/jas-plotter.jar"/>            
+            <include name="lib/jdom.jar"/>            
+            <include name="lib/jh.jar"/>            
+            <include name="lib/openide-lookup.jar"/>            
+            <include name="org/freehep/postscript/**/*.java"/>
+            <include name="org/freehep/postscript/**/*.txt"/>
+            <include name="org/freehep/postscript/GNUmakefile"/>
+
+            <include name="org/freehep/graphics2d/**/*.java"/>
+            <include name="org/freehep/graphicsio/**/*.java"/>
+
+            <include name="org/freehep/record/**/*.java"/>
+            <include name="org/freehep/application/**/*.java"/>
+            <include name="org/freehep/xml/**/*.java"/>
+            <include name="org/freehep/util/**/*.java"/>
+            <include name="org/freehep/swing/**/*.java"/>
+            <include name="org/freehep/preview/**/*.java"/>
+            <include name="org/freehep/jaco/**/*.java"/>
+            <include name="hep/graphics/heprep/util/HepRepColor.java"/>
+            
+            <include name="package/PSViewer/**"/>
+            <include name="web/freehep/psviewer/ReleaseNotes-1.1.0.xhtml"/>
+            <include name="tools/readme.txt"/>
+            <include name="tools/ant*.*"/>
+            <include name="tools/freehep-buildtools.jar"/>
+            <include name="tools/junit.jar"/>
+            <include name="tools/jnlp.jar"/>
+        </zip>
+        <zip basedir="." compress="true" destfile="PSViewer-1.1.0-tst.zip">
+            <include name="LICENSE.txt"/>
+            <include name="LGPL.txt"/>
+            <include name="org/freehep/postscript/**/*.ps"/>
+            <include name="org/freehep/postscript/**/*.ps.gz"/>
+            <include name="org/freehep/postscript/**/*.eps"/>
+            <include name="org/freehep/postscript/**/*.eps.gz"/>
+            <include name="org/freehep/postscript/**/level2.zip"/>
+        </zip>
+        
+        <tar basedir="." compression="gzip" destfile="PSViewer-1.1.0-src.tar.gz">
+            <include name="LICENSE.txt"/>
+            <include name="LGPL.txt"/>
+            <include name="build.xml"/>
+            <include name="bin/*"/>
+            <include name="config/*"/>
+            <include name="config/sys/*"/>
+            <include name="lib/readme.txt"/>            
+            <include name="lib/aida.jar"/>            
+            <include name="lib/bcel.jar"/>            
+            <include name="lib/jas-plotter.jar"/>            
+            <include name="lib/jdom.jar"/>            
+            <include name="lib/jh.jar"/>            
+            <include name="lib/openide-lookup.jar"/>            
+            <include name="org/freehep/postscript/**/*.java"/>
+            <include name="org/freehep/postscript/**/*.txt"/>
+            <include name="org/freehep/postscript/GNUmakefile"/>
+            
+            <include name="org/freehep/graphics2d/**/*.java"/>
+            <include name="org/freehep/graphicsio/**/*.java"/>
+
+            <include name="org/freehep/record/**/*.java"/>
+            <include name="org/freehep/application/**/*.java"/>
+            <include name="org/freehep/xml/**/*.java"/>
+            <include name="org/freehep/util/**/*.java"/>
+            <include name="org/freehep/swing/**/*.java"/>
+            <include name="org/freehep/preview/**/*.java"/>
+            <include name="org/freehep/jaco/**/*.java"/>
+            <include name="hep/graphics/heprep/util/HepRepColor.java"/>
+            
+            <include name="package/PSViewer/**"/>
+            <include name="web/freehep/psviewer/ReleaseNotes-1.1.0.xhtml"/>
+            <include name="tools/readme.txt"/>
+            <include name="tools/ant*.*"/>
+            <include name="tools/freehep-buildtools.jar"/>
+            <include name="tools/junit.jar"/>
+            <include name="tools/jnlp.jar"/>
+        </tar>
+        <tar basedir="." compression="gzip" destfile="PSViewer-1.1.0-tst.tar.gz">
+            <include name="LICENSE.txt"/>
+            <include name="LGPL.txt"/>
+            <include name="org/freehep/postscript/**/*.ps"/>
+            <include name="org/freehep/postscript/**/*.ps.gz"/>
+            <include name="org/freehep/postscript/**/*.eps"/>
+            <include name="org/freehep/postscript/**/*.eps.gz"/>
+            <include name="org/freehep/postscript/**/level2.zip"/>
+        </tar>
+    </target>
+    
+    <target name="VectorGraphics">
+        <zip basedir="." compress="true" destfile="VectorGraphics-1.2.2-src.zip">
+            <include name="LICENSE.txt"/>
+            <include name="LGPL.txt"/>
+            <include name="build.xml"/>
+            <include name="bin/*"/>
+            <include name="config/*"/>
+            <include name="config/sys/*"/>
+            <include name="lib/readme.txt"/>            
+            <include name="lib/aida.jar"/>            
+            <include name="lib/bcel.jar"/>            
+            <include name="lib/jas-plotter.jar"/>            
+            <include name="lib/jdom.jar"/>            
+            <include name="lib/jh.jar"/>            
+            <include name="lib/openide-lookup.jar"/>            
+
+            <include name="org/freehep/graphics2d/**/*.java"/>
+            <include name="org/freehep/graphics2d/**/*.txt"/>
+            <include name="org/freehep/graphicsio/**/services/*"/>
+            <include name="org/freehep/graphicsio/**/*.java"/>
+            <include name="org/freehep/graphicsio/**/*.txt"/>
+            <include name="org/freehep/graphicsio/GNUmakefile"/>
+            
+            <include name="org/freehep/record/**/*.java"/>
+            <include name="org/freehep/application/**/*.java"/>
+            <include name="org/freehep/xml/**/*.java"/>
+            <include name="org/freehep/util/**/*.java"/>
+            <include name="org/freehep/swing/**/*.java"/>
+            <include name="org/freehep/preview/**/*.java"/>
+            <include name="org/freehep/jaco/**/*.java"/>
+            <include name="hep/graphics/heprep/util/HepRepColor.java"/>
+            
+            <include name="web/freehep/vectorgraphics/ReleaseNotes-1.2.2.xhtml"/>
+            <include name="tools/readme.txt"/>
+            <include name="tools/ant*.*"/>
+            <include name="tools/freehep-buildtools.jar"/>
+            <include name="tools/junit.jar"/>
+            <include name="tools/jnlp.jar"/>
+        </zip>
+        
+        <tar basedir="." compression="gzip" destfile="VectorGraphics-1.2.2-src.tar.gz">
+            <include name="LICENSE.txt"/>
+            <include name="LGPL.txt"/>
+            <include name="build.xml"/>
+            <include name="bin/*"/>
+            <include name="config/*"/>
+            <include name="config/sys/*"/>
+            <include name="lib/readme.txt"/>            
+            <include name="lib/aida.jar"/>            
+            <include name="lib/bcel.jar"/>            
+            <include name="lib/jas-plotter.jar"/>            
+            <include name="lib/jdom.jar"/>            
+            <include name="lib/jh.jar"/>            
+            <include name="lib/openide-lookup.jar"/>            
+
+            <include name="org/freehep/graphics2d/**/*.java"/>
+            <include name="org/freehep/graphics2d/**/*.txt"/>
+            <include name="org/freehep/graphicsio/**/*.java"/>
+            <include name="org/freehep/graphicsio/**/*.txt"/>
+            <include name="org/freehep/graphicsio/GNUmakefile"/>
+            
+            <include name="org/freehep/record/**/*.java"/>
+            <include name="org/freehep/application/**/*.java"/>
+            <include name="org/freehep/xml/**/*.java"/>
+            <include name="org/freehep/util/**/*.java"/>
+            <include name="org/freehep/swing/**/*.java"/>
+            <include name="org/freehep/preview/**/*.java"/>
+            <include name="org/freehep/jaco/**/*.java"/>
+            <include name="hep/graphics/heprep/util/HepRepColor.java"/>
+            
+            <include name="web/freehep/vectorgraphics/ReleaseNotes-1.2.2.xhtml"/>
+            <include name="tools/readme.txt"/>
+            <include name="tools/ant*.*"/>
+            <include name="tools/freehep-buildtools.jar"/>
+            <include name="tools/junit.jar"/>
+            <include name="tools/jnlp.jar"/>
+        </tar>
+    </target>
+    
+    <target description="Clean all build products." name="clean" depends="init">
+        <delete>
+            <fileset dir=".">
+                <include name="AIDAJNI-3.2.5-src.zip"/>
+                <include name="AIDAJNI-3.2.5-src.tar.gz"/>
+                <include name="PSViewer-1.0.0-src.zip"/>
+                <include name="PSViewer-1.0.0-src.tar.gz"/>
+                <include name="PSViewer-1.0.0-tst.zip"/>
+                <include name="PSViewer-1.0.0-tst.tar.gz"/>
+                <include name="VectorGraphics-1.2.2-src.zip"/>
+                <include name="VectorGraphics-1.2.2-src.tar.gz"/>
+            </fileset>
+        </delete>
+    </target>
+</project>

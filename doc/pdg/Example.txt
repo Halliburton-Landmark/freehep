@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- ***************************************************************************************
+	
+	This is a example XML file for the technical specification
+	
+**************************************************************************************** -->
+<PPML Source="testdata" xmlns:ppml="http://www.w3.org/1999/XMLSchema-instance" ppml:noNamespaceSchemaLocation='ppml2.xsd'>
+	<Particle Name="p" TName="p (Proton)">
+		<data Name="PDGID"    TName="PDG ID (Monte Carlo Numbering Scheme)" Value="2212"/>
+		<data Name="Mass"     Value="938.272" Unit="MeV" PError="0.00004" MError="0.00004"/>
+		<!-- second mass entry for other unit -->
+		<data Name="Mass"     Value="1.00727646688" Unit="u" PError="0.00000000013" MError="0.00000000013"/>
+		<data Name="Charge"   Value="-1"/>
+		<data Name="LifeTime" Value="&gt; 1.6E25" Unit="a"/>	<!-- ENTITY USED FOR GREATER THAN ... !!! -->
+		<comment> no errors until now entered ! </comment>
+	</Particle>
+
+	<Particle Name="K" TName="K^{\pm}">
+		<data Name="PDGID"    TName="PDG ID (Monte Carlo Numbering Scheme)" Value="321"/>
+		<data Name="Mass"     Value="493.677" Unit="MeV" PError="0.016" MError="0.016"/>
+		<data Name="LifeTime" Value="1.2386E-8" Unit="s" PError="0.0024E-8" MError="0.0024E-8"/>	<!-- ENTITY USED !!! -->
+
+		<!-- decay channels of K(+/-) follow -->
+		
+		<!-- ASCII naming of decays schould be better ... -->
+		<Decay Name="mu+nu(mu)" TName="\mu^{+}\nu_{\mu}" Fract="0.6351" PError="0.0018" MError="0.0018" SF="1.3" P="236" PUnit="MeV/c">
+				<DParticle Particle="mu+"/>
+				<DParticle Particle="nu(mu)"/>
+		</Decay>
+
+		<Decay Name="pi+pi0" TName="\pi^{+}\pi^{0}" Fract="0.2116" PError="0.0014" MError="0.0014" SF="1.1" P="205" PUnit="MeV/c">
+				<DParticle Particle="pi+"/>
+				<DParticle Particle="pi0"/>
+		</Decay>
+		
+		<!-- ... -->
+	</Particle>
+	
+
+</Particle>
+
+<FamilyStructure Name="Particles">
+  	
+   <FamilyStructure Name="BARYONS" TName="Baryons">	
+	<FamilyStructure Name="N BARYONS" TName="N Baryons">
+		
+		<!-- Family Properties follow here ... -->
+		<Data Name="S" Value="0"/>
+		<Data Name="I" Value="1/2"/>
+		
+		<!-- now all members of this family follow ... -->
+		<Particle Name="p"/>
+		<Particle Name="n"/>
+		<Particle Name="N(1440)P11"/>
+		<!-- ... -->
+		
+		<!-- End of N BARYONS -->
+	</FamilyStructure>
+
+	<FamilyStructure Name="Delta BARYONS" TName="\Delta{}Baryons">
+	
+		<!-- Family Properties follow here ... -->
+		<Data Name="S" Value="0"/>
+		<Data Name="I" Value="3/2"/>
+		
+		<!-- now all members of this family follow ... -->
+		<Particle Name="DELTA(1232)P33"/>
+		<Particle Name="DELTA(1600)P33"/>
+		<Particle Name="DELTA(1620)P33"/>
+		<!-- ... -->
+		
+		<!-- End of Delta BARYONS -->
+	</FamilyStructure>
+	
+	<!-- ... -->
+    </FamilyStructure>
+    
+    <FamilyStructure Name="MESONS" TName="Mesons">
+    	<FamilyStructure Name="LIGHT UNFLAVORED MESONS" TName="LIGHT UNFLAVORED MESONS">
+    	
+		<!-- Family Properties follow here ... -->
+		<Data Name="S" Value="0"/>
+		<Data Name="C" Value="0"/>
+		<Data Name="B" Value="0"/>
+		
+		<!-- now all members of this family follow ... -->
+		<Particle Name="PI"/>
+		<Particle Name="PI0"/>
+		<!-- ... -->
+    		
+    	</FamilyStructure>
+    	
+    	<FamilyStructure Name="STRANGE MESONS" TName="STRANGE MESONS">
+    		
+    		<!-- Family Properties follow here ... -->
+		<Data Name="S" Value="1"/>
+		<Data Name="S" Value="-1"/>
+		<Data Name="C" Value="0"/>
+		<Data Name="B" Value="0"/>
+    	
+    		<!-- now all members of this family follow ... -->
+		<Particle Name="K"/>
+		<Particle Name="K0"/>
+		<!-- ... -->
+		
+    </FamilyStructure>
+</PPML>

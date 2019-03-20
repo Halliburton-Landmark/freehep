@@ -1,0 +1,121 @@
+#
+# Architecture Makefile to produce JNI related Libraries
+# on Windows, Linux and Solaris
+#
+
+#============================================================================
+# Below NO User Configuration
+#============================================================================
+
+#
+# Set everything to NULL
+#
+CXX =
+CC =
+F77 =
+INCFLAGS =
+CFLAGS =
+F77FLAGS =
+CCFLAGS =
+CXXFLAGS =
+CXXTARGET =
+F77TARGET =
+LINK =
+LINKCC =
+LINKFLAGS =
+LINKLIBS =
+LINKTARGET =
+LIB =
+LIBFLAGS =
+DLL =
+DLLFLAGS =
+LIBTARGET =
+PDB =
+PDBTARGET =
+EXP =
+SEPARATOR = /
+
+ifdef INCLUDEDIRS
+	INCFLAGS += $(addprefix -I, $(INCLUDEDIRS))
+endif
+
+#
+# Windows
+#
+ifeq ($(findstring Windows_, $(OS)), Windows_)
+	OSNAME = WIN32
+	ifndef COMPILER
+		COMPILER = VC
+	endif
+else
+
+#
+# Linux
+#
+ifeq ($(OS), Linux)
+	OSNAME = Linux
+	ifndef COMPILER
+		COMPILER = g++
+	endif
+else
+
+#
+# Linuxamd64
+#
+ifeq ($(OS), Linuxamd64)
+	OSNAME = Linuxamd64
+	ifndef COMPILER
+		COMPILER = g++
+	endif
+else
+
+#
+# Solaris
+#
+ifeq ($(OS), Solaris)
+	OSNAME = SUN
+	ifndef COMPILER
+		COMPILER = CC
+	endif
+else
+
+#
+# Mac OS X
+#
+ifeq ($(OS), Darwin)
+	OSNAME = Darwin
+	ifndef COMPILER
+		   COMPILER = g++
+	endif
+else
+
+	OSNAME = OS_Not_Defined
+	COMPILER = COMPILER_Not_Defined
+endif # MacOS
+endif # Solaris
+endif # Linuxamd64
+endif # Linux
+endif # Win32
+
+#
+# Generic Options
+#
+REF = $(OSNAME)-$(COMPILER)
+DST = $(REF)$(COMPILERVERSION)
+INCFLAGS += -I$(JDK_HOME)/include
+
+#
+# Architecture specific includes
+#
+include $(FREEHEP)/config/sys/$(REF).gmk
+
+#
+# Add include dirs
+#
+CFLAGS += $(DEFINES)
+CFLAGS += $(INCFLAGS)
+
+ifneq ($(LINKNOCXX),)
+   LINK = $(LINKCC)
+endif   # LINKNOCXX
+

@@ -1,0 +1,633 @@
+#!/usr/local/bin/perl -w
+
+##############################################################
+# Copyright 2001, CERN, Geneva, Swizterland.
+#
+# Frisbee: FreeHEP Release Tool
+# A utility above Ant, to automate the building and
+# deployment of software distributions or publications.
+#
+# @author Mario Ruggier
+# @author Mark Donszelmann
+# @version $Id: frisbee,v 1.4 2002/07/12 18:40:55 duns Exp $
+##############################################################
+
+require 5;                     ## For perl5
+use strict;                    ## Strict coding
+use diagnostics;               ## Verbose messages
+use Getopt::Long;              ## Parse options
+use File::Basename;            ## Path/filename manipulation
+use File::Path;                ## Directory manipulation
+use Time::Local;               ## Time
+
+##############################################################
+## Parse the command-line options
+#
+
+my %cloptions = ();
+
+&usage(1) if (0 == GetOptions(\%cloptions,
+
+     "cvsroot=s",        ## Compulsory: path/filename of CVS repository
+     "frisbeemodule=s",  ## Compulsory: frisbee cvs module to check out
+     "worklocation=s",   ## Compulsory: work area, where default co is done
+     "exportlocation=s", ## Compulsory: export area, where tagged co's are done
+     "statuslocation=s", ## Compulsory: path to file "status.frisbee"
+     "loglocation=s",    ## Compulsory: path to file "frisbee.log"
+     "updatefileflag:s", ## Optional:   path/filename to file to flag an update
+#     "mailto:s",        ## Optional:   Email to send to in case of problems?
+     "help!")            ## Online help
+
+             );
+
+&usage(0) if ($cloptions{'help'});        ## Go to help if requested
+
+###
+## Check that required switches are specified
+#  Set-up information in global variables
+
+# Global variable "container"
+my %g = ();
+
+if (!defined($cloptions{'cvsroot'})) {
+    &messageQuit("Root location for CVS repository not specified!");
+}
+$g{'cvsroot'}=$cloptions{'cvsroot'};
+
+if (!defined($cloptions{'frisbeemodule'})) {
+    &messageQuit("No CVS main module specified!");
+}
+$g{'frisbeemodule'}=$cloptions{'frisbeemodule'};
+
+if (!defined($cloptions{'worklocation'})) {
+    &messageQuit("No CVS work location specified!");
+}
+$g{'worklocation'}=$cloptions{'worklocation'};
+
+if (!defined($cloptions{'exportlocation'})) {
+    &messageQuit("No CVS export location specified!");
+}
+$g{'exportlocation'}=$cloptions{'exportlocation'};
+
+if (!defined($cloptions{'statuslocation'})) {
+    &messageQuit("Location of file \"status.frisbee\" not specified!");
+}
+$g{'statuslocation'}=$cloptions{'statuslocation'};
+$g{'statusfile'}="$cloptions{'statuslocation'}/status.frisbee";
+
+if (!defined($cloptions{'loglocation'})) {
+    &messageQuit("Location of file \"frisbee.log\" not specified!");
+}
+$g{'loglocation'}=$cloptions{'loglocation'};
+$g{'logfile'}="$cloptions{'loglocation'}/frisbee.log";
+
+if (defined($cloptions{'updatefileflag'})) {
+    $g{'updatefileflag'}=$cloptions{'updatefileflag'};
+}
+
+$g{'distfrisbee'} = "$g{'worklocation'}/$g{'frisbeemodule'}/distribute.frisbee";
+
+##############################################################
+## Action
+#
+
+# Get start time
+$g{'starttime'} = &dateTimeStamp();
+
+# Open log file
+open(LOG, ">> $g{'logfile'}") or &messageQuit("$g{'logfile'}: $!!");
+&logln("\nFrisbee start: $g{'starttime'}");
+
+# Check update flag
+if (defined($g{'updatefileflag'})) {
+    &logln("Checking existence of flag file: $g{'updatefileflag'}");
+    if (! -e $g{'updatefileflag'}) {
+        exit 0;
+    }
+    unlink $g{'updatefileflag'}
+        or &messageQuit("Can't remove file: $g{'updatefileflag'}: $!!");
+}
+
+# Do CVS Check-out of Frisbee module
+chdir($g{'worklocation'}) or &messageQuit("$g{'worklocation'}: $!!");
+my $cvscommandline = "cvs -d $g{'cvsroot'} checkout $g{'frisbeemodule'}";
+&doSystemCall("$cvscommandline");
+
+# Declare Data Structures to use globally
+my @gDists   = ();      # Ordered distributions
+my %gDists   = ();      # Hash of distributions, value set to the order
+my %gParams  = ();      # Hash (distrib) of hash (param)
+my %gTargets = ();      # Hash (distrib) of array (ordered targets per 3)
+
+# Parse distribute.frisbee (sets global data structures)
+&logln("Parsing file: $g{'distfrisbee'}");
+&parseDistributeFrisbee($g{'distfrisbee'});
+
+# Prepare ordered list of targets in distribute.frisbee (sets @gTargetList)
+my @gTargetList = ();
+&buildTargetList();
+
+# Keep copy of data from distribute.frisbee
+my @dfDists   = @gDists;
+my %dfDists   = %gDists;
+my %dfParams  = %gParams;
+my %dfTargets = %gTargets;
+my @dfTargetList = @gTargetList;
+
+# Clear global data structures
+@gDists = ();
+%gDists = ();
+%gParams = ();
+%gTargets = ();
+@gTargetList = ();
+
+# Parse status file (sets global data structures)
+&logln("Parsing file: $g{'statusfile'}");
+&parseDistributeFrisbee($g{'statusfile'});
+
+# Prepare ordered list of targets in status.frisbee (sets @gTargetList)
+&buildTargetList();
+
+# Keep copy of data from status file
+my @statusDists   = @gDists;
+my %statusDists   = %gDists;
+my %statusParams  = %gParams;
+my %statusTargets = %gTargets;
+my @statusTargetList = @gTargetList;
+
+# Clear global data structures
+@gDists = ();
+%gDists = ();
+%gParams = ();
+%gTargets = ();
+@gTargetList = ();
+
+# Do dev builds
+&buildTargets("dev");
+
+# Do pub builds, if any
+&buildTargets("pub");
+
+
+# Targets published before but not in distribute.frisbee
+my @toClean = ();
+
+for my $i (0 .. $#statusTargetList) {
+    my $isOK = 0;
+    for my $j (0 .. $#dfTargetList) {
+        if ($statusTargetList[$i]{targetid} eq $dfTargetList[$j]{targetid}) {
+            $isOK = 1;
+        }
+    }
+    if (!$isOK) {
+        push(@toClean,$i);
+    }
+}
+
+if ($#toClean >=0) {
+    &logln("Published targets to clean are: ");
+    for my $i (0 .. $#toClean) {
+        my $distrib    = $statusTargetList[$toClean[$i]]{distrib};
+        my $target     = $statusTargetList[$toClean[$i]]{target};
+        my $tag        = $statusTargetList[$toClean[$i]]{tag};
+        my $version    = $statusTargetList[$toClean[$i]]{version};
+        my $antprops   = $statusTargetList[$toClean[$i]]{antprops};
+        my $antcommand = "ant $antprops -Ddist.tag=$tag -Ddist.version=$version $target.clean";
+
+        &logln(" $i (distrib:$distrib tag:$tag version:$version)");
+        &logln("    $antcommand");
+        &doSystemCall("$antcommand");
+    }
+}
+
+
+# Write status file
+&logln("Writing status: $g{'statusfile'}");
+&writeStatusFile($g{'statusfile'});
+
+# Close log file
+&logln("Frisbee stop: " . &dateTimeStamp() );
+close(LOG);
+
+##############################################################
+
+sub doSystemCall {
+    my($commandline) = @_;
+
+    &logln("System call: $commandline");
+    my $rs = system("$commandline");
+    if ($rs != 0) {
+        &messageQuit("Non-zero ($rs) return status from: $commandline. $!");
+    }
+}
+
+sub buildTargetList {
+
+    # Reads from global environment:
+    # @gDists
+    # %gDists
+    # %gParams
+    # %gTargets
+    #
+    # Builds @gTargetList array of hashes
+    # Each item (hash) has teh following keys:
+    #   targetid  (distrib + target + version)
+    #   distrib
+    #   target
+    #   tag
+    #   version
+    #   antprops (predigested... )
+    #   module
+    #   submodule
+    #   antrundir
+
+    my $t = 0;
+    for my $i (0 .. $#gDists) {
+        my $distrib = $gDists[$i];
+
+        my ($tag, $target, $version) = ("","","");
+        my $j=0;
+        while ($j <= $#{ $gTargets{$distrib} }) {
+
+            $target  = $gTargets{$distrib}[$j];
+            $tag     = $gTargets{$distrib}[$j+1];
+            if (defined($gTargets{$distrib}[$j+2])) {
+                $version = $gTargets{$distrib}[$j+2];
+            }
+            else { $version = ""; }
+
+            my $targetid = $distrib . $target . $version ;
+
+            $gTargetList[$t]{targetid} = "$targetid";
+            $gTargetList[$t]{distrib}  = "$distrib";
+            $gTargetList[$t]{target}   = "$target";
+            $gTargetList[$t]{tag}      = "$tag";
+            $gTargetList[$t]{version}  = "$version";
+
+            my $antprops = "";
+
+            foreach my $param (sort(keys(%{ $gParams{$distrib} }))) {
+
+               # If starts with "target.", then prepare to pass as ant properties
+               if ( $param =~ m/^$target\./ ) {
+                   $antprops = $antprops . " -D$param=$gParams{$distrib}{$param}";
+               }
+
+               # Need to remember the following individual properties
+               if ( $param =~ m/\.module$/ ) {
+                   $gTargetList[$t]{module} = $gParams{$distrib}{$param};
+               }
+               if ( $param =~ m/\.submodule$/ ) {
+                   $gTargetList[$t]{submodule} = $gParams{$distrib}{$param};
+               }
+               if ( $param =~ m/\.antrundir$/ ) {
+                   $gTargetList[$t]{antrundir} = $gParams{$distrib}{$param};
+               }
+            }
+            $gTargetList[$t]{antprops}  = "$antprops";
+            if (!defined($gTargetList[$t]{module}))    { $gTargetList[$t]{module}=""; }
+            if (!defined($gTargetList[$t]{submodule})) { $gTargetList[$t]{submodule}=""; }
+            if (!defined($gTargetList[$t]{antrundir})) { $gTargetList[$t]{antrundir}=""; }
+
+            $j = $j + 3;
+            $t++;
+       }
+    }
+}
+
+sub buildTargets {
+    my($dp) = @_;   # Must be "dev" or "pub"
+
+    # Reads:
+    # %dfTargetList %statusTargetList
+
+    for my $i (0 .. $#dfTargetList) {
+
+        my $targetid  = $dfTargetList[$i]{targetid};
+        my $distrib   = $dfTargetList[$i]{distrib};
+        my $target    = $dfTargetList[$i]{target};
+        my $tag       = $dfTargetList[$i]{tag};
+        my $version   = $dfTargetList[$i]{version};
+        my $antprops  = $dfTargetList[$i]{antprops};
+        my $module    = $dfTargetList[$i]{module};
+        my $submodule = $dfTargetList[$i]{submodule};
+        my $antrundir = $dfTargetList[$i]{antrundir};
+
+        my $addantprops = "";
+
+        if ($tag ne '*') {
+            $addantprops = $addantprops . " -D$target.tag=$tag";
+        }
+        if (length($version)) {
+            $addantprops = $addantprops . " -D$target.version=$version";
+        }
+
+        unless(-d $g{'exportlocation'}) {
+            mkpath($g{'exportlocation'})
+                or &messageQuit("Failed to create path: $g{'exportlocation'}: $!!");
+        }
+        chdir($g{'exportlocation'})
+            or &messageQuit("Failed to chdir: $g{'exportlocation'}: $!!");
+        if (-d "tagged") {
+            rmtree("tagged") or &messageQuit("Failed to remove: tagged: $!!");
+        }
+
+        # Check the status of this target
+        my $statusindex = -1;
+        my $statusdiff  = 0;
+        for my $j (0 .. $#statusTargetList) {
+            if ($targetid eq $statusTargetList[$j]{targetid}) {
+                $statusindex = $j;
+            }
+        }
+        if ($statusindex>=0) {
+            if ($tag      ne $statusTargetList[$statusindex]{tag}) {
+                $statusdiff = 1;
+            }
+            if ($antprops ne $statusTargetList[$statusindex]{antprops}) {
+                $statusdiff = 1;
+            }
+        }
+        else { $statusdiff = 1; }
+
+        my $buildornot = 0;
+        if ($tag eq '*' && $dp eq 'dev') {
+            $buildornot = 1;
+        }
+        if ($statusdiff && $tag ne '*' && $dp eq 'pub') {
+            $buildornot = 1;
+        }
+
+
+        # Build
+        if ($buildornot) {
+            if ($tag eq '*') {
+                unless(-d '__star__') {
+                    mkpath('__star__') or &messageQuit("Failed to create: __star__: $!!");
+                }
+                chdir('__star__') or &messageQuit("Failed to chdir: __star__: $!!");
+            }
+            else {
+                unless(-d "tagged/$tag") {
+                    mkpath("tagged/$tag") or &messageQuit("Failed to create: tagged/$tag: $!!");
+                }
+                chdir("tagged/$tag") or &messageQuit("Failed to chdir: tagged/$tag: $!!");
+            }
+
+            my $cvscom = "";
+            if ($tag eq '*') { $cvscom = "checkout"; }
+            else             { $cvscom = "export -r $tag"; }
+
+            if (length($module)) {
+               my $cvscommand = "cvs -d $g{'cvsroot'} $cvscom $module";
+               &doSystemCall("$cvscommand");
+            }
+            if (length($antrundir)) {
+                chdir($antrundir) or &messageQuit("Failed to chdir: $antrundir: $!!");
+            }
+            if (length($submodule)) {
+               my $cvscommand = "cvs -d $g{'cvsroot'} $cvscom $submodule";
+               &doSystemCall("$cvscommand");
+            }
+
+				# hack by tonyj to allow multiple ant targets (comma delimited)
+            my $realtarget = $target;
+				$realtarget =~ s/,/ /g;
+            my $antcommand = "ant $antprops $addantprops $realtarget";
+
+            &logln("Building $dp target: $distrib $target $tag $version");
+            &logln("$antcommand");
+            &doSystemCall("$antcommand");
+
+            # Clean export directory
+            if ($tag ne '*') {
+                chdir($g{'exportlocation'})
+                    or &messageQuit("Failed to chdir: $g{'exportlocation'}: $!!");
+                rmtree("tagged/$tag")
+                    or &messageQuit("Failed to remove: tagged/$tag: $!!");
+            }
+        }
+
+    }
+}
+
+
+sub parseDistributeFrisbee {
+
+   my($file) = @_;
+
+   # Manipulates (sets) the following global structures
+   #
+   # @gDists
+   # %gDists
+   # %gParams
+   # %gTargets
+
+   my($dist,$targetparam,$tagvalue,$optversion) = ("","","","");
+   my $isvarline=0;
+
+   open(FH,"<$file") || &messageQuit("Can't open $file: $!\n");
+   while (<FH>) {
+       chomp;               # no newline
+       s/#.*//;             # no comments
+       s/^\s+//;            # no leading white
+       s/\s+$//;            # no trailing white
+       next unless length;  # anything left?
+
+       # does this line defines a variable?
+       $isvarline = 0;
+       if (m/=/) {
+           s/=//;           # get rid of the equal sign
+           $isvarline = 1;
+       }
+
+       # get max 4 pieces of info in line
+       ($dist, $targetparam, $tagvalue, $optversion) = split(/\s+/,$_);
+       unless ($optversion) { $optversion = ""; }
+
+       if (!defined($gDists{$dist})) {
+           push (@gDists,$dist);    # store order of distrib occurance
+           my $x = $#gDists;
+           $gDists{$dist} = $x;     # hash of distribs (value is order of occurance)
+       }
+
+       if ($isvarline) {
+          # add "var => value" to $gParams of this distribution
+          $gParams{$dist}{$targetparam} = $tagvalue;
+       }
+       else {
+          my @thistarget = ($targetparam, $tagvalue, $optversion);
+          push (@{ $gTargets{$dist} }, @thistarget);
+          # This just pushes 3 new elements on same array and
+          # NOT another separate array of 3 elements!
+       }
+
+   }
+   close(FH);
+
+   # Expand out all "*" in variable declarations (distribution or target parts)
+   if (defined($gDists{'*'})) {
+
+       my $i=0;
+       for $i (0 .. $#gDists) {
+           my $distrib = $gDists[$i];
+
+           # Assign to each distribution, unless defined already
+           foreach my $globalparam (keys(%{ $gParams{'*'} })) {
+               unless (defined($gParams{$distrib}{$globalparam})) {
+                   $gParams{$distrib}{$globalparam} = $gParams{'*'}{$globalparam};
+               }
+           }
+
+           foreach my $param (keys(%{ $gParams{$distrib} })) {
+                # For each *.something as $param, then strip the "*."
+                # and check each target (of same distrib) to see
+                # if target.something is defined...
+                # If not, set with value for *.something.
+
+                my $value = $gParams{$distrib}{$param};
+                if ($param =~ s/^\*\.// ) {
+                    my $n=0;
+                    while ($n <= $#{ $gTargets{$distrib} }) {
+                        my $target  = $gTargets{$distrib}[$n];
+                        unless (defined($gParams{$distrib}{"$target.$param"})) {
+                            $gParams{$distrib}{"$target.$param"} = $value;
+                        }
+                        $n = $n + 3;
+                    }
+                }
+
+           }
+       }
+   }
+
+   # Remove the '*' distribution
+   if (defined($gDists{'*'})) {
+       splice(@gDists,$gDists{'*'}, 1);
+       delete($gDists{'*'});
+       delete($gParams{'*'});
+   }
+
+   # For all distributions, remove all '*.something' parameters
+   for my $i (0 .. $#gDists) {
+       my $distrib = $gDists[$i];
+       foreach my $param (keys(%{ $gParams{$distrib} })) {
+           if ($param =~ m/^\*\./ ) {
+              delete $gParams{$distrib}{$param} ;
+           }
+       }
+   }
+}
+
+sub writeStatusFile {
+    my($statusfile) = @_;
+
+    # Reads:
+    # @dfDists
+    # %dfDists
+    # %dfParams
+    # %dfTargets
+
+    open(SF,">$statusfile") || &messageQuit("Can't open $statusfile: $!\n");
+
+    print SF "#" x 60 . "\n";
+    print SF "# Frisbee Distribution Status File for $g{'frisbeemodule'}\n";
+    print SF "# Automatically generated on: " . &dateTimeStamp() . "\n";
+    print SF "#" x 60 . "\n";
+    my $i=0;
+    for $i (0 .. $#dfDists) {
+
+        my $distrib = $dfDists[$i];
+
+        print SF "\n";
+
+        if (defined( %{ $dfParams{$distrib} } )) {
+            foreach my $param (keys(%{ $dfParams{$distrib} })) {
+               my $value = $dfParams{$distrib}{$param};
+               print SF "$distrib $param = $value\n";
+            }
+        }
+
+        my $j=0;
+        while ($j <= $#{ $dfTargets{$distrib} }) {
+            my $target  = $dfTargets{$distrib}[$j];
+            my $tag     = $dfTargets{$distrib}[$j+1];
+            my $version = $dfTargets{$distrib}[$j+2];
+            print SF "$distrib $target $tag $version\n";
+            $j = $j + 3;
+        }
+    }
+    print SF "\n";
+    print SF "#" x 60 . "\n";
+
+    close(SF);
+}
+
+#-------------------------------------------------------------
+# Subroutine: messageQuit
+# Input     : Error message
+# Output    : none
+# Purpose   : Print error message, follow by call to usage(1)
+#-------------------------------------------------------------
+sub messageQuit {
+    my ($errormessage) = @_;
+
+    &log("\n\nERROR: ");
+    &log("$errormessage ");
+    &log("Quitting. \n\n");
+    &usage(1);
+}
+
+sub log {
+    my ($message)= @_;
+    print LOG    "$message";
+    print STDERR "$message";
+}
+
+sub logln {
+    my ($message)= @_;
+    &log("$message\n");
+}
+
+sub dateTimeStamp {
+    my ($sec, $min, $hours, $mday, $mon, $year) = (localtime)[0..5];
+    $year = $year + 1900;
+    $mon = $mon + 1;
+    return "$year/$mon/$mday $hours:$min:$sec";
+}
+
+#-------------------------------------------------------------
+# Subroutine: usage
+# Input     : exit return status
+# Output    : none
+# Purpose   : Print usage and exit
+#-------------------------------------------------------------
+sub usage {
+    my $status = shift || 0;
+    print STDERR <<USAGE;
+
+USAGE:
+The $0 utility is a layer on top of the Ant build tool,
+and automates the building of specified modules and releases
+and the deployment of specified publications and distributions.
+
+Command line options:
+
+  -cvsroot        Compulsory: path/filename of CVS repository
+  -frisbeemodule  Compulsory: frisbee cvs module to check out
+  -worklocation   Compulsory: work area, where default co is done
+  -exportlocation Compulsory: export area, where tagged co's are done
+  -statuslocation Compulsory: path to file "status.frisbee"
+  -loglocation    Compulsory: path to file "frisbee.log"
+  -updatefileflag Optional  : path/filename to file to flag an update
+  -help           Print this message
+
+Note that any option can be reduced down to its unique
+abbrevation with respect to the other options, e.g.
+  -c is equivalent to -cvsroot
+
+Please send comments to: developers\@freehep.org
+
+USAGE
+    exit $status;
+}

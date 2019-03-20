@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+</HEAD>
+<BODY>
+<p>A modified Standard doclet (from JDK 1.4.2), which includes links to the source code in the
+generated documentation.</p>
+<p>Unfortunately although the changes to the standard doclet are minor, it is
+not practical to use inheritance and therefore the entire package is reproduced
+here with the changes, including the tags subpackage.</p>
+<p>The modifications are based on <a href="http://java.sun.com/j2se/javadoc/faq.html#sourcedoclet">this
+FAQ</a>,&nbsp; with some additional changes to support specifying the URL of the
+source code independently from the sourcepath.</p>
+<p>Changes for 1.4.2 are marked in the 4 files from the com.sun.tools.doclets.standard package:
+<ul>
+<li>Standard</li>
+<li>ClassWriter</li>
+<li>HtmlStandardWriter</li>
+<li>ConfigurationStandard</li>
+</ul>
+and 2 files from the com.sun.tools.doclets package:
+<ul>
+<li>MetaKeywords</li>
+<li>TagletManager</li>
+</ul>
+ by the comment //MD.</p>
+<p>all files have a changed package statement and correspoding imports.
+No import refer to com.sun.tools.doclets.standard or com.sun.tools.doclets.standard.tags</p>
+<h2>Usage</h2>
+<pre>javadoc -doclet org.freehep.tools.doclet.Standard -docletpath lib/freehep-tools.jar -baseurl <a href="http://www.sourcode.com/path/to/source">http://www.sourcode.com/path/to/source</a> &lt;packagelist&gt;</pre>
+@author Mark Donszelmann
+@author Manj Benning
+@author Tony Johnson
+
+@status compilable only with jdk 1.4.2, runnable with jdk 1.4.0 and up, not runnable below.
+</BODY>
+</HTML>

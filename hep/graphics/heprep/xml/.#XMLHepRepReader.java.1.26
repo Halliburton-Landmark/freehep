@@ -1,0 +1,167 @@
+// Copyright 2000-2003, FreeHEP.
+
+package hep.graphics.heprep.xml;
+
+import java.io.*;
+import java.util.*;
+import java.util.zip.*;
+import javax.xml.parsers.*;
+
+import org.xml.sax.*;
+
+import org.freehep.util.io.*;
+import hep.graphics.heprep.*;
+import hep.graphics.heprep.ref.*;
+
+/**
+ *
+ * @author M.Donszelmann
+ *
+ * @version $Id: XMLHepRepReader.java,v 1.27 2003/11/24 22:34:52 duns Exp $
+ */
+public class XMLHepRepReader implements HepRepReader {
+    public static final String cvsId = "$Id: XMLHepRepReader.java,v 1.27 2003/11/24 22:34:52 duns Exp $";
+
+    private Reader in;
+    private ZipInputStream zip;
+    private ZipFile zipFile;
+
+    public XMLHepRepReader(InputStream in) throws IOException {
+        super();
+        if (in instanceof ZipInputStream) {
+            zip = (ZipInputStream)in;
+        } else {
+            this.in = new BufferedReader(new InputStreamReader(in));
+        }
+    }
+
+    public XMLHepRepReader(String fileName) throws IOException {
+        super();
+        if (fileName.equalsIgnoreCase(".zip")) {
+            zipFile = new ZipFile(fileName);
+        } else if (fileName.equalsIgnoreCase(".gz")) {
+            in = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(fileName))));
+        } else {
+            in = new BufferedReader(new FileReader(fileName));
+        }
+    }
+
+    public void close() throws IOException {
+        if (zip != null) {
+            zip.close();
+        }
+        if (zipFile != null) {
+            zipFile.close();
+        }
+        if (in != null) {
+            in.close();
+        }
+    }
+
+    public boolean hasSequentialAccess() throws IOException {
+        return (zip != null) || (in != null);
+    }
+
+    public void reset() throws IOException, UnsupportedOperationException {
+        if (!hasSequentialAccess()) throw new UnsupportedOperationException(getClass()+" does not support sequential access");
+
+        if (zip != null) {
+            zip.reset();
+        } else {
+            in.reset();
+        }
+    }
+
+    public boolean hasNext() throws IOException, UnsupportedOperationException {
+        if (!hasSequentialAccess()) throw new UnsupportedOperationException(getClass()+" does not support sequential access");
+        // best we can do here, since the zip.available() seems unreliable in an XML context
+        return true;
+    }
+
+    public HepRep next() throws IOException, UnsupportedOperationException, NoSuchElementException {
+        if (!hasSequentialAccess()) throw new UnsupportedOperationException(getClass()+" does not support sequential access");
+
+        if (!hasNext()) throw new UnsupportedOperationException(getClass()+" no more elements");
+
+        if (zip != null) {
+            ZipEntry entry = zip.getNextEntry();
+            Reader reader = new BufferedReader(new InputStreamReader(new NoCloseInputStream(zip)));
+            return readHepRep(reader);
+        } else {
+            return readHepRep(in);
+        }
+    }
+
+    public boolean hasRandomAccess() {
+        return zipFile != null;
+    }
+
+    public HepRep read(String name) throws IOException, UnsupportedOperationException, NoSuchElementException {
+        if (!hasRandomAccess()) throw new UnsupportedOperationException(getClass()+" does not support random access");
+
+        ZipEntry entry = zipFile.getEntry(name);
+        if (entry == null) throw new NoSuchElementException(getClass()+" cannot access entry '"+name+"'");
+
+        Reader reader = new BufferedReader(new InputStreamReader(zipFile.getInputStream(entry)));
+        return readHepRep(reader);
+    }
+
+    public static void readDefaults() throws IOException {
+
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            XMLReader xmlReader = factory.newSAXParser().getXMLReader();
+            XMLHepRepDefaultsHandler handler = new XMLHepRepDefaultsHandler();
+            xmlReader.setContentHandler(handler);
+            xmlReader.setDTDHandler(handler);
+            xmlReader.setErrorHandler(handler);
+            xmlReader.setEntityResolver(handler);
+
+            Reader reader = new BufferedReader(
+                            new InputStreamReader(XMLHepRepReader.class.getResourceAsStream("AttributeDefaults.xml")));
+            InputSource source = new InputSource(reader);
+            xmlReader.parse(source);
+            reader.close();
+        } catch (Exception e) {
+            IOException exception = new IOException();
+            exception.initCause(e);
+            throw exception;
+        }
+    }
+
+    public static HepRep readHepRep(Reader reader) throws IOException {
+
+        HepRep heprep = readHepRep(new DefaultHepRep(), reader);
+        return heprep;
+    }
+
+    public static HepRep readHepRep(DefaultHepRep heprep, Reader reader) throws IOException {
+
+        try {
+            XMLHepRepHandler handler = new XMLHepRepHandler(heprep);
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            SAXParser xml = factory.newSAXParser();
+
+            // now read real document
+            InputSource source = new InputSource(reader);
+            xml.parse(source, handler);
+
+            return heprep;
+        } catch (ParserConfigurationException e) {
+            IOException exception = new IOException();
+            exception.initCause(e);
+            throw exception;
+        } catch (SAXParseException e) {
+            if ((e.getLineNumber() == 1) && (e.getColumnNumber() == -1)) throw new EOFException();
+            IOException exception = new IOException("Syntax error at Line: "+e.getLineNumber()+"("+e.getColumnNumber()+")");
+            exception.initCause(e);
+            throw exception;
+        } catch (SAXException e) {
+            IOException exception = new IOException();
+            exception.initCause(e);
+            throw exception;
+        }
+    }
+}

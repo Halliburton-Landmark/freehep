@@ -1,0 +1,9 @@
+api
+dist
+release
+reports
+slib
+web
+*-*.tar.gz
+*-*.zip
+test*.aida

@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Viewing Root Histograms with the JAS Plot Widget</title>
+</head>
+
+<body>
+
+<h1>          
+             
+          
+         
+          
+            
+      
+             
+    The <a href="index.html"> hep.io.root</a> Package</h1>
+<h2>Viewing Root Histograms with the JAS Plot Widget</h2>
+<p>The following example shows how to display root histograms using the JAS plot
+widget. You will need both root.jar and jas.jar (part of the <a href="http://jas.freehep.org/downloads.htm"> JAS
+distribution</a>)
+in your CLASSPATH to compile and run this, plus the <a href="ftp://ftp.slac.stanford.edu/software/jas/RootData/Example.root">Example.root</a>
+data file. The essential class is the RootHistogramAdapter which takes a Root
+histogram (TH1) and converts it to a JAS DataSource, which can be displayed by
+the JAS Plot widget. The <a href="http://jas.freehep.org/documentation/api/Root/jasext/root/RootHistogramAdapter.html"> RootHistogramAdapter</a> is quite crude at the moment, it
+only works for simple 1D and 2D plots, and ignores attributes such as line
+color, markers, date axis <i>etc</i>. (It should be easy to improve it,
+volunteers are welcome).</p>
+<pre><font color="blue">import</font><font color="black"> hep.io.root.*;</font>
+<font color="blue">import</font><font color="black"> hep.io.root.interfaces.*;</font>
+<font color="blue">import</font><font color="black"> java.io.IOException;</font>
+<font color="blue">import</font><font color="black"> jas.hist.*;</font>
+<font color="blue">import</font><font color="black"> jasext.root.RootHistogramAdapter;</font>
+<font color="blue">import</font><font color="black"> javax.swing.*;</font>
+<font color="blue">import</font><font color="black"> java.awt.BorderLayout;</font>
+
+<font color="green">/**</font>
+<font color="green"> * An example of using the JASHist widget with Root Histograms</font>
+<font color="green"> * @author tonyj@slac.stanford.edu</font>
+<font color="green"> */</font>
+<font color="blue">public</font><font color="black"> </font><font color="blue">class</font><font color="black"> RootWithJAS </font><font color="blue">extends</font><font color="black"> JPanel</font>
+<font color="black">{</font>
+<font color="black">   </font><font color="green">/** Creates new RootWithJas */</font>
+<font color="black">    </font><font color="blue">private</font><font color="black"> RootWithJAS() </font><font color="blue">throws</font><font color="black"> IOException</font>
+<font color="black">    {</font>
+<font color="black">       RootFileReader rfr = </font><font color="blue">new</font><font color="black"> RootFileReader(</font><font color="maroon">&quot;Example.root&quot;</font><font color="black">);</font>
+<font color="black">       TH1 main = (TH1) rfr.getKey(</font><font color="maroon">&quot;mainHistogram&quot;</font><font color="black">).getObject();</font>
+<font color="black">       TH1 total = (TH1) rfr.getKey(</font><font color="maroon">&quot;totalHistogram&quot;</font><font color="black">).getObject();</font>
+<font color="black">       TH1 s1 = (TH1) rfr.getKey(</font><font color="maroon">&quot;s1Histogram&quot;</font><font color="black">).getObject();</font>
+<font color="black">       TH1 s2 = (TH1) rfr.getKey(</font><font color="maroon">&quot;s2Histogram&quot;</font><font color="black">).getObject();</font>
+<font color="black">              </font>
+<font color="black">       JASHist plot = </font><font color="blue">new</font><font color="black"> JASHist();</font>
+<font color="black">       plot.addData(RootHistogramAdapter.create(total)).show(</font><font color="blue">true</font><font color="black">);</font>
+<font color="black">       plot.addData(RootHistogramAdapter.create(main)).show(</font><font color="blue">true</font><font color="black">);</font>
+<font color="black">       plot.addData(RootHistogramAdapter.create(s1)).show(</font><font color="blue">true</font><font color="black">);</font>
+<font color="black">       plot.addData(RootHistogramAdapter.create(s2)).show(</font><font color="blue">true</font><font color="black">);</font>
+<font color="black">       </font>
+<font color="black">       setLayout(</font><font color="blue">new</font><font color="black"> BorderLayout());</font>
+<font color="black">       add(plot);       </font>
+<font color="black">    }</font>
+<font color="black">    </font><font color="blue">public</font><font color="black"> </font><font color="blue">static</font><font color="black"> </font><font color="blue">void</font><font color="black"> main (String args[]) </font><font color="blue">throws</font><font color="black"> IOException</font>
+<font color="black">    {</font>
+<font color="black">       JFrame f = </font><font color="blue">new</font><font color="black"> JFrame();</font>
+<font color="black">       f.setDefaultCloseOperation(f.EXIT_ON_CLOSE);</font>
+<font color="black">       f.setContentPane(</font><font color="blue">new</font><font color="black"> RootWithJAS());</font>
+<font color="black">       f.setSize(500,300);</font>
+<font color="black">       f.show();</font>
+<font color="black">    }</font>
+<font color="black">}</font></pre>
+<p>Running the program will produce something like this:</p>
+<p><img border="0" src="RootWithJAS.gif" width="500" height="300"></p>
+<h2>A Root Histogram Browser</h2>
+<p>This code can easily be extended to create a <a href="http://java.freehep.org/demo/Root/"> Root Histogram Browser</a>.</p>
+
+</body>
+
+</html>

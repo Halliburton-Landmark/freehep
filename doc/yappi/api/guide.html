@@ -1,0 +1,195 @@
+<html><!-- #BeginTemplate "/Templates/yappi.dwt" -->
+<head>
+<!-- #BeginEditable "doctitle" --> 
+<title>YaPPI - Mini User's Guide</title>
+<!-- #EndEditable --> 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="../images/site.css">
+</head>
+
+<body bgcolor="#FFFFFF">
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr> 
+    <td width="171" valign="top" align="left" class="nav"> 
+      <p align="center"> <a href="../index.html"><img src="../images/yappi.gif" width="150" height="46" border="0"></a><br>
+        <span class="YaPPIsubtext">The XML Particle Property Database</span> </p>
+      <table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#FF6666" align="right">
+        <tr> 
+          <td bgcolor="#FF6666"><img src="../images/1bit.gif" width="100" height="2"></td>
+        </tr>
+      </table>
+      <br>
+      <table border="0" cellspacing="0" cellpadding="2" width="100%">
+        <tr> 
+          <td colspan="2" class="nav1"><a href="http://java.freehep.org/">FreeHEP 
+            Home <img src="../images/out.gif" width="17" height="11" border="0"></a> 
+          </td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="../index.html">YaPPI Home</a></td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">&nbsp;</td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">YaPPI Java API </td>
+        </tr>
+        <tr class="nav2"> 
+          <td width="20">&nbsp;</td>
+          <td class="nav2"> 
+            <p><a href="guide.html">Mini User's Guide</a><br>
+              <a href="xmlschema.html">XML Schema</a> <br>
+              <a href="classdiagram.html">Class Diagram</a> <br>
+              <a href="http://java.freehep.org/lib/freehep/api/hep/physics/yappi/package-summary.html">YaPPI&nbsp;JavaDocs 
+              <img src="../images/out.gif" width="17" height="11" border="0"> 
+              </a> <br>
+              <a href="http://java.freehep.org/servlet/fhcvs/list/freehep/hep/physics/yappi">Source 
+              Code <img src="../images/out.gif" width="17" height="11" border="0"></a> 
+            </p>
+          </td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="browsedata.html">Browse&nbsp;Particle&nbsp;Data</a> 
+          </td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="http://java.freehep.org/download.thtml">Downlaod&nbsp;<img src="../images/out.gif" width="17" height="11" border="0"> 
+            </a></td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="../project/authors.html">Authors</a></td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">&nbsp;</td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">For&nbsp;YaPPI&nbsp;Developers</td>
+        </tr>
+        <tr class="nav2"> 
+          <td>&nbsp;</td>
+          <td class="nav2"> 
+            <p><a href="http://java.freehep.org/rules.thtml">FreeHEP&nbsp;Rules&nbsp;<img src="../images/out.gif" width="17" height="10" border="0"></a> 
+              <br>
+              <a href="../report/YaPPI.pdf">Project Report</a> [PDF]<br>
+              <a href="http://java.freehep.org/source.thtml">Get Sources&nbsp;<img src="../images/out.gif" width="17" height="11" border="0"></a> 
+              <br>
+              <a href="todo.html">To Do List </a></p>
+            </td>
+        </tr>
+      </table>
+      <br>
+    </td>
+    <td width="14" valign="top" align="left"> 
+      <table width="14" border="0" cellspacing="0" cellpadding="0" >
+        <tr> 
+          <td bgcolor="#FF6666" width="2"><img src="../images/1bit.gif" width="2" height="360"></td>
+          <td width="12">&nbsp;</td>
+        </tr>
+      </table>
+    </td>
+    <td width="*" valign="top"> 
+      <h1 class="pageHeading"><!-- #BeginEditable "pageHeading" -->Mini User's 
+        Guide <!-- #EndEditable --></h1>
+      <!-- #BeginEditable "pageContent" --> 
+      <p>To use the YaPPI Java API means to write a Java program that uses class 
+        definitions from the YaPPI class package. The program will make use of 
+        methods to read (or write) particle data from (or to) XML files that you 
+        specify. The basic steps in using the YaPPI Java API are: </p>
+      <p> 
+      <p> 
+      <ol>
+        <li>Get the YaPPI class library (jar files) that you will need to compile 
+          your program with. </li>
+        <li> Use YaPPI classes, methods and variables, as explained in the javadocs 
+          YaPPI classes. </li>
+        <li>Load the XML data. </li>
+        <li>Manipulate the data. </li>
+      </ol>
+      <p></p>
+      We expand on each of these steps below. 
+      <p></p>
+      <p><strong>Pre-requisites</strong><br>
+        working knowledge of Java and XML. Good introductions may be found at: 
+      </p>
+      <p> 
+      <ul>
+        <li><a href="http://www.javasoft.com/docs/books/tutorial/">The Java Tutorial 
+          <img src="../images/out.gif" width="17" height="11" border="0"></a> 
+        </li>
+        <li><a href="http://developer.java.sun.com/developer/onlineTraining/new2java/">New-to-Java 
+          Programming Center <img src="../images/out.gif" width="17" height="11" border="0"></a> 
+        </li>
+        <li><a href="http://www.xml.com/pub/a/98/10/guide0.html">A Technical Introduction 
+          to XML <img src="../images/out.gif" width="17" height="11" border="0"></a> 
+        </li>
+      </ul>
+      <p><strong>Get YaPPI Jar Files</strong><br>
+        In your program you will use classes defined in these jar files, thus 
+        you will need to have them in your Java classpath. Thus: </p>
+      <ol>
+        <li>Download the jar files from the <a href="http://java.freehep.org/download.thtml">FreeHEP 
+          download area</a>. </li>
+        <li>Modify the classpath of your JDK to include the location of the FreeHEP 
+          Jar files. </li>
+      </ol>
+      <p><strong>Use the YaPPI API javadocs</strong> <br>
+        For the details on what you can do with each YaPPI API class, such as 
+        constructor to use, which methods to call, and so on, you will need to 
+        <a href="http://java.freehep.org/lib/freehep/api/hep/physics/yappi/package-summary.html">browse 
+        the javadoc</a> (automatically generated documentation) for the Java classes 
+        of the YaPPI API. The YaPPI javadoc is contained in the FreeHEP javadoc. 
+      </p>
+      <p>Please the the <a href="classdiagram.html">YaPPI Class Diagram</a> for 
+        an overview of the available classes.<br>
+        <br>
+      </p>
+      <p><strong>Load the XML data</strong> <br>
+        XML data is loaded by reading XML files, as many as needed. This you do 
+        creating an instance of the XMLYappi class, and using one of its <strong>read</strong> 
+        methods to load one or more XML files. Please see small test class below 
+        as a sample.</p>
+      <p>Please the <a href="xmlschema.html">YaPPI XML Schema</a> for a visual 
+        representation of how Particle Property data is structured in XML by YaPPI. 
+      </p>
+      <p><strong>Manipulate the Data</strong> <br>
+        Data that is read in from XML files is made accessible to your program 
+        via a set of <strong>get</strong> methods, for each supported data element. 
+        Please see the methods available to XMLYappi for a complete list. The 
+        sample below shows a get of a family and a get of a particle. <br>
+      </p>
+      <p><strong>Sample Code</strong> <br>
+      </p>
+      <pre>package hep.physics.yappi.test; 
+import hep.physics.yappi.*; 
+
+public class TestYappi { 
+
+    public static void main(String[] args) throws Exception {
+
+          XMLYappi yappi = new XMLYappi(); 
+          yappi.read("hep/physics/yappi/xml/2000/PDG-Family.xml");
+          yappi.read("hep/physics/yappi/xml/2000/PDG-Properties.xml");
+
+          Family fam = yappi.getFamily(&quot;ccbar MESONS");
+          System.out.println(&quot;Family: &quot; + fam);
+
+          ParticleType par = yappi.getParticle("eta(c)(1S)"); 
+          System.out.println(&quot;Particle: &quot; + par);
+    }
+}</pre>
+      <!-- #EndEditable --> </td>
+  </tr>
+  <tr>
+    <td width="171" valign="top" align="left" class="nav">&nbsp;</td>
+    <td width="14" valign="top" align="left">&nbsp;</td>
+    <td width="*" valign="top" align="right"> 
+      <table border="0" cellspacing="0" cellpadding="0" width="121" bgcolor="#FF6666">
+        <tr> 
+          <td bgcolor="#FF6666"><img src="../images/1bit.gif" width="121" height="2"></td>
+        </tr>
+      </table>
+      <a href="mailto:developers@freehep.org" class="nav2">developers@freehep.org</a></td>
+  </tr>
+</table>
+</body>
+<!-- #EndTemplate --></html>

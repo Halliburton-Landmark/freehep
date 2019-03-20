@@ -1,0 +1,6 @@
+To Do:
+- implement methods: close, mv, setOverwrite, cp, symlink in Tree
+x implement methods: setRow and skip in ChainedTuple
+- implement more complicated constraints for fitting
+x complete implementation of Evaluator and Filter
+- implement methods: createCopy and createProfile (with lowerValue and upperValue) in HistogramFactory

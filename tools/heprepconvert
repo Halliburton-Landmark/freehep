@@ -1,0 +1,3 @@
+#!/bin/sh 
+
+java -classpath $FREEHEP:$FREEHEP/lib/xerces.jar:$CLASSPATH hep.graphics.heprep.util.HepRepConvert $*

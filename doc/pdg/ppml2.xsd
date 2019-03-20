@@ -1,0 +1,43 @@
+<ppml:schema xmlns:ppml="http://www.w3.org/1999/XMLSchema" targetNamespace="ppml">
+  
+<ppml:annotation>
+ <ppml:documentation>
+ 	Particle Properties Schema for XML Particle database.
+ 	Patrick Hellwig, CERN (EP/ALC, IT/API)
+ </ppml:documentation>
+</ppml:annotation>
+
+<ppml:element name="comment" type="xsd:string"/>
+
+<ppml:complexType name="PPMLDataType">
+	<ppml:attribute name="Name"   type="xsd:string"               />
+	<ppml:attribute name="Value"  type="xsd:decimal"              />
+	<ppml:attribute name="Unit"   type="xsd:string"  minOccurs="0"/>
+	<ppml:element   name="Type"   type="xsd:string"  minOccurs="0"/>
+	<ppml:element   name="PErr"   type="xsd:decimal" minOccurs="0"/>
+	<ppml:element   name="MErr"   type="xsd:decimal" minOccurs="0"/>
+	<ppml:element   name="Source" type="xsd:string"  minOccurs="0"/>
+</ppml:complexType>
+
+<ppml:complexType name="PPMLDecayModeType">
+	<ppml:attribute   name="Name"       type="xsd:string"                />
+	<ppml:attribute	  name="LaTeXName"  type="xsd:string"	minOccurs="0"/>
+	<ppml:attribute	  name="Ratio"	    type="xsd:decimal"               />
+	<ppml:attribute   name="Confidence" type="xsd:decimal"	minOccurs="0"/>
+	<ppml:element	  name="Part"	    type="xsd:name"  	minOccurs="0"/>
+</ppml:complexType>
+
+<ppml:complexType name="ParticleType">
+	<ppml:attribute name="Name"      type="xsd:string"                     />
+	<!-- <ppml:attribute name="Family"    type="xsd:string" 	  minOccurs="0"/> -->
+	<!-- <ppml:attribute name="ID"	 type="xsd:integer"	  minOccurs="0"/> -->
+	<ppml:element   name="data"      type="PPMLDataType"                   />
+	<ppml:element	name="decaymode" type="PPMLDecayModeType" minOccurs="0"/>
+</ppml:complexType>
+
+<ppml:complexType name="PPML">
+	<ppml:attribute name="Source" type="xsd:string"/>
+	<ppml:element   name="Particle" type="ParticleType"/>
+</ppml:complexType>
+
+</ppml:schema>

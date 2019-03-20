@@ -1,0 +1,15 @@
+if test $OS = "Linux"
+then
+   export ARCH='i386'
+   export OSNAME='Linux'
+   export COMPILER='g++'
+fi
+
+if test $OS = "Solaris"
+then
+   export ARCH='sparc'
+   export OSNAME='SUN'
+   export COMPILER='CC'
+fi
+
+./$OSNAME-$COMPILER/HBookTimeTest

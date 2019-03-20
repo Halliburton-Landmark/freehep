@@ -1,0 +1,40 @@
+#
+# Makefile for the Streamer HepRep Driver
+#
+# Author: Mark Donszelmann
+# Version: $Id: GNUmakefile,v 1.10 2003/06/17 23:56:19 duns Exp $
+#
+
+#
+# User Configuration: Define targets
+#
+INCLUDEDIRS = $(FREEHEP)/hep/graphics/heprep/streamer-c++/include \
+              $(FREEHEP)/hep/graphics/heprep/c++/include \
+              $(FREEHEP)/hep/graphics/heprep/include \
+              $(FREEHEP)/org/freehep/jni
+INCLUDELIBS = HEPREP
+LIBDIRS = $(FREEHEP)/hep/graphics/heprep/c++/
+UNIXLIBDIRS =
+
+#OBJS = DefaultHepRepAttDef DefaultHepRepAttValue DefaultHepRepTreeID DefaultHepRepAction
+OBJS = StreamerHepRepAttribute StreamerHepRepDefinition
+OBJS += StreamerHepRepPoint StreamerHepRepInstance StreamerHepRepInstanceTree
+OBJS += StreamerHepRepType StreamerHepRepTypeTree StreamerHepRep
+OBJS += XMLHepRepStreamer XMLHepRepStreamerFactory
+LIBS = HEPREPStreamer
+DLLS = HEPREPStreamer
+EXE = HepRepStreamerTest HepRepStreamerExample HepRepStreamerTreeOnly
+TEST =
+
+DNAME = $(LIBS)-0.2-$(DST)$(TAREXT)
+DDIR  = README.TXT HepRepStreamerExample.cc HepRepStreamerExample.heprep
+DDIR += ../../../../LICENSE.txt
+DDIR += ../../../../LGPL.txt
+DINC  = include/XMLHepRepStreamerFactory.h ../include/HEPREP
+DSLIB = $(DST)/*$(DLLEXT) $(DST)/*$(LIBEXT)
+
+#
+# No User Configuration below
+#
+
+include $(FREEHEP)/config/common.gmk

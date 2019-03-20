@@ -1,0 +1,43 @@
+if test $OS = "Windows_NT"
+then
+   ARCH='i386'
+   OSNAME='WIN32'
+fi
+
+if test $OS = "Linux"
+then
+   ARCH='i386'
+   OSNAME='Linux'
+fi
+
+if test $OS = "Solaris"
+then
+   ARCH='sparc'
+   OSNAME='SUN'
+fi
+
+if test $OS = "Darwin"
+then
+   OSNAME='Darwin'
+fi
+
+if test $OS = "Windows_NT"
+then
+PATH=$JDK_HOME/jre/bin:$PATH
+PATH=$JDK_HOME/jre/bin/client:$PATH
+export PATH
+export CLASSPATH="$FREEHEP/lib/openide-lookup.jar;$FREEHEP/lib/freehep-aidajni.jar;$FREEHEP/lib/freehep-hep.jar;$FREEHEP/lib/freehep-base.jar;$FREEHEP/lib/aida.jar;$FREEHEP/lib/aida-dev.jar;$CLASSPATH"
+else
+LD_LIBRARY_PATH=$FREEHEP/org/freehep/jni/$OSNAME-$COMPILER$COMPILERVERSION:$LD_LIBRARY_PATH
+LD_LIBRARY_PATH=$FREEHEP/hep/aida/jni/$OSNAME-$COMPILER$COMPILERVERSION:$LD_LIBRARY_PATH
+LD_LIBRARY_PATH=$JDK_HOME/jre/lib/$ARCH:$LD_LIBRARY_PATH
+LD_LIBRARY_PATH=$JDK_HOME/jre/lib/$ARCH/client:$LD_LIBRARY_PATH
+LD_LIBRARY_PATH=$JDK_HOME/jre/lib/$ARCH/server:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH
+CLASSPATH=$FREEHEP/lib/openide-lookup.jar:$FREEHEP/lib/freehep-aidajni.jar:$FREEHEP/lib/freehep-hep.jar:$FREEHEP/lib/freehep-base.jar:$FREEHEP/lib/aida.jar:$FREEHEP/lib/aida-dev.jar:$CLASSPATH
+export CLASSPATH
+fi
+
+JVM_ARGS="-Xmx256M -Djava.awt.headless=true"
+export JVM_ARGS
+$FREEHEP/hep/aida/jni/$OSNAME-$COMPILER$COMPILERVERSION/AidaTest

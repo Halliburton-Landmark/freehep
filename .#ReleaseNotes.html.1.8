@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>The FreeHEP Java Library - Release Notes</title>
+</head>
+
+<body>
+
+      <h1>Release Notes</h1>
+
+      <p>These release notes are in reverse chronological order.</p>
+      <h2>Latest Version</h2>
+      <p>Head of CVS</p>
+      <h3>Infrastructure and Tools</h3>
+      <ul>
+        <li>FREEHEP-1: upgraded to Ant version 1.5.3.</li>
+        <li>FREEHEP-1: build file now uses -source 1.4 for compilation.</li>
+        <li>FREEHEP-206: upgraded JavaCC to version 3.0, and AID to version 0.9</li>
+      </ul>
+      <h3>FreeHEP IO</h3>
+      <ul>
+        <li>FREEHEP-190: Added Base64 Input and Output Streams.</li>
+        <li>FREEHEP-191: Added ReaderInputStream and WriterOutputStream.</li>
+        <li>FREEHEP-210: Added DecompressableInputStream and CompressableOutputStream,
+            which can start (de)compressing midstream. BitInputStream and BitOutputStream
+            inherit from these respective classes now.</li>
+      </ul>
+      <h3>ROOTIO</h3>
+      <ul>
+        <li>Added latest version of ROOTIO.</li>
+      </ul>
+      <h3>VectorGraphics</h3>
+        <ul>
+            <li>FREEHEP-199: AbstractPathConstructor calls quad method rather than making cubics.</li>
+            <li>FREEHEP-196: SymbolShape now has proper bounding box.</li>
+            <li>FREEHEP-185 and FREEHEP-187: Added transparency for normal (non-image) drawing to the PDF and SVG formats.</li>
+            <li>FREEHEP-202: Fixed PrintColor class to rely on JDK 1.4 Color constants.</li>
+            <li>FREEHEP-204: Added WebColor class to create Colors following the 216-web color
+                scheme.</li>
+            <li>FREEHEP-207: endExport() now calls dispose() on top-level graphics context, which may call
+                writeGraphicsSave().</li>
+        </ul>
+      <h4>PixelGraphics2D</h4>
+          <ul>
+            <li>FREEHEP-205: The drawSymbol and fillSymbol methods in PixelGraphics2D will use
+                image blitting of cached symbol images of max size 32x32, in the case
+                the display is local (Windows32, MacOSX and X11local). In the X11 Remote
+                case normal drawing procedures are used. The colors are converted to
+                WebColors. For VectorGraphics export everything stays as normal.</li>
+          </ul>
+      <h4>EMF</h4>
+        <ul>
+            <li>FREEHEP-193: Header properly padded.</li>
+        </ul>
+      <h4>PDF</h4>
+        <ul>
+            <li>FREEHEP-203: Cleaned up the PDF output regarding empty objects.</li>
+        </ul>
+      <h4>SVG</h4>
+        <ul>
+            <li>FREEHEP-189: PNG Images now embedded into SVG format.</li>
+        </ul>
+      <h4>SWF</h4>
+        <ul>
+            <li>FREEHEP-59: upgraded to version 6.0</li>
+            <li>FREEHEP-197: swf file can now be partially compressed for version 6.0</li>
+            <li>FREEHEP-195: proper bounding boxes written.</li>
+            <li>FREEHEP-75: glyphed text added to output.</li>
+            <li>FREEHEP-74: Fixed a problem with curved shapes.</li>
+            <li>FREEHEP-24, FREEHEP-119 and FREEHEP-171: Added imaging (including transparency) to the SWF format.
+                It also handles setPaint(TexturePaint) now.</li>
+            <li>FREEHEP-22: clip now properly written.</li>
+        </ul>
+      <h2>Version 1.1 (March 20, 2003)</h2>
+      <ul>
+        <li>Initial public release.</li>
+      </ul>
+
+</body>
+
+</html>

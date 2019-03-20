@@ -1,0 +1,7 @@
+#
+# This file is generated, version number is in config/freehep.properties
+#
+TITLE=FreeHEP Java Libraries
+VERSION=current
+DATE=January 13 2004
+TIME=1102

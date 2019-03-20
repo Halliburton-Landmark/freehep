@@ -1,0 +1,9 @@
+#
+# Build file for g++ (Linux, MacOS X)
+#
+g++ -c `heprep-config --include` ../HepRepExample.cpp
+g++ -o HepRepExample HepRepExample.o `heprep-config --lib`
+
+g++ -c `heprep-config --include` ../MultiWriteTest.cpp
+g++ -o MultiWriteTest MultiWriteTest.o `heprep-config --lib`
+

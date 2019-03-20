@@ -1,0 +1,225 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>The FreeHEP Application Framework</title>
+</head>
+
+<body>
+
+<h1>The FreeHEP Application Framework</h1>
+<p>The <a href="http://java.freehep.org"> FreeHEP</a> application framework provides a set of framework classes for
+building applications. The framework is organized into 4 layers, each building
+on the layer below.</p>
+<ol>
+  <li>Application - A framework for general purpose GUI applications.</li>
+  <li>MDIApplication - extends Application to provide support for &quot;MDI
+    style&quot; applications.</li>
+  <li>Studio - Extends MDIApplication to provide support for plugins, which can
+    be dynamically loaded and extend the functionality of the application.</li>
+  <li>Data Studio - Extends the functionality of studio to provide support for
+    data analysis specific functionality, including Data Interface Modules's.</li>
+</ol>
+<p>The entire package is still under development and should not be considered
+stable.</p>
+<h2>Application</h2>
+<p>The Application package (<a href="http://java.freehep.org/lib/freehep/api/org/freehep/application/package-summary.html">org.freehep.application</a>) provides the following
+capabilities. In many cases the individual functions are provided by other parts
+of the freehep library, but the application package brings these capabilities
+all together in one place. The application package makes some assumptions about
+the application design, but provides many ways in which it can be customized.</p>
+<ul>
+  <li>Setting of properties via an &quot;application properties&quot; file</li>
+  <li>Maintenance of user preferences between sessions using a &quot;user
+    properties&quot; file.</li>
+  <li>A services package which provides for writing applications which can run
+    as standalone applications, trusted JNLP applications, or untrusted JNLP
+    applications.</li>
+  <li>Use of XML to define menus and toolbars</li>
+  <li>Use of a command manager for dispatching commands to command targets.</li>
+  <li>Command line parsing</li>
+  <li>About dialog</li>
+  <li>Print Preview capabilities</li>
+  <li>Recent File menu(s) maintained between sessions</li>
+  <li>Reporting of errors to the user.</li>
+  <li>JDK compatibility testing.</li>
+  <li>Dynamic Look and Feel switching and persistency between sessions</li>
+  <li>Window size and position maintained between sessions</li>
+  <li>Splash Screen</li>
+  <li>Status bar with message area and progress meter - including support for
+    canceling time consuming operations.</li>
+  <li>Help system using JavaHelp</li>
+</ul>
+<p>As an alternative to customization by overriding methods, much of the
+application functionality can be controlled using the application property file.</p>
+<table border="1">
+  <tr>
+    <th>Property</th>
+    <th>Purpose</th>
+    <th>Default</th>
+    <th>User overide</th>
+    <th>Legal values</th>
+  </tr>
+  <tr>
+    <td>version</td>
+    <td>Version #</td>
+    <td>1.0</td>
+    <td>no</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>fullVersion</td>
+    <td>Version description</td>
+    <td>{title} {version}</td>
+    <td>no</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>confirmQuit</td>
+    <td>Ask before quit?</td>
+    <td>maybe</td>
+    <td>yes</td>
+    <td>never|maybe|always</td>
+  </tr>
+  <tr>
+    <td>confirmQuitMessage</td>
+    <td>Confirm quit message</td>
+    <td>Do you&nbsp;really want&nbsp;to quit?</td>
+    <td>yes</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>confirmQuitTitle</td>
+    <td>Title for confirm quit dialog</td>
+    <td>Confirm Quit</td>
+    <td>yes</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>showSplash</td>
+    <td>Should splash screen appear at startup</td>
+    <td>true</td>
+    <td>yes</td>
+    <td>true|false</td>
+  </tr>
+  <tr>
+    <td>splashTitle</td>
+    <td>Title for splash screen</td>
+    <td>{title}</td>
+    <td>yes</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>splashImage</td>
+    <td>Image for&nbsp; splash screen</td>
+    <td>{aboutImage}</td>
+    <td>yes</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>numberOfInitializationStages</td>
+    <td>Automatically set after first application invokation</td>
+    <td>10</td>
+    <td>yes</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>lookAndFeel</td>
+    <td>Look and Feel</td>
+    <td>System</td>
+    <td>yes</td>
+    <td>System|Java|&lt;name&gt;</td>
+  </tr>
+  <tr>
+    <td>title</td>
+    <td>Application title</td>
+    <td>{appName}</td>
+    <td>yes</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>icon</td>
+    <td>Application icon</td>
+    <td>null</td>
+    <td>yes</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>topLevelToolBar</td>
+    <td>Name of default tool bar in XML file</td>
+    <td>null</td>
+    <td>yes</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>topLevelMenuBar</td>
+    <td>Name of default menu bar in XML file</td>
+    <td>null</td>
+    <td>yes</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>topLevelPopupMenu</td>
+    <td>Name of default popup menu in XML file</td>
+    <td>null</td>
+    <td>yes</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>showToolBar</td>
+    <td>Is tool bar visible</td>
+    <td>true</td>
+    <td>yes</td>
+    <td>true|false</td>
+  </tr>
+  <tr>
+    <td>showStatusBar</td>
+    <td>Is status bar visible</td>
+    <td>true</td>
+    <td>yes</td>
+    <td>true|false</td>
+  </tr>
+  <tr>
+    <td>window</td>
+    <td>Position/size of top level window</td>
+    <td>&nbsp;</td>
+    <td>yes</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>SAXParser</td>
+    <td>Class for XML parser</td>
+    <td>org.apache.xerces.parsers.SAXParser</td>
+    <td>yes</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>menuXML</td>
+    <td>Name of XML file which defines menus</td>
+    <td>{appName}.menus</td>
+    <td>yes</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<p>For a demonstration of the application framework see the <a href="http://java.freehep.org/demo/IconBrowser">IconBrowser</a>
+demo.</p>
+<h2>MDI Application</h2>
+<p>The MDI application package (<a href="http://java.freehep.org/lib/freehep/api/org/freehep/application/mdi/package-summary.html">org.freehep.application.mdi</a>)
+provides support for:</p>
+<ul>
+  <li>pages, control(s) and console(s) areas.</li>
+  <li>dynamic switching of page managers to allow pages to be organized as
+    tabbed panes, or as movable windows on a desktop.</li>
+  <li>multiple toolbars.</li>
+</ul>
+<h2>Studio</h2>
+
+<p>While MDI applications are typically customized by subclassing, Studio
+applications are typically extended by the use of one or more plugins.</p>
+
+</body>
+
+</html>

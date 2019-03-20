@@ -1,0 +1,5 @@
+hep.aida.ref.fitter.fitMethod.UnbinnedMaximumLikelihoodFitMethod
+hep.aida.ref.fitter.fitMethod.LeastSquaresFitMethod
+hep.aida.ref.fitter.fitMethod.CleverChiSquaredFitMethod
+hep.aida.ref.fitter.fitMethod.ChiSquaredFitMethod
+hep.aida.ref.fitter.fitMethod.BinnedMaximumLikelihoodFitMethod

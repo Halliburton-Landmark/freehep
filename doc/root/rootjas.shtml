@@ -1,0 +1,143 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>The Root DIM for JAS</title>
+</head>
+
+<body>
+
+<h1>          
+             
+          
+         
+          
+            
+      
+             
+    The <a href="index.shtml"> hep.io.root</a> Package</h1>
+
+<h2>The Root Data Interface Module (DIM) for JAS</h2>
+<p>The root.jar
+file described above also functions as a JAS Plugin, providing a Data Interface
+Module (DIM) for reading Root files into JAS. The Root DIM allows you to read
+Root files into JAS, to view histograms and NTuples and to analyze data stored
+in TTrees. The DIM supports using user-defined classes as well as class built in
+to Root.</p>
+<h3>Getting Started&nbsp;</h3>
+<p>Before you can use the Root DIM for JAS you must download and install JAS
+(version 2.2.3 or later). The easiest way to install the Root DIM is to use the Plugin Manager built
+into JAS.&nbsp; Choose <i>Plugin Manager</i> from the <i>View</i>  menu,
+click on <i>Install Plugin</i>, and then select the Root Plugin. (If you already
+have an older version of the Root plugin you may need to use <i>Update Installed
+Plugin</i> instead of <i>Install Plugin)</i></p>
+<p>Once you have the Root DIM installed you can open a Root file simply by
+choosing <i>File</i>, <i>Open</i>, and select a Root file. This example uses the file Event.root created by <a href="http://root.cern.ch/root/html/examples/Event.C.html">this
+Root example</a>.
+(You can download this file <a href="ftp://ftp.slac.stanford.edu/software/jas/RootData/Event.root">here</a>, but it is
+17MB, so maybe you should recreate
+it yourself using Root).&nbsp;</p>
+
+<p>Once you have opened the Root file your should see something like this.</p>
+
+<p><img border="0" src="RootJas1.gif" width="632" height="503"></p>
+
+<p>You can view histograms stored in the Root file simply by double clicking on
+the histogram icon in the tree. You can overlay multiple histograms and plot
+multiple plots on the same page using the popup menus obtained by right-clicking
+on the icons in the tree. Branches within TTree's which are simple scalers
+(integer, float etc) can be histogrammed simply by double-clicking on the
+corresponding icon in the tree. (Unlike fixed histograms you can change the
+binning of dynamic histograms by sliding the rebin slider, or by dragging on the
+histograms X axis).</p>
+
+<h3>Using the Root Event Browser</h3>
+
+<p>You can look at individual root events in JAS very simply. The first step is
+to load the Root plugin, which extends the functionality of JAS. Choose <i>Job</i>,
+<i>Load Plugin</i>, and type jasext.root.RootPlugin, followed by OK</p>
+
+<p>.<img border="0" src="loadplugin.gif" width="413" height="176"></p>
+
+<p>Once you have done this a new menu item should appear in the Menu bar,
+labeled <i>Root</i>. (<b>Note</b>: in the forthcoming release of JAS this will
+happen automatically when you open a Root file).</p>
+<p>Using the new menu choose <i>Root</i>, <i>Show Event Browser</i>. An Event
+Browser window should appear. Now you can use the JAS <i>Job</i>, <i>Step</i>
+command (or the toolbar button: <img border="0" src="step.gif" width="16" height="15">) to step through
+events. Each event in turn will appear in the Event Browser.</p>
+<p><img border="0" src="jaseb.gif" width="617" height="555"></p>
+<h3>Writing Some Analysis Code</h3>
+<p>To do some more useful analysis you will need to write some Java code. Before
+you can do this you must generate Java Interfaces for the user-defined objects
+stored in the root file. Choose <i>Root</i>, <i>Generate Java Interfaces...,</i>
+and select a directory where you would like the generated interfaces to be
+stored. After selecting a suitable directory press the <i>Generate</i> button.
+Assuming all went well you can then press the <i>Close</i> button to close the
+dialog. The Java interfaces (in this case <code>Event.java</code>, <code>EventHeader.java</code>
+and <code>Track.java</code>) will be created. By default these interfaces will
+also be opened in the JAS editor so you can look at the generated
+interfaces.&nbsp;</p>
+<p><img border="0" src="rib.gif" width="407" height="264"></p>
+<p>Before proceeding you must tell JAS where you stored the interfaces. Choose <i>View</i>,
+<i>Options</i>, <i>Class Path</i>, and add the directory where you stored the
+files to the CLASSPATH. (Again this will be automated in a future version of
+JAS).</p>
+<p>Now we are ready to write a simple analysis program. To do
+this select <i>File</i>, <i>New</i>, <i>Blank Program Page, </i>and type (or cut
+and paste) the
+following code.</p>
+<p><!--webbot bot="HTMLMarkup" startspan --><servlet code="ColorizeServlet">
+<param name="source" value="examples/MyRootAnalysis1.java">
+</servlet><!--webbot bot="HTMLMarkup" endspan -->
+</p>
+<p>Some notes about this program:</p>
+<ol>
+  <li>The processEvent() method gets passed each event in turn as you run
+    through the data. Since you are analyzing Root data you will in fact get
+    passed a <a href="http://jas.freehep.org/documentation/api/Root/jasext/root/RootEvent.html"> RootEvent</a> object. The RootEvent object allows you to access each
+    branch of the TTree.</li>
+  <li>In this example we know that the first branch in the TTree (branch 0) is
+    the event branch. We can thus get the entry for this branch from the
+    RootEvent and cast it to an Event.&nbsp; </li>
+  <li>Now we have an Event we can access any members and histogram them using
+    the JAS histogramming facilities.</li>
+</ol>
+<p>Before you can compile the code you must save it (use <i>File</i>, <i>Save As</i>).
+Java requires that the name of the file be MyRootAnalysis.java (since the class
+is called MyRootAnalysis) and that you <b>store this file in the same directory
+as the Java Interfaces generated above</b>. Once you have saved the file use <i>File</i>, <i>Compile</i>,
+to compile it. Now you can load the routine by using <i>Job</i>, <i>Load
+Program.&nbsp; </i></p>
+<p>Finally to run your analysis select <i>Job</i>, <i>Go</i>. New icons
+corresponding to the histograms you have created should now appear in the tree.
+You can view them as before by double-clicking on the icons. </p>
+<p><img border="0" src="RootJas2.gif" width="663" height="488"></p>
+<p>You can now extend you analysis so that it looks over the tracks within each
+event, as follows:</p>
+<p><!--webbot bot="HTMLMarkup" startspan --><servlet code="ColorizeServlet">
+<param name="source" value="examples/MyRootAnalysis2.java">
+</servlet><!--webbot bot="HTMLMarkup" endspan -->
+</p>
+<p>When you add the extra lines and recompile your new code will be
+automatically loaded in place of the old version. Choose, <i>Job</i>, <i>Rewind</i>,
+followed by <i>Job</i>, <i>Go, </i>to feed the data to your new analysis
+routine. You will notice that the job runs considerably slower now, since
+it must read the track information as well as the event information. (The
+slowness is mainly due to the <a href="index.shtml#Performance"> inefficient implementation</a> of this early version
+of Java Root IO, it should be greatly improved in the next release.) As soon as
+the analysis starts running your new histograms should appear in the tree. You
+do not need to wait for the analysis to stop running before you can view the
+histograms.</p>
+<p>This is still a very early release of the Root IO for Java package, so we are
+very interested in getting your feedback, or hearing about any problems you
+encounter. Please send e-mail to <a href="mailto:tonyj@slac.stanford.edu">tonyj@slac.stanford.edu</a>.
+For JAS specific questions you can also use the JAS mailing list <a href="mailto:jas-l@slac.stanford.edu">jas-l@slac.stanford.edu</a>.
+</p>
+
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+#
+# Linux - icc 8.0
+#
+
+ARCH = i386
+
+INCFLAGS += -I$(JDK_HOME)/include/linux
+
+#
+# Compiler
+#
+ifneq ($(DEBUG),)
+	DEBUGSUFFIX =
+	CFLAGS += -g
+else    # DEBUG
+	DEBUGSUFFIX =
+	CFLAGS += -O
+endif   # DEBUG
+
+CXX = icpc
+CC = icc
+F77 = ifort
+F77FLAGS += -O99 -c
+F77TARGET = -o # leave the space!
+CFLAGS += -c -DLinux
+CCFLAGS += -D__NO_STRING_INLINES -Wnested-externs -Wbad-function-cast
+CXXFLAGS += -ansi -no-gcc -w1
+CXXTARGET = -o # leave the space!
+ifneq ($(LINKNOCXX),)
+        # will not link to ___gxx_personality_v0
+        CFLAGS += -fno-exceptions
+endif   # LINKNOCXX
+
+#
+# Librarian
+#
+LIB = ar
+LIBTARGET = -r # leave the space!
+
+#
+# Linker
+#
+LINK = $(CXX)
+LINKCC = $(CC)
+DLLFLAGS += -shared
+ifeq ($(LINKNOJAVA),)
+    LINKFLAGS += -L$(JDK_HOME)/jre/lib/$(ARCH)/client
+    LINKFLAGS += -L$(JDK_HOME)/jre/lib/$(ARCH)/server
+    LINKFLAGS += -L$(JDK_HOME)/jre/lib/$(ARCH)
+    LINKFLAGS += -L$(JDK_HOME)/jre/bin/
+    LINKLIBS += -ljvm
+endif   # LINKNOJAVA
+
+#
+# CERN Lib
+#
+ifneq ($(CERN_ROOT),)
+    LINKLIBS += `cernlib packlib geant`
+endif   # CERN_ROOT
+
+#
+# Generic Unix
+#
+LINKFLAGS += -i_dynamic
+LINKFLAGS += $(addsuffix  /$(REF), $(addprefix -L, $(EXTLIBDIRS)))
+LINKFLAGS += $(addsuffix  /$(DST), $(addprefix -L, $(LIBDIRS)))
+LINKFLAGS += $(addprefix -L, $(UNIXLIBDIRS))
+LINKLIBS += $(addsuffix $(DEBUGSUFFIX), $(addprefix -l, $(INCLUDELIBS)))
+LINKLIBS += $(addsuffix $(DEBUGSUFFIX), $(addprefix -l, $(INCLUDEUNIXLIBS)))
+
+LINKTARGET = -o # leave ths space
+DLL = ld
+
+#
+# Extra for fortran...
+#
+#ifneq ($(LINKFORTRAN),)
+#    LINKLIBS += -lg2c
+#endif    # LINKFORTRAN
+
+#
+# System
+#
+OBJEXT = .o
+LIBEXT = .a
+DLLEXT = .so
+LIBPRE = lib
+EXEEXT =
+TAREXT = .tar.gz
+DTMP = /tmp/$(DST)
+DTAR = tar z

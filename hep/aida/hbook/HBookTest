@@ -1,0 +1,25 @@
+if test $OS = "Linux"
+then
+   export ARCH='i386'
+   export OSNAME='Linux'
+   export COMPILER='g++'
+fi
+
+if test $OS = "Solaris"
+then
+   export ARCH='sparc'
+   export OSNAME='SUN'
+   export COMPILER='CC'
+fi
+
+
+export LD_LIBRARY_PATH=$FREEHEP/org/freehep/jni/$OSNAME-$COMPILER:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$JDK_HOME/jre/bin:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$JDK_HOME/jre/bin/classic:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$JDK_HOME/jre/bin/hotspot:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$JDK_HOME/jre/lib/$ARCH:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$JDK_HOME/jre/lib/$ARCH/classic:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$JDK_HOME/jre/lib/$ARCH/hotspot:$LD_LIBRARY_PATH
+export CLASSPATH=$FREEHEP/lib/freehep-hep.jar:$FREEHEP/lib/freehep-base.jar:$FREEHEP/lib/xerces.jar:$CLASSPATH
+export JVM_ARGS=-Xmx256M
+./$OSNAME-$COMPILER/CHBookAidaTest

@@ -1,0 +1,422 @@
+package hep.graphics.heprep.ref;
+
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+
+import hep.graphics.heprep.*;
+
+import org.freehep.util.DoubleHashtable;
+import org.freehep.util.FastStack;
+
+/**
+ * Fast iterator, which allows for iteration of all HepRepInstances
+ * in a HepRepInstanceTree or for iteration of a specific layer.
+ * It also features a callback to a HepRepListener to signal
+ * changes in attributes.
+ *
+ * @author M.Donszelmann
+ * @version $Id: DefaultHepRepIterator.java,v 1.16 2003/11/24 22:34:50 duns Exp $
+ */
+public class DefaultHepRepIterator implements HepRepIterator {
+
+    // state
+    private HepRepInstanceTree instanceTree;
+    private Iterator layerIterator;
+    private String currentLayer;
+    private boolean reportAllForLayerChange;
+
+    // for the iteration
+    private LinkedListIterator linkedListIterator;         // to re-use iterator
+    private HepRepInstance nextInstance = null;            // next Instance
+    private HepRepInstance currentInstance = null;         // current Instance
+    private FastStack instanceStack = new FastStack(1000); // of HepRepInstance
+
+    // for the listener
+    private HepRepIteratorListener listener = null;     // only one HepRepIteratorListener allowed
+
+    // for the attributes
+    private Map/*<HepRepAttValue>*/ attributes;         // current attributes, HepRepAttValue, stored by lowerCaseName
+    private Set changedAttributes;                      // Set to signal change, stored by lowerCaseName
+    private String layerString = "layer";               // Lowercase!
+
+    /**
+     * Creates a HepRepIterator for the given InstanceTree.
+     * Layer changes are reported but ignored.
+     *
+     * @param instanceTree to be iterated over.
+     */
+    public DefaultHepRepIterator(HepRepInstanceTree instanceTree) {
+        this(instanceTree, null);
+    }
+
+    /**
+     * Creates a HepRepIterator for the given InstanceTree and set of layers.
+     *
+     * @param instanceTree to be iterated over.
+     * @param layers to be used in iteration.
+     */
+    public DefaultHepRepIterator(HepRepInstanceTree instanceTree, List layers) {
+        this(instanceTree, layers, false);
+    }
+
+    /**
+     * Creates a HepRepIterator for the given InstanceTree and set of layers.
+     *
+     * @param instanceTree to be iterated over for given layers.
+     * @param layers to be used in iteration.
+     * @param reportAllForLayerChange true will report all attributes at every layer change.
+     */
+    public DefaultHepRepIterator(HepRepInstanceTree instanceTree, List layers, boolean reportAllForLayerChange) {
+        if (layers == null) {
+            layers = new ArrayList();
+            layers.add(null);
+        }
+        this.layerIterator = layers.iterator();
+        this.currentLayer = null;
+        this.reportAllForLayerChange = reportAllForLayerChange;
+        this.instanceTree = instanceTree;
+
+        // empty iterator
+        linkedListIterator = new LinkedListIterator(null);
+
+        //setup attribute tables
+        attributes = new HashMap();
+        changedAttributes = new HashSet();
+    }
+
+    private void fillInstanceStack(Collection instances) {
+        // put instances of this instancetree on stack for processing
+        Iterator iterator;
+        if (instances instanceof LinkedList) {
+            iterator = ((LinkedList)instances).iterator(linkedListIterator);
+        } else {
+            iterator = instances.iterator();
+        }
+        while (iterator.hasNext()) {
+            instanceStack.push(iterator.next());
+        }
+    }
+
+    /**
+     * Add a listener to be informed about attribute changes
+     * while the iteration is ongoing.
+     * Only one listener is allowed.
+     *
+     * @param l listener to be added.
+     */
+    public void addHepRepIteratorListener(HepRepIteratorListener l) throws TooManyListenersException {
+        if (listener != null) {
+            throw new TooManyListenersException("HepRepIterator.addHepRepIteratorListener: only one listener allowed, do a remove first.");
+        } 
+            
+        listener = l;
+
+        // inform listener of all known attributes
+        informListener(layerString, (HepRepAttValue)attributes.get(layerString));
+        for (Iterator attIterator = attributes.keySet().iterator(); attIterator.hasNext();  ) {
+            Map.Entry entry = (Map.Entry)attIterator.next();
+            String name = ((String)(entry.getKey())).toLowerCase().intern();
+            if (name != layerString) {
+                changedAttributes.add(name);
+            }
+        }
+        informListener();
+    }
+
+    /**
+     * Remove a listener.
+     *
+     * @param l listener to be removed.
+     */
+    public void removeHepRepIteratorListener(HepRepIteratorListener l) {
+        listener = null;
+    }
+
+    /**
+     * Informs listener of any attribute changes (except layer) and
+     * resets changed flag.
+     */
+    private void informListener() {
+        for (Iterator attIterator = attributes.keySet().iterator(); attIterator.hasNext();  ) {
+            Map.Entry entry = (Map.Entry)attIterator.next();
+            String name = ((String)(entry.getKey())).toLowerCase().intern();
+            if ((name != layerString) && changedAttributes.contains(name)) {
+//                System.out.println(nameTable.getName(code)+" has changed into "+attributes[code]);
+                informListener(name, (HepRepAttValue)attributes.get(name));
+                changedAttributes.remove(name);
+            }
+        }
+    }
+
+    /**
+     * Informs listener of a change in the given AttributeValue.
+     *
+     * @param name name of the changed attributeValue.
+     * @param attValue the changed attributeValue.
+     */
+    private void informListener(String name, HepRepAttValue attValue) {
+        if (listener !=null) {
+            if (attValue != null) {
+                switch (attValue.getType()) {
+                case HepRepAttValue.TYPE_STRING:
+                    listener.setAttribute(name, attValue.getString(), attValue.getLowerCaseString(), attValue.showLabel());
+                    break;
+                case HepRepAttValue.TYPE_COLOR:
+                    listener.setAttribute(name, attValue.getColor(), attValue.showLabel());
+                    break;
+                case HepRepAttValue.TYPE_LONG:
+                    listener.setAttribute(name, attValue.getLong(), attValue.showLabel());
+                    break;
+                case HepRepAttValue.TYPE_INT:
+                    listener.setAttribute(name, attValue.getInteger(), attValue.showLabel());
+                    break;
+                case HepRepAttValue.TYPE_DOUBLE:
+                    listener.setAttribute(name, attValue.getDouble(), attValue.showLabel());
+                    break;
+                case HepRepAttValue.TYPE_BOOLEAN:
+                    listener.setAttribute(name, attValue.getBoolean(), attValue.showLabel());
+                    break;
+                default:
+                    System.err.println("Unknown type in HepRepPrimitiveIterator: '"+attValue.getType()+"'");
+                    listener.setAttribute(name, attValue.toString(), attValue.toString().toLowerCase(), attValue.showLabel());
+                    break;
+                }
+            } else {
+                listener.removeAttribute(name);
+            }
+        }
+    }
+
+    /**
+     * @return the current value of an attribute, given the key
+     */
+    public HepRepAttValue getAttValue(String key) {
+        return (HepRepAttValue)attributes.get(key.toLowerCase());
+    }
+
+    /**
+     * @return the next HepRepInstance
+     */
+    public HepRepInstance nextInstance() {
+        return (HepRepInstance)next();
+    }
+
+    /**
+     * @return the next HepRepInstance
+     */
+    public Object next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
+
+        // report layer change
+        if (changedAttributes.contains(layerString)) {
+//            log("Layer has changed into "+attributes[layerCode]);
+            if (reportAllForLayerChange) {
+//                log("Reporting all attributes");
+                // make sure we report all attributes
+                for (Iterator attIterator = attributes.keySet().iterator(); attIterator.hasNext();  ) {
+                    Map.Entry entry = (Map.Entry)attIterator.next();
+                    String name = ((String)(entry.getKey())).toLowerCase().intern();
+                    if (!changedAttributes.contains(name)) {
+                        changedAttributes.add(name);
+                        attributes.put(name, nextInstance.getAttValue(name));
+                    }
+                }
+            }
+            // actually report layer change as the first thing
+            informListener(layerString, (HepRepAttValue)attributes.get(layerString));
+            changedAttributes.remove(layerString);
+        }
+
+        // report all other attribute changes
+        informListener();
+
+        // move on
+        currentInstance = nextInstance;
+        nextInstance = null;
+
+//        System.out.println(currentInstance+"\n");
+        return currentInstance;
+    }
+
+    /**
+     * Prepares the next instance and returns true if exists. Successive
+     * calls to hasNext() without calling next() or nextInstance() are ignored.
+     *
+     * The instances are walked through the tree in in-order traversal.
+     *
+     * @return true if there exists a next HepRepInstance
+     */
+    public boolean hasNext() {
+        // no need if nextInstance is prepared
+        if (nextInstance == null) {
+
+            do {
+                if (instanceStack.isEmpty()) {
+                    if (!layerIterator.hasNext()) {
+                        nextInstance = null;
+                        return false;
+                    }
+                    currentLayer = (String)layerIterator.next();
+                    fillInstanceStack(instanceTree.getInstances());
+                }
+
+                // get stacked instance
+                nextInstance = (HepRepInstance)instanceStack.pop();
+
+                // add children of this instance to the instanceStack
+                fillInstanceStack(nextInstance.getInstances());
+
+            // skip if not in layer, unless layer is null;
+            } while ((currentLayer != null) && !nextInstance.getAttValue(layerString).getString().equals(currentLayer));
+
+            // detect changes in attributes and schedule rapportation
+            detectChangesInAttributes(currentInstance);
+        }
+
+        // nextInstance is valid.
+        return true;
+    }
+
+    /**
+     * Removes the current instance, however this is not permitted.
+     *
+     * @throws UnsupportedOperationException in all cases.
+     */
+    public void remove() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Detects changes in attributes between the current node and the next node.
+     * Changes may come from the nodes themselves, or from their types.
+     *
+     * The global strategy for detecting changes in attributes is the following:
+     *  1. changes on the next node are reported, if different from the current values.
+     *      This implies also that attributes that have not been used before, will be
+     *      added to the known attributes table.
+     *  2. if the instance node is null, all known attributes on top of what was
+     *      available in 1. are reported.
+     *      (strictly speaking we could ask for all attributes known by the type
+     *       of the instance, but there is no easy way to do so).
+     *  3. if the instance node is non-null, and the type of the next node
+     *      is not equal to the type of the instance node, all known attributes
+     *      are looked up and if different from their current value are reported.
+     *  4. else (the types are equal) run over the attributes set in the instance
+     *      node and report if the have a different value (or removed) in the next node.
+     *      This makes sure that values that where set on the current node and not
+     *      on the next are removed.
+     */
+    private void detectChangesInAttributes(HepRepInstance instance) {
+
+        //  1. changes on the next node are reported, if different from the current values.
+        //      This implies also that attributes that have not been used before, will be
+        //      added to the known attributes table.
+        Collection nodeValues = nextInstance.getAttValuesFromNode();
+        Iterator iterator;
+        if (nodeValues instanceof LinkedList) {
+            iterator = ((LinkedList)nodeValues).iterator(linkedListIterator);
+        } else {
+            iterator = nodeValues.iterator();
+        }
+
+        while (iterator.hasNext()) {
+            HepRepAttValue attValue = (HepRepAttValue)iterator.next();
+            String name = attValue.getLowerCaseName();
+            if (!attValue.equals(attributes.get(name))) {
+//                log(nameTable.getName(code)
+//                        +" has changed on node from "
+                changedAttributes.add(name);
+                attributes.put(name, attValue);
+            }
+        }
+
+        //  2. if the current node is null, all known attributes on top of what was
+        //      available in 1. are reported.
+        //      (strictly speaking we could ask for all attributes known by the type
+        //       of the current instance, but there is no easy way to do so).
+        if (instance == null) {
+//            log("Type changed from null to "
+//                    +nextInstance.getType().getName());
+            // first set of attributes, use defaults, set all which are not set yet
+            for (Iterator attIterator = attributes.keySet().iterator(); attIterator.hasNext();  ) {
+                Map.Entry entry = (Map.Entry)attIterator.next();
+                String name = ((String)(entry.getKey())).toLowerCase().intern();
+                if (!changedAttributes.contains(name)) {
+                    attributes.put(name, nextInstance.getAttValue(name));
+                    // set changed flag only if we found a real value.
+                    if (attributes.get(name) == null) {
+                        changedAttributes.remove(name);
+                    } else {
+                        changedAttributes.add(name);
+                    }
+                }
+            }
+        } else {
+        //  3. if the current node is non-null, and the type of the next node
+        //      is not equal to the type of the current node, all known attributes
+        //      are looked up and if different from their current value are reported.
+            if (instance.getType() != nextInstance.getType()) {
+//                log("Type changed from "
+//                        +instance.getType().getName()+" to "
+//                        +nextInstance.getType().getName());
+                for (Iterator attIterator = attributes.keySet().iterator(); attIterator.hasNext();  ) {
+                    Map.Entry entry = (Map.Entry)attIterator.next();
+                    String name = ((String)(entry.getKey())).toLowerCase().intern();
+                    HepRepAttValue attValue = nextInstance.getAttValue(name);
+                    if (attValue == null)  {
+                        if (attributes.get(name) != null) {
+//                            log(nameTable.getName(code)
+//                                    +" has changed on type from "
+//                                    +attributes[code]+" to "+attValue);
+                            changedAttributes.add(name);
+                            attributes.remove(name);
+                        }
+                    } else {
+                        if (!attValue.equals(attributes.get(name))) {
+//                            log(nameTable.getName(code)
+//                                    +" has changed on type from "
+//                                    +attributes[code]+" to "+attValue);
+                            changedAttributes.add(name);
+                            attributes.put(name, attValue);
+                        }
+                    }
+                }
+            } else {
+        //  4. else (the types are equal) run over the attributes set in the current
+        //      node and report if the have a different value (or removed) in the next node.
+        //      This makes sure that values that where set on the current node and not
+        //      on the next are removed.
+                nodeValues = instance.getAttValuesFromNode();
+                if (nodeValues instanceof LinkedList) {
+                    iterator = ((LinkedList)nodeValues).iterator(linkedListIterator);
+                } else {
+                    iterator = nodeValues.iterator();
+                }
+
+                while (iterator.hasNext()) {
+                    HepRepAttValue attValue = (HepRepAttValue)iterator.next();
+                    String name = attValue.getLowerCaseName();
+                    
+                    if (!changedAttributes.contains(name)) {
+                        // was specified before, but no new value set, or was equal, so we have to look this up
+                        HepRepAttValue newAttValue = nextInstance.getAttValue(name);
+                        if (!attValue.equals(newAttValue)) {
+//                            log(nameTable.getName(code)
+//                                    +" was removed from node whereby its value changes from "
+//                                    +attValue+" to "+newAttValue);
+                            changedAttributes.add(name);
+                            attributes.put(name, newAttValue);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void log(String msg) {
+        System.out.println(msg);
+    }
+}

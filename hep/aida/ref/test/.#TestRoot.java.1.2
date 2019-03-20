@@ -1,0 +1,158 @@
+package hep.aida.ref.test;
+
+import hep.aida.IAnalysisFactory;
+import hep.aida.IEvaluator;
+import hep.aida.IFitFactory;
+import hep.aida.IFitResult;
+import hep.aida.IFunction;
+import hep.aida.IHistogram1D;
+import hep.aida.IHistogram2D;
+import hep.aida.IHistogramFactory;
+import hep.aida.ITree;
+import hep.aida.ITreeFactory;
+import hep.aida.ITuple;
+import hep.aida.ITupleFactory;
+import java.io.File;
+import junit.framework.TestResult;
+import junit.framework.TestSuite;
+
+
+/**
+ *
+ * @author tonyj
+ * @version $Id: TestRoot.java,v 1.2 2003/06/03 02:29:50 tonyj Exp $
+ */
+public class TestRoot extends AidaTestCase
+{
+   protected ITree tree;
+   public TestRoot(String testName)
+   {
+      super(testName);
+   }
+   
+   protected void tearDown() throws Exception
+   {
+      tree.close();
+      super.tearDown();
+   }
+   protected String convertName(int id)
+   {
+      return id >= 0 ? "/h"+id : "/h_"+id;
+   }
+   public void test1DHistogramAccess()
+   {
+      IHistogram1D hist = (IHistogram1D) tree.find(convertName(110));
+      assertNotNull(hist);
+      assertEquals(hist.title().trim(),"TEST OF HBOOK1");
+      assertEquals(hist.entries(), 5000);
+      assertEquals(hist.extraEntries(), 0);
+      assertEqualsDouble(hist.mean(),.49817,1e-4);
+      assertEqualsDouble(hist.rms(),.22046,1e-4);
+   } 
+   public void test2DHistogramAccess()
+   {
+      IHistogram2D hist = (IHistogram2D) tree.find(convertName(210));
+      assertNotNull(hist);
+      assertEquals(hist.title().trim(),"TEST OF HBOOK2");
+      assertEquals(hist.entries(), 5000);
+      assertEquals(hist.extraEntries(), 0);
+      assertEqualsDouble(hist.meanX(),.48060,1e-4);
+      assertEqualsDouble(hist.meanY(),.48094,1e-4);
+      assertEqualsDouble(hist.rmsX(),.21781,1e-4);
+      assertEqualsDouble(hist.rmsY(),.21768,1e-4);
+   }   
+   public void testSimpleFit() throws Exception
+   {
+      ITuple tuple = (ITuple) tree.find(convertName(30));
+      IAnalysisFactory af = IAnalysisFactory.create();
+      ITree temp = af.createTreeFactory().create();
+      IHistogramFactory hf = af.createHistogramFactory(temp);
+      ITupleFactory tf = af.createTupleFactory(temp);
+      IHistogram1D hist = hf.createHistogram1D("test",50,-4,4);
+      IEvaluator x = tf.createEvaluator("X");
+      tuple.project(hist,x);
+      assertEquals(hist.entries(),10000);
+      //now try a simple fit
+      IFitFactory ff = af.createFitFactory();
+      IFitResult result = ff.createFitter().fit(hist,"g");
+      IFunction fitted = result.fittedFunction();
+      assertEqualsDouble(result.quality(),.579,.01);
+      assertEquals(result.ndf(),43);     
+      //System.out.println(result.fitStatus());
+      assertTrue(result.isValid());
+      assertEquals(fitted.parameter("mean"),0,.01);
+      assertEqualsDouble(fitted.parameter("sigma"),1,.03);      
+      assertEqualsDouble(fitted.parameter("amplitude"),643,.01);  
+      temp.close();
+   } 
+   public void testFolderAccess()
+   {
+      IHistogram1D hist = (IHistogram1D) tree.find("BS"+convertName(100));
+      assertNotNull(hist);
+      assertEquals(hist.title().trim(),"BREM P M");
+      assertEquals(hist.entries(), 15896);
+      assertEquals(hist.extraEntries(), 0);
+      assertEqualsDouble(hist.mean(),.28203,1e-4);
+      assertEqualsDouble(hist.rms(),.10821,1e-4);
+   }
+   public void testTuple()
+   {
+      ITuple tuple = (ITuple) tree.find(convertName(30));
+      IAnalysisFactory af = IAnalysisFactory.create();
+      ITree temp = af.createTreeFactory().create();
+      IHistogramFactory hf = af.createHistogramFactory(temp);
+      ITupleFactory tf = af.createTupleFactory(temp);
+      IHistogram1D hist = hf.createHistogram1D("test",40,0,10);
+      IEvaluator x = tf.createEvaluator("Z");
+      tuple.project(hist,x);
+      assertEquals(9934,hist.entries());
+      assertEqualsDouble(1.9721,hist.mean(),1e-4);
+      assertEqualsDouble(1.9925,hist.rms(),1e-4);
+   }
+   public void testTupleAge()
+   {
+      ITuple tuple = (ITuple) tree.find("STAFF"+convertName(10));
+      IAnalysisFactory af = IAnalysisFactory.create();
+      ITree temp = af.createTreeFactory().create();
+      IHistogramFactory hf = af.createHistogramFactory(temp);
+      ITupleFactory tf = af.createTupleFactory(temp);
+      IHistogram1D hist = hf.createHistogram1D("test",44,20.5,64.5);
+      IEvaluator x = tf.createEvaluator("Age");
+      tuple.project(hist,x);
+      assertEquals(3354,hist.entries());
+      assertEqualsDouble(26.653+20.5,hist.mean(),1e-4);
+      assertEqualsDouble(8.6430,hist.rms(),1e-4);      
+   }
+   public void testTupleNation()
+   {
+      ITuple tuple = (ITuple) tree.find("STAFF"+convertName(10));
+      int nationIndex = tuple.findColumn("Nation");
+      int n = 0;
+      tuple.start();
+      while (tuple.next())
+      {
+         String nation = tuple.getString(nationIndex);
+         if (nation.equals("CH")) n++;
+      }
+      assertEquals(465,n);
+   }
+   public void testWalkTree()
+   {
+      String[] names = tree.listObjectNames("/",true);
+      assertEquals(266,names.length);
+   }
+   protected void setUp() throws Exception
+   {
+      super.setUp();
+      openFile();
+   }
+   protected void openFile() throws Exception
+   {
+      // Open the test data
+      String testDataDir = System.getProperty("org.freehep.testData");
+      File f = new File(testDataDir,"pawdemo.root");
+      IAnalysisFactory af = IAnalysisFactory.create();
+      ITreeFactory tf = af.createTreeFactory();
+      tree = tf.create(f.getAbsolutePath(),"root",true,false,null);
+   }
+}

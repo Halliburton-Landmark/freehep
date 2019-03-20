@@ -1,0 +1,263 @@
+*****************************************************************************************
+** Technical Documentation and Specification
+** XML Particle Property Database
+**
+** Version: $Id: Technical.txt,v 1.4 2000/08/16 07:36:17 patrick Exp $
+** Author: Patrick Hellwig
+** CERN summer student 2000
+**
+*****************************************************************************************
+
+THIS DOCUMENT HAS NOT BEEN FINISHED YET ! THIS DOCUMENT IS A SMALL DRAFT FOR DISCUSSION. 
+PLEASE REPLY ANY COMMENTS TO Patrick.Hellwig@cern.ch
+
+######################
+# about the document #
+######################
+
+This document descibes the technical details of the implementation of a Particle Properties
+database in XML.
+
+Short forms: 
+
+.s. : string
+.d. : decimal double
+
+
+###############
+# DATA-Format #
+###############
+
+-------------------------
+++ Particle Data Entry ++
+-------------------------
+
+The XML-file is initialized by a "PPML" tag. This is just for defining the contents of the
+XML file and the get information about the source of data (f.e. PDG98.mc)
+
+<PPML source=".s.">
+...
+</PPML>
+
+
+In the XML file each entry of particle data begins with a "Particle" tag:
+
+<Particle name=".s." texname=".s.">
+	
+	name:		ASCII-Name of the Particle
+	texname:	Name of the Particle in LaTeX2e form
+	
+	<Data ... />
+	<Decay ... />
+	<Comment> ..... </Comment>
+	
+</Particle>
+
+Within the "Particle" tag as many "Data" tags can follow as many data is given. 
+Each "Data" tag has the following structure:
+
+<Data name=".s." texname=".s." value=".s." unit=".s." poserror=".d." negerror=".d." confidencelevel=".d." scalefactor=".d." subinfo=".s.">
+
+	name:    ASCII-Name of the Property 
+	texName: Name of the Property in LaTeX2e form
+	value:   Value of the Property in String-Form
+	unit:    Physical Unit (see Appendix) in String-Form
+	posError:positive Error in double-Form (PError = 1.0 = 100%)
+	negError:negative Error in double-Form
+	confidenceLevel:Confidence level
+	scaleFactor:Scale factor
+	subInfo: Substructure of the Data f.e. "Width (full)", "Width (hadrons)", etc.
+	
+	<AdditionalData Name=".s." Value=".s."/>
+	
+		An "AddData" tag can be inserted inside a "Data" tag to enlarge the possible 
+		attributes for each data entry.
+
+</Data>
+
+To store the decay modes of an particle use the "Decay" tag.
+
+<Decay name=".s." texName=".s." fraction=".s." posError=".d." negError=".d." confidenceLevel=".d." scaleFactor=".d." P=".s." PUnit=".s.">
+	
+	name:	ASCII-Name of the decay
+	texName:Name of the decay in LaTeX2e form
+	fraction:Fraction (double, "< "double, "> "double, "seen", "not seen", "possibly seen", "dominant", "large") (Fract = 1.0 = 100%)
+	posError:positive Error in double-Form (PError = 1.0 = 100%)
+	negError: negative Error in double-Form
+	confidenceLevel:Confidence level
+	scaleFactor:Scale factor
+	P:	p
+	PUnit:	Unit of p
+	
+	<DecayParticle particle=".s."/>
+	<DecayParticle family=".s."/>
+	<DecayParticle text=".s."/>
+	
+		The "DParticle" tag stores the components of a decay channel. F.e.
+		decay in a specific particle 'xyz' and one particle of a specific 
+		family 'ABC':
+		
+			<DecayParticle name="xyz"/>
+			<DecayParticle family="Family_ABC"/>
+			
+		For unknown decays there exists the "Text" attribute.
+
+If some data has multiple entries you can use multiple "Data" tags. F.e. if there is a
+particle with two sorts of charges:
+
+	<Particle name="manyvalues">		
+		<Data name="anything" value="-1"/>
+		<Data name="anything" value="-2"/>
+		<Data name="anything" value="-3"/>
+	</Particle>
+
+REMARK: The Standard "Data" tags will be listed below (see Appendix).
+
+REMARK: There is no need of a special sequence of the particles nor is there an field 
+or an attribute giving information about the position within the particle family. 
+This gives the efford that no information about the hierarchy of particles is stored 
+in the "Particle" tag. Therefore you can restructurize the particlefamily without the 
+need of retype the properties of the particle. Use the "FamilyStructure" tag to implement
+this hierarchy.
+
+---------------------------
+++ Familystructure Entry ++
+---------------------------
+
+<FamilyStructure name=".s.">
+	<FamilyStructure name=".s.">
+		<FamilyStructure name=".s.">
+			...
+		</FamilyStructure>
+		<FamilyParticle name=".s."/>
+		....
+	</FamilyStructure>
+	....
+	<FamilyStructure name=".s.">
+		<FamilyStructure name=".s.">
+			...
+		</FamilyStructure>
+		<FamilyParticle name=".s."/>
+		...
+	</FamilyStructure>
+	...
+</FamilyStructure>
+
+f.e.:
+
+<FamilyStructure name="Particles">
+	<FamilyStructure name="Leptons">
+		<FamilyParticle name="mu"/>
+		<FamilyParticle name="nu"/>
+		<FamilyParticle name="tau"/>
+	</FamilyStructure>
+	<FamilyStructure name="IVB"/>
+	<FamilyStructure name="Hadrons">
+		<FamilyStructure name="Baryons">
+			<FamilyParticle name="N"/>
+			<FamilyParticle name="Delta"/>
+			<FamilyParticle name="Lambda"/>
+			<FamilyParticle name="Sigma"/>
+			<FamilyParticle name="Omega"/>
+			...
+		</FamilyStructure>
+		<FamilyStructure name="Mesons">
+			<FamilyStructure name="Strange"/>
+				<FamilyParticle name="..."/>
+				<FamilyParticle name="..."/>
+			</FamilyStructure>
+		</FamilyStructure>
+	<FamilyStructure name="Quarks"/>
+</FamilyStructure>
+
+-------------------
+++ Sources Entry ++
+-------------------
+
+<Source name=".s.">
+	<Author>.s.</Author>
+	<Name>.s.</Name>
+	<Link>.s.</Link>
+	<Date>.s.</Date>
+	<Type>.s.</Type>
+	<Reliability>.d.</Reliability>
+	
+	author:		Author of the data (f.e. PDG)
+	name:		Name of the source
+	link:		Link to the source (f.e. http://pdg.lbl.gov)
+	date:		Date of information source
+	Type:		Type of source (database, book, testdata, etc.)
+	reliability:	How reliable the data is (subjective field !)
+</Source>
+
+
+##################
+# Data handling  #
+##################
+
+There are many use cases of a particle properties database. The requirements differ from
+small data usage (just particle name, id, mass and width) to the full spectrum of decay
+channels and special data. For this reason the data will be splitted in two or more files:
+
+1. General data (Name, ID, Mass, Width, etc.) of the particles
+2. Decay channels
+3. user defined data
+
+4. Particle Family Structure
+
+The format of all files is equivalent to the above specified. Double information is
+overwritten. f.e. a user wants to insert his own mass for a specific particle XYZ. Then 
+he can overwrite only this special particle and all other particles are untouched.
+
+###############
+# Appendix    #
+###############
+
+--------------
+++ Entities ++
+--------------
+
+Entity	Character
+----------------------
+&amp;	&
+&lt;	<
+&gt;	>
+&quot;	"
+&apos;	'
+
+-------------------------
+++ Standard Data tags  ++
+-------------------------
+
+Tag-Name		Value-Range
+
+"PDGID"			int
+"Mass"			double, "< "double, "> "double
+"Width"			double, "< "double, "> "double
+"Charge"		
+"Mean life"		
+"Magnetic moment"
+"Electric dipole moment"
+
+-------------------------
+++        Units        ++
+-------------------------
+
+Energy
+------
+MeV
+
+Masses
+------
+MeV
+u	: atomic units
+
+
+time
+----
+a = years
+d = days
+m = months
+s = seconds
+min = minutes
+h = hours

@@ -1,0 +1,275 @@
+<html><!-- #BeginTemplate "/Templates/yappi.dwt" -->
+<head>
+<!-- #BeginEditable "doctitle" --> 
+<title>YaPPI - User Requirements</title>
+<!-- #EndEditable --> 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="../images/site.css">
+</head>
+
+<body bgcolor="#FFFFFF">
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr> 
+    <td width="171" valign="top" align="left" class="nav"> 
+      <p align="center"> <a href="../index.html"><img src="../images/yappi.gif" width="150" height="46" border="0"></a><br>
+        <span class="YaPPIsubtext">The XML Particle Property Database</span> </p>
+      <table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#FF6666" align="right">
+        <tr> 
+          <td bgcolor="#FF6666"><img src="../images/1bit.gif" width="100" height="2"></td>
+        </tr>
+      </table>
+      <br>
+      <table border="0" cellspacing="0" cellpadding="2" width="100%">
+        <tr> 
+          <td colspan="2" class="nav1"><a href="http://java.freehep.org/">FreeHEP 
+            Home <img src="../images/out.gif" width="17" height="11" border="0"></a> 
+          </td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="../index.html">YaPPI Home</a></td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">&nbsp;</td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">YaPPI Java API </td>
+        </tr>
+        <tr class="nav2"> 
+          <td width="20">&nbsp;</td>
+          <td class="nav2"> 
+            <p><a href="../api/guide.html">Mini User's Guide</a><br>
+              <a href="../api/xmlschema.html">XML Schema</a> <br>
+              <a href="../api/classdiagram.html">Class Diagram</a> <br>
+              <a href="http://java.freehep.org/lib/freehep/api/hep/physics/yappi/package-summary.html">YaPPI&nbsp;JavaDocs 
+              <img src="../images/out.gif" width="17" height="11" border="0"> 
+              </a> <br>
+              <a href="http://java.freehep.org/servlet/fhcvs/list/freehep/hep/physics/yappi">Source 
+              Code <img src="../images/out.gif" width="17" height="11" border="0"></a> 
+            </p>
+          </td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="../api/browsedata.html">Browse&nbsp;Particle&nbsp;Data</a> 
+          </td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="http://java.freehep.org/download.thtml">Downlaod&nbsp;<img src="../images/out.gif" width="17" height="11" border="0"> 
+            </a></td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="authors.html">Authors</a></td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">&nbsp;</td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">For&nbsp;YaPPI&nbsp;Developers</td>
+        </tr>
+        <tr class="nav2"> 
+          <td>&nbsp;</td>
+          <td class="nav2"> 
+            <p><a href="http://java.freehep.org/rules.thtml">FreeHEP&nbsp;Rules&nbsp;<img src="../images/out.gif" width="17" height="10" border="0"></a> 
+              <br>
+              <a href="../report/YaPPI.pdf">Project Report</a> [PDF]<br>
+              <a href="http://java.freehep.org/source.thtml">Get Sources&nbsp;<img src="../images/out.gif" width="17" height="11" border="0"></a> 
+              <br>
+              <a href="../api/todo.html">To Do List </a></p>
+            </td>
+        </tr>
+      </table>
+      <br>
+    </td>
+    <td width="14" valign="top" align="left"> 
+      <table width="14" border="0" cellspacing="0" cellpadding="0" >
+        <tr> 
+          <td bgcolor="#FF6666" width="2"><img src="../images/1bit.gif" width="2" height="360"></td>
+          <td width="12">&nbsp;</td>
+        </tr>
+      </table>
+    </td>
+    <td width="*" valign="top"> 
+      <h1 class="pageHeading"><!-- #BeginEditable "pageHeading" -->User Requirements 
+        <!-- #EndEditable --></h1>
+      <!-- #BeginEditable "pageContent" --> 
+      <p class=MsoBodyText>To find out the goals of this project we define User 
+        Requirements. These are small, separated tasks which can be implemented 
+        step by step. Every user requirement is one feature of the upcoming software 
+        and implementation. It is very important, that it is possible to check 
+        afterwards, if a particular user requirement was accomplished or not. 
+        If not, it is easier to define the future work, which has to be done.</p>
+      <p class=MsoBodyText>We begin with the most general user requirement: A 
+        database has to be built up.</p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>1)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        </span></span><![endif]>Define a data model fitting to all data requirements.</p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>See the data model section. </span></p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>2)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        </span></span><![endif]>Choose a database system which is accessible in 
+        many ways (also over the web) and run able on many platforms</p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>Fitting to the very wide usage of the database we took XML 
+        as format. We have the following reasons: A standard database system like 
+        Oracle or MySQL is system dependent and needs a high level administration 
+        team. The advantage of such a system would be very fast access and a high 
+        security level. Both we don&#146;t need really, because the data is most 
+        times just read only. The data changes not very often and could be just 
+        copied as a backup to a tape. There is no need of a high-tech database 
+        system. <o:p></o:p></span></p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>A XML file can be published easy on the web without a special 
+        protocol or server. On the other hand a XML file can be also stored on 
+        a harddisk. You need no software for a XML file, but your XML interface.<o:p></o:p></span></p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>XML is accessible in many standard database systems (for 
+        example Oracle) and in nearly every programming language (C++, Java, &#133;).<o:p></o:p></span></p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>3)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        </span></span><![endif]>Create a human and computer readable database 
+        definition file.</p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>As database definition standard we use the &#147;XML Schema&#148; 
+        definition. Unfortunately until now it is only a working draft and not 
+        a recommendation.<span style="mso-spacerun: yes">  </span><o:p></o:p></span></p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>August 16, 2000: Actual version of XML-Schema: 7 April 2000<o:p></o:p></span></p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>4)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        </span></span><![endif]>Create a test data file by hand</p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>5)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        </span></span><![endif]>Additional data must be easily addable</p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>If a user wants to add his own data he can add a XML file 
+        with his own data. The data inside will be added. <o:p></o:p></span></p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>6)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        </span></span><![endif]>Data should be easily modifiable / overwrite able 
+      </p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>If a user doesn&#146;t want to use specific data or overwrite 
+        special values he can use a second XML file, where the specific data is 
+        provided. <o:p></o:p></span></p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>7)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        </span></span><![endif]>Data should be imported from other databases.</p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>This database is not intended to be used as first order 
+        database. The intention is to provide the particle properties to a wide 
+        range of users, but the data itself should be taken out of a other database 
+        (Particle Data Group (PDG)). For this reason interfaces and import utilities 
+        must be written. <o:p></o:p></span></p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>August 16, 2000: We have an import utility for the &#147;.mc&#148; 
+        file from the Particle Data Group Web Site (<a href="http://pdg.lbl.gov/">http://pdg.lbl.gov</a>). 
+        Problem here is the contents: This is only very few of data: ASCII-Name, 
+        PDG-ID-Number, Mass, Width and Charge. <o:p></o:p></span></p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>August 16, 2000: We have a slight approach to get the whole 
+        PDG-database. If this happens we have to look, what actually is in the 
+        database and how we can get the useful information out of it. If we get 
+        no access to this database another idea would be to get the information 
+        out of the web-published Postscript files (*.PS) on the PDG web site. 
+        I have looked a bit on it and it seems to be possible to get it out.<o:p></o:p></span></p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>August 24, 2000: We have a copy of the PDG database from 
+        1998, but the computed results are missing (table RESULTS_SUMMARY). I 
+        (Patrick Hellwig) have requested the FORTRAN programs to compute these 
+        values from the PDG. I hope they will arrive soon.<o:p></o:p></span></p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>8)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        </span></span><![endif]>A data administration program should be written. 
+      </p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>The following idea: Build up an overall software: Add/Modify/Delete 
+        Particles, Add/Modify/Delete FamilyStructures, Add/Modify/Delete Sources, 
+        Add/Modify/Delete Comments, create new XML files (import or type in data), 
+        export data (create hardcode), search and browse data, display treelike 
+        structure, etc.<o:p></o:p></span></p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>August 24, 2000: Until now it seems to me, that I will not 
+        have the time to do it until my departure.<o:p></o:p></span></p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>9)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        </span></span><![endif]>A Java Servlet should be written to browse and 
+        search through the database</p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>August 16, 2000: The servlet can actually search for particle 
+        name and PDGID. But it can&#146;t display the decay modes until now. <o:p></o:p></span></p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>August 24, 2000: The servlet is now able to display also 
+        the decay modes either in HTML-format or LaTeX format<o:p></o:p></span></p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>10)<span style='font:7.0pt "Times New Roman"'>&nbsp; 
+        </span></span><![endif]>The interface must be capable to read multiple 
+        data files</p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>August 16, 2000: This must be also implemented.<o:p></o:p></span></p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>August 24, 2000: Implementation has been done.<o:p></o:p></span></p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>11)<span style='font:7.0pt "Times New Roman"'>&nbsp; 
+        </span></span><![endif]>Provide an web site with all the information</p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>You are currently looking on it. <o:p></o:p></span></p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>August 24, 2000: I have no specific server until now.<o:p></o:p></span></p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>12)<span style='font:7.0pt "Times New Roman"'>&nbsp; 
+        </span></span><![endif]>The database must provide the same information 
+        like all the other old software databases</p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>13)<span style='font:7.0pt "Times New Roman"'>&nbsp; 
+        </span></span><![endif]>It must be possible to implement new Particle 
+        Properties without recompiling code or changing the database structure</p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>This is done by the data structure. You have an entry like: 
+        &lt;data name=&#148;Mass&#148; value=&#148;1.233&#148;/&gt; to store the 
+        data. So if additional data will come up it is easy to add another &lt;data 
+        &#133;/&gt; element.<o:p></o:p></span></p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>14)<span style='font:7.0pt "Times New Roman"'>&nbsp; 
+        </span></span><![endif]>For each data entry there should be the possibility 
+        for a source entry</p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>August 16, 2000: I have thought about this, but it is not 
+        implemented yet.<o:p></o:p></span></p>
+      <p class=MsoListNumber style='text-indent:0in;mso-list:none'><span
+style='color:#339966'>August 24, 2000: The XML Schema file (XSD) is prepared for 
+        this, but the Parser doesn&#146;t care about it. Until now I haven&#146;t 
+        implemented the Interface for &#147;source&#148; entries.<o:p></o:p></span></p>
+      <p class=MsoListNumber><![if !supportLists]><span style='font-size:9.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Arial Black"'>15)<span style='font:7.0pt "Times New Roman"'>&nbsp; 
+        </span></span><![endif]>For each particle the following data must be stored:</p>
+      <p class=MsoListNumber>
+        <ul>
+          <li>Family (Bosons, Mesons, etc.)</li>
+          <li>Name in ASCII encoding </li>
+          <li>Name in typsetting format (LaTeX)</li>
+          <li>Standard Particle ID</li>
+          <li>Charge </li>
+          <li>Width (+Error, -Error)</li>
+          <li>Mass (+Error, -Error)</li>
+          <li>has antiparticle (yes / no)</li>
+          <li>2J (Quantum Information)</li>
+          <li>&lt;add more general data&gt;</li>
+        </ul>
+      </p>
+      <p class=MsoListNumber>&nbsp;</p>
+      <!-- #EndEditable --> </td>
+  </tr>
+  <tr>
+    <td width="171" valign="top" align="left" class="nav">&nbsp;</td>
+    <td width="14" valign="top" align="left">&nbsp;</td>
+    <td width="*" valign="top" align="right"> 
+      <table border="0" cellspacing="0" cellpadding="0" width="121" bgcolor="#FF6666">
+        <tr> 
+          <td bgcolor="#FF6666"><img src="../images/1bit.gif" width="121" height="2"></td>
+        </tr>
+      </table>
+      <a href="mailto:developers@freehep.org" class="nav2">developers@freehep.org</a></td>
+  </tr>
+</table>
+</body>
+<!-- #EndTemplate --></html>

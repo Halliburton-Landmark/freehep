@@ -1,0 +1,106 @@
+<html>
+
+<head>
+    <title>${title}</title>
+    <link rel="stylesheet" type="text/css" href="${webPageStyleSheet}">
+</head>
+
+<body>
+
+<table border="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" cellpadding="0" cellspacing="5">
+  <tr>
+    <td colspan="2">
+        <table bgcolor="#294563" width="100%" border="0" style="border-collapse: collapse" bordercolor="#111111" cellspacing="0" cellpadding="5">
+          <tr>
+            #if ($printablePageURL)
+                #set ($rowSpan = 2)
+            #else
+                #set ($rowSpan = 1)
+            #end
+            <td width="100%" rowspan="$rowSpan" align="left" valign="center">
+                <font color="#FFCC00">
+                #parse ("Header.ivm")
+                </font>
+            </td>
+            <td  bgcolor="#4C6C8F" colspan="2" align="right" valign="top">
+              <table width="100%" border="0" style="border-collapse: collapse" bordercolor="#111111" cellpadding="3">
+                <form method="GET" action="http://www.google.com/search">
+                <tr>
+                  #set ($rowSpan = 0)
+                  #set ($colSpan = 0)
+                  #set ($hidden = "")
+                  #if ($webName || $searchRealm)
+                     #if ($webName)
+                        #set ($rowSpan = 1)
+                        #set ($colSpan = $colSpan + 1)
+                        #set ($hidden = $webName)
+                     #end
+                     #if ($searchRealm)
+                        #set ($rowSpan = $rowSpan + 1)
+                        #set ($hidden = $searchRealm)
+                     #end
+                     #set ($colSpan = $colSpan + 1)
+                  #end
+                  <td colspan="$colSpan">
+                     <input type="text" name="as_q" size="30">
+                  </td>
+                  <td rowspan="$rowSpan">
+                     <input type="submit">
+                  </td>
+                </tr>
+                #if ($rowSpan == 2)
+                    <tr>
+                    #set ($checked = "checked")
+                    #if ($webName)
+                        <td><input type="radio" $checked name="as_sitesearch" value="$webSearch" >$webName</td>
+                        #set ($checked = "")
+                    #end
+                    #if ($searchRealm)
+                        <td><input type="radio" $checked name="as_sitesearch" value="$searchURL" >$searchRealm</td>
+                        #set ($checked = "")
+                    #end
+                    </tr>
+                #else
+                    <input type="hidden" name="as_sitesearch" value="$hidden">
+                #end
+                </form>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" valign="center">
+                <a href="http://www.freehep.org">
+                    Member&nbsp;of&nbsp;FreeHEP
+                </a>
+            </td>
+            #if ($printablePageURL)
+                <td align="center" valign="center">
+                    <a href="$printablePageURL">Printable&nbsp;Page</a>
+                </td>
+            #end
+          </tr>
+        </table>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+        $includer.menu("Menu.xml")
+    </td>
+    <td valign="top">
+        #parse ($contentPage)
+        <p>
+        &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+        &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+        &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+        &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+        &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+        &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+        &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+        &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+    </td>
+  </tr>
+</table>
+
+</body>
+
+</html>

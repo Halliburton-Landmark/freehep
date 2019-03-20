@@ -1,0 +1,14 @@
+#/bin/sh
+
+mkdir Linux-g++
+echo compiling...
+g77 -c HBookTimeTest.F -o Linux-g++/HBookTimeTest.o
+echo linking with hbook...
+#g77 Linux-g++/HBookTimeTest.o `cernlib packlib` -o Linux-g++/HBookTimeTest
+echo linking with aida...
+g77 -L$FREEHEP/lib/Linux-g++ \
+-L$JDK_HOME/jre/lib/i386/hotspot -L$JDK_HOME/jre/lib/i386/classic -L$JDK_HOME/jre/lib/i386 \
+-o Linux-g++/AidaTimeTest \
+Linux-g++/HBookTimeTest.o \
+-lFREEHEP_g -ljvm 
+

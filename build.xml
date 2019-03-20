@@ -1,0 +1,744 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================================= -->
+<!-- Generic ANT build file                                                  -->
+<!--     this file is used for FreeHEP and WIRED                             -->
+<!--                                                                         -->
+<!-- Author: Mark Donszelmann                                                -->
+<!-- Version: $Id: build.xml,v 1.92 2004/09/27 08:08:22 duns Exp $    -->
+<!--                                                                         -->
+<!-- ======================================================================= -->
+
+<project name="Generic-Build" default="all" basedir=".">
+
+  <!-- Load properties in reverse order, since they cannot be overridden. -->
+  <!-- Order is: command-line, ant, user, jarfile, system -->
+
+  <!-- Ant properties  -->
+  <property file="config/ant.properties" />
+
+  <!-- User properties  -->
+  <property file="${user.home}/${projectname}.properties" />
+
+  <!-- JarFile properties in subdir -->
+  <property file="${jar}/${projectname}-${jar}.properties" />
+
+  <!-- JarFile properties  -->
+  <property file="config/${projectname}-${jar}.properties" />
+
+  <!-- System properties  -->
+  <property file="config/${projectname}.properties" />
+
+  <property name="dist.dir" value="dist"/>
+  <property name="docs.dir" value="doc"/>
+
+
+  <!-- =================================================================== -->
+  <!-- Help                                                                -->
+  <!-- =================================================================== -->
+  <target name="help" description="&lt;    target&gt; display help on how to define specific targets">
+    <echo message="ANT builder for ${projectname}"/>
+    <echo message=""/>
+    <echo message="  Usage:"/>
+    <echo message="     ant -Djar=jarsuffix jar-target    works on ${projectname}-jarsuffix"/>
+    <echo message="       where jarsuffix is one of:      ${jars}"/>
+    <echo message="  or"/>
+    <echo message="     ant gen-target                    works globally"/>
+    <echo message=""/>
+    <echo message="  or"/>
+    <echo message="     ant -projecthelp                  shows all targets, gen-targets and jar-targets"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Initialization, setup of commands, check                            -->
+  <!-- =================================================================== -->
+  <target name="init">
+    <taskdef name="junit"               classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
+
+    <taskdef name="freehep.ant"         classname="org.freehep.ant.FreeHepAnt"/>
+    <taskdef name="freehep.defined"     classname="org.freehep.ant.FreeHepDefined"/>
+    <taskdef name="freehep.not.defined" classname="org.freehep.ant.FreeHepNotDefined"/>
+    <taskdef name="freehep.delete"      classname="org.freehep.ant.FreeHepDelete"/>
+    <taskdef name="freehep.exec"        classname="org.freehep.ant.FreeHepExec"/>
+    <taskdef name="freehep.command"     classname="org.freehep.ant.FreeHepCommand"/>
+    <taskdef name="freehep.jar"         classname="org.freehep.ant.FreeHepJar"/>
+    <taskdef name="freehep.javac"       classname="org.freehep.ant.FreeHepJavac"/>
+    <taskdef name="freehep.javacc"      classname="org.freehep.ant.FreeHepJavaCC"/>
+    <taskdef name="freehep.javadoc"     classname="org.freehep.ant.FreeHepJavadoc"/>
+    <taskdef name="freehep.javah"       classname="org.freehep.ant.FreeHepJavah"/>
+    <taskdef name="freehep.jlink"       classname="org.freehep.ant.FreeHepJlink"/>
+    <taskdef name="freehep.junit"       classname="org.freehep.ant.FreeHepJUnit"/>
+    <taskdef name="freehep.signjar"     classname="org.freehep.ant.FreeHepSignJar"/>
+    <tstamp />
+
+    <!-- Check for property "projectname" -->
+    <freehep.not.defined property="projectname" message="Property 'projectname' must be defined at the top of the 'build.xml' file"/>
+
+    <!-- Check for file "config/${projectname}.properties" -->
+    <available file="config/${projectname}.properties" property="project.properties"/>
+    <freehep.not.defined property="project.properties" message="Cannot find project property file: 'config/${projectname}.properties'"/>
+  </target>
+
+  <target name="init.jar" depends="init">
+    <!-- Look for user specific properties for this jar -->
+    <property file="${user.home}/${projectname}-${jar}.properties"/>
+    <property file="${user.home}/${projectname}.properties"/>
+
+    <!-- Check for "jar" to be defined -->
+    <freehep.not.defined property="jar" message="Target only available with '-Djar=suffix' option"/>
+
+    <!-- Check for file "${projectname}-jar.properties" -->
+    <available file="${jar}/${projectname}-${jar}.properties" property="jar.properties"/>
+    <available file="config/${projectname}-${jar}.properties" property="jar.properties"/>
+
+    <freehep.defined property="jar.properties" target="init.jar.ok"/>
+    <freehep.not.defined property="jar.properties" target="init.jar.failed"/>
+  </target>
+
+  <target name="init.jar.failed">
+    <echo message="   Skipping module '${projectname}-${jar}'"/>
+  </target>
+
+  <target name="init.jar.ok">
+    <!-- Check for property "title" -->
+    <freehep.not.defined property="title" message="Property 'title' must be defined in 'config/${projectname}-${jar}.properties'. Examples 'title=${projectname} Plugin'"/>
+
+    <!-- Check for property "name" -->
+    <freehep.not.defined property="name" message="Property 'name' must be defined in 'config/${projectname}-${jar}.properties'. Examples 'name=tools'"/>
+
+    <!-- Check for property "packages" -->
+    <freehep.not.defined property="packages" message="Property 'packages' must be defined in 'config/${projectname}-${jar}.properties'. Examples 'packages=hep.wired.dim.*, hep.atlas.wired.*'"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Generates java from jj                                              -->
+  <!-- =================================================================== -->
+  <target name="jj" depends="jj.generate, all" description="&lt;jar-target&gt; compiles jj files using javacc">
+  </target>
+
+  <target name="jj.generate" depends="init.jar">
+    <freehep.javacc includes="${javacc.includes}" javacchome="${javacc.home}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Generates java and hh from aid                                      -->
+  <!-- =================================================================== -->
+  <target name="aid" depends="aid.generate, all" description="&lt;jar-target&gt; compiles aid files using aid">
+  </target>
+
+  <target name="aid.generate" depends="init">
+    <java classpath="${aid.classpath}" classname="${aid.class}">
+        <arg line="-directory ${aid.java.dir} -property ${aid.config.dir} JavaInterfaceGenerator ${aid.includes} ${aid.java.includes} ${aid.java.interface.includes}"/>
+    </java>
+    <java classpath="${aid.classpath}" classname="${aid.class}">
+        <arg line="-directory ${aid.python.dir} -property ${aid.config.dir} PythonClassGenerator ${aid.includes} ${aid.python.includes}"/>
+    </java>
+    <java classpath="${aid.classpath}" classname="${aid.class}">
+        <arg line="-directory ${aid.cpp.dir} -property ${aid.config.dir} CPPHeaderGenerator ${aid.includes} ${aid.cpp.includes}"/>
+    </java>
+    <java classpath="${aid.classpath}" classname="${aid.class}">
+        <arg line="-directory ${aid.jni.dir} -property ${aid.config.dir} JNIHeaderGenerator ${aid.jni.includes}"/>
+    </java>
+    <java classpath="${aid.classpath}" classname="${aid.class}">
+        <arg line="-directory ${aid.jni.dir} -property ${aid.config.dir} JNICodeGenerator ${aid.jni.includes}"/>
+    </java>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Generates cpp and h from jace                                       -->
+  <!-- =================================================================== -->
+  <target name="jace" depends="jar" description="&lt;jar-target&gt; generates cpp and h files using jace">
+    <freehep.defined property="jar" target="jace.ok"/>
+  </target>
+
+  <target name="jace.ok" depends="init">
+    <echo message="   Generating jace files for module '${projectname}-${jar}'"/>
+    <java classpath="${jace.classpath}" classname="${jace.batchgenerator.class}">
+        <arg line="${jace.jar} ${jace.header.dir} ${jace.source.dir}"/>
+    </java>
+    <java classpath="${jace.classpath}" classname="${jace.autoproxy.class}">
+        <arg line=" ${jace.header.dir} ${jace.source.dir} ${jace.header.dir} ${jace.source.dir} ${java.home}/lib/rt.jar;${jace.jar}"/>
+    </java>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Generates java from IDL                                             -->
+  <!-- =================================================================== -->
+  <target name="idl" depends="init.jar" description="&lt;jar-target&gt; compiles idl files using an idl compiler">
+    <freehep.defined property="idlj" target="idl.ok"/>
+  </target>
+
+  <target name="idl.ok">
+    <freehep.command commands="${idlj}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Compiles the source code                                            -->
+  <!-- =================================================================== -->
+  <target name="compile" depends="idl" description="&lt;jar-target&gt; compiles java files">
+    <freehep.defined property="src.dir" target="compile.ok"/>
+  </target>
+
+  <target name="compile.ok">
+    <echo message="   Building module '${projectname}-${jar}'"/>
+
+    <freehep.javac srcdir="${src.dir}"
+           destdir="${src.dir}"
+           classpath="${exp.classpath};${classpath}"
+           source="${source}"
+           debug="${debug}"
+           deprecation="${deprecation}"
+           optimize="${optimization}"
+           packages="${packages}"
+           excludepackages="${packages.exclude}"
+           includes="${compile.includes}"
+           excludes="${compile.excludes}">
+    </freehep.javac>
+
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Creates the rmi stubs and skeletons                                 -->
+  <!-- =================================================================== -->
+  <target name="rmi" depends="compile" description="&lt;jar-target&gt; compiles class files using rmic">
+    <freehep.defined property="src.dir" target="rmi.ok"/>
+  </target>
+
+  <target name="rmi.ok">
+    <rmic base="${src.dir}"
+        includes="${rmi.includes}"
+        excludes="${rmi.excludes}"
+    />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Creates the jni header files                                        -->
+  <!-- =================================================================== -->
+  <target name="jni" depends="rmi" description="&lt;jar-target&gt; compiles class files using javah">
+    <freehep.defined property="src.dir" target="jni.ok"/>
+  </target>
+
+  <target name="jni.ok">
+    <freehep.javah base="${src.dir}"
+        classpath="${exp.classpath};${classpath}"
+        includes="${jni.includes}"
+        excludes="${jni.excludes}"
+    />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Creates the jar archive                                             -->
+  <!-- =================================================================== -->
+  <target name="jar" depends="jni" description="&lt;jar-target&gt; creates jar file">
+    <freehep.defined property="jlink" target="jlink"/>
+    <freehep.not.defined property="jlink" target="jar.tst"/>
+  </target>
+  
+  <target name="jar.tst">
+    <freehep.defined property="src.dir" target="jar.ok"/>
+  </target>
+
+  <target name="jar.ok">
+    <freehep.jar jarfile="${jar.dir}/${name}.jar"
+            basedir="${src.dir}"
+            packages="${packages}"
+            excludepackages="${packages.exclude}"
+            extensions="${jar.suffixes}"
+            excludes="${jar.excludes}"
+    >
+      <metainf dir="${jar.metainfdir}"
+               includes="${jar.metainf}"
+      />
+      <fileset dir="."
+               includes="${jar.includes}"
+      />
+    </freehep.jar>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Creates the war archive                                             -->
+  <!-- =================================================================== -->
+  <target name="war" depends="init" description="&lt;jar-target&gt; creates war file">
+    <freehep.defined property="jar" target="war.ok"/>
+    <freehep.not.defined property="jar" target="war.all"/>
+  </target>
+
+  <target name="war.ok" depends="init.jar">
+    <war warfile="${war.dir}/${name}.war"
+         webxml="${war.webxml}"
+         basedir="${src.dir}"
+         includes="${war.includes}"
+    >
+        <fileset dir="${war.docdir}" includes="${war.docfiles}"/>
+        <lib dir="lib" includes="${packages}"/>
+    </war>
+  </target>
+
+  <target name="war.all" depends="all">
+    <echo message="   Building all wars"/>
+    <freehep.ant jars="${wars}" args="war"/>
+  </target>
+
+  <target name="war.clean" depends="init.jar" description="&lt;jar-target&gt; cleans up war file">
+    <freehep.delete file="${war.dir}/${name}.jar"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Creates the JLinked archive                                         -->
+  <!-- =================================================================== -->
+  <target name="jlink" depends="init" description="&lt;jar-target&gt; creates jlinked jar file">
+    <freehep.defined property="jar" target="jlink.ok"/>
+    <freehep.not.defined property="jar" target="jlink.all"/>
+  </target>
+
+  <target name="jlink.ok" depends="init.jar">
+    <!-- Copy manifest file -->
+    <filter token="WARNING" value="This file is generated, version number is in config/${projectname}.properties" />
+    <filter token="NAME" value="${mainpackage}" />
+    <filter token="TITLE" value="${title}" />
+    <filter token="VERSION" value="${dist.version}" />
+    <filter token="VENDOR" value="${copyright}" />
+    <filter token="DATETIME" value="${TODAY} - ${TSTAMP}" />
+    <freehep.delete file="${jlink.dir}/META-INF/MANIFEST.MF"/>
+    <copy overwrite="yes" filtering="on"
+          file="config/manifest.template"
+          tofile="${jlink.dir}/META-INF/MANIFEST.MF"
+    />
+
+<!-- FIXME: jlink seems to deliver wrong files (not unjarrable) when compress is true -->
+    <freehep.jlink compress="true"
+                   outfile="${jlink.dir}/${name}.jar"
+                   srcdir="${jlink.src.dir}"
+                   inputfiles="${packages}">
+        <addfiles>
+            <pathelement location="${jlink.dir}/META-INF"/>
+        </addfiles>
+    </freehep.jlink>
+  </target>
+
+  <target name="jlink.all" depends="all">
+    <echo message="   Building all jlinked jars"/>
+    <freehep.ant jars="${jlinks}" args="jlink"/>
+  </target>
+
+  <target name="jlink.clean" depends="init.jar" description="&lt;jar-target&gt; cleans up jlinked jar file">
+    <freehep.delete file="${jlink.dir}/${name}.jar"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Default target                                                 -->
+  <!-- =================================================================== -->
+  <target name="all" depends="init" description="&lt;   default&gt; builds: compile, rmi, jni and jar">
+    <freehep.defined property="jar" target="all.jar"/>
+    <freehep.not.defined property="jar" target="all.all"/>
+  </target>
+
+  <target name="all.jar" depends="init.jar, jar">
+  </target>
+
+  <target name="all.all">
+    <echo message="   Building all modules"/>
+    <freehep.ant jars="${jars}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Signs Jar files                                                     -->
+  <!-- =================================================================== -->
+  <target name="sign" depends="all" description="&lt;gen-target&gt; signs jar files (needs password)">
+    <freehep.defined property="jar" message="Target 'sign' only available without '-Djar=suffix' option"/>
+    <freehep.not.defined property="password" message="Target 'sign' only available with '-Dpassword=password' option"/>
+    <freehep.not.defined property="jar.signed.dir" message="Internal error: jar.signed.dir is not defined!"/>
+    <freehep.not.defined property="keystore" message="Internal error: keystore is not defined!"/>
+    <freehep.not.defined property="keystore.alias" message="Internal error: keystore.alias is not defined!"/>
+
+    <mkdir dir="${jar.signed.dir}"/>
+    <freehep.signjar
+             srcdir="${jar.dir}"
+             jars="${jar.signed.jars}"
+             dstdir="${jar.signed.dir}"
+             alias="${keystore.alias}"
+             keystore="${keystore}"
+             storepass="${password}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Copies FreeHEP Libs (Only used for packages that use freehep        -->
+  <!-- =================================================================== -->
+  <target name="copyfreehep" depends="init" description="&lt;gen-target&gt; copies FreeHEP libs">
+    <freehep.defined property="jar" message="Target 'copyfreehep' only available without '-Djar=suffix' option"/>
+    <freehep.not.defined property="freehep" message="Target 'copyfreehep' only available with '-Dfreehep=FreeHepHomeDir' option"/>
+
+     <copy todir="lib">
+        <fileset dir="${freehep}/lib"
+                 includes="freehep-base.jar, freehep-graphicsio.jar, freehep-graphicsio-cgm.jar, freehep-graphicsio-emf.jar, freehep-graphicsio-pdf.jar, freehep-graphicsio-ps.jar, freehep-graphicsio-svg.jar, freehep-graphicsio-swf.jar, freehep-graphicsio-gif.jar, freehep-graphicsio-ppm.jar, freehep-graphics2d.jar, freehep-graphics3d.jar, freehep-hep3d.jar, freehep-heprep.jar, freehep-j3d.jar, xerces.jar"
+        />
+     </copy>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Runs the tests and creates the report(s)                            -->
+  <!-- =================================================================== -->
+  <target name="test" depends="init" description="&lt;gen-target&gt; runs tests and creates reports">
+    <freehep.defined property="jar" target="test.ok"/>
+    <freehep.not.defined property="jar" target="test.all"/>
+  </target>
+
+  <target name="test.all">
+    <echo message="   Testing all modules"/>
+
+    <freehep.ant jars="${jars}" args="test"/>
+  </target>
+
+  <target name="test.aid" depends="init.jar">
+    <echo message="   Running aid on module '${projectname}-${jar}'"/>
+    <ant target="aid">
+        <property name="jar" value="${jar}"/>
+    </ant>
+  </target>
+
+  <target name="test.ok" depends="init.jar">
+    <echo message="   Testing module '${projectname}-${jar}'"/>
+    <freehep.defined property="test.aid" target="test.aid"/>
+    <mkdir dir="${test.output}"/>
+    <freehep.junit printsummary="yes"
+           showoutput="yes"
+           fork="yes"
+           tests="${test.includes}"
+           todir="${test.output}">
+      <sysproperty key="args" value="${test.args}"/>
+      <sysproperty key="org.freehep.testData" value="${org.freehep.testData}"/>
+      <sysproperty key="hep.aida.test.data" value="${hep.aida.test.data}"/>
+      <sysproperty key="java.awt.headless" value="true"/>
+      <classpath path="${test.classpath}"/>
+      <formatter type="xml"/>
+      <formatter type="plain" usefile="no"/>
+    </freehep.junit>
+    <mkdir dir="${test.html}"/>
+    <junitreport todir="${test.output}">
+      <fileset dir="${test.output}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="${test.format}" todir="${test.html}"/>
+    </junitreport>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Creates the API documentation for user / system                     -->
+  <!-- =================================================================== -->
+  <target name="doc" depends="init"
+          description="&lt;gen-target&gt; creates apidoc using javadoc's standard doclet">
+    <freehep.defined property="jar" message="Target 'doc' only available without '-Djar=suffix' option"/>
+    <freehep.not.defined property="doc.dst" message="Target 'doc' only available with '-Dweb.dst=destination' option"/>
+
+    <mkdir dir="${doc.dst}"/>
+    <freehep.javadoc packagenames="${javadoc.packages}"
+             sourcepath="${exp.srcpath};${srcpath};${javadoc.srcpath}"
+             excludepackagenames="${javadoc.packages.excludes}"
+             classpath="${exp.classpath};${classpath};${javadoc.classpath}"
+             destdir="${doc.dst}"
+             overview="overview.html"
+             author="true"
+             version="true"
+             windowtitle="${javadoc.windowtitle}, Version ${dist.version}"
+             doctitle="${javadoc.doctitle}&lt;br&gt;Version ${dist.version}"
+		     link="${javadoc.extdocs}"
+		     header="&lt;B&gt;${javadoc.header}&lt;br&gt;Version ${dist.version}&lt;/B&gt;"
+		     footer="&lt;B&gt;${javadoc.footer}&lt;br&gt;Version ${dist.version}&lt;/B&gt;"
+             bottom="${copyright}"
+             maxmemory="${javadoc.maxmemory}"
+             source="1.4">
+    </freehep.javadoc>
+  </target>
+
+  <target name="sysdoc" depends="init"
+          description="&lt;gen-target&gt; creates apidoc using FreeHEP's doclet and links to the source code">
+    <freehep.defined property="jar" message="Target 'sysdoc' only available without '-Djar=suffix' option"/>
+    <freehep.not.defined property="doc.dst" message="Target 'sysdoc' only available with '-Dweb.dst=destination' option"/>
+
+    <mkdir dir="${doc.dst}"/>
+    <java classpath="${buildtools.jar}" classname="${buildtools.generatestatus}" output="${doc.dst}/status.log">
+        <arg line="${doc.dst}/status.xml ${projectname} ${dist.version} ${buildtools.generatestatus.packages}"/>
+    </java>
+    <java classpath="${buildtools.jar}" classname="${buildtools.transformstatus}" output="${doc.dst}/status.log">
+        <arg line="${doc.dst}/status.xml ${doc.dst}/status.html"/>
+    </java>
+    <freehep.javadoc packagenames="${javadoc.packages}"
+             additionalparam="-breakiterator"
+             overview="overview.html"
+             excludepackagenames="${javadoc.packages.excludes}"
+             sourcepath="${exp.srcpath};${srcpath};${javadoc.srcpath}"
+             classpath="${exp.classpath};${classpath};${javadoc.classpath}"
+             destdir="${doc.dst}"
+             author="true"
+             version="true"
+             windowtitle="${javadoc.windowtitle}, Version ${dist.version}"
+             doctitle="${javadoc.doctitle}&lt;br&gt;Version ${dist.version}"
+		     link="${javadoc.extdocs}"
+		     header="&lt;B&gt;${javadoc.header}&lt;br&gt;Version ${dist.version}&lt;/B&gt;"
+		     footer="&lt;B&gt;${javadoc.footer}&lt;br&gt;Version ${dist.version}&lt;/B&gt;"
+             bottom="${copyright}"
+             maxmemory="${javadoc.maxmemory}"
+             source="1.4">
+      <doclet name ="${javadoc.doclet}"
+              path="${buildtools.jar}">
+              <param name="-baseurl" value="${javadoc.cvs}"/>
+              <param name="-d" value="${doc.dst}"/>
+              <param name="-author"/>
+              <param name="-version"/>
+              <param name="-J-Xmx${javadoc.maxmemory}"/>
+      </doclet>
+    </freehep.javadoc>
+  </target>
+
+  <target name="reldoc" depends="init"
+          description="&lt;gen-target&gt; creates apidoc using FreeHEP's doclet without links to the source code">
+    <freehep.defined property="jar" message="Target 'reldoc' only available without '-Djar=suffix' option"/>
+    <freehep.not.defined property="doc.dst" message="Target 'reldoc' only available with '-Dweb.dst=destination' option"/>
+
+    <mkdir dir="${doc.dst}"/>
+    <java classpath="${buildtools.jar}" classname="${buildtools.generatestatus}" output="${doc.dst}/status.log">
+        <arg line="${doc.dst}/status.xml ${projectname} ${dist.version} ${buildtools.generatestatus.packages}"/>
+    </java>
+    <java classpath="${buildtools.jar}" classname="${buildtools.transformstatus}" output="${doc.dst}/status.log">
+        <arg line="${doc.dst}/status.xml ${doc.dst}/status.html"/>
+    </java>
+    <freehep.javadoc packagenames="${javadoc.packages}"
+             additionalparam="-breakiterator"
+             overview="overview.html"
+             excludepackagenames="${javadoc.packages.excludes}"
+             sourcepath="${exp.srcpath};${srcpath};${javadoc.srcpath}"
+             classpath="${exp.classpath};${classpath};${javadoc.classpath}"
+             destdir="${doc.dst}"
+             author="true"
+             version="true"
+             windowtitle="${javadoc.windowtitle}, Version ${dist.version}"
+             doctitle="${javadoc.doctitle}&lt;br&gt;Version ${dist.version}"
+		     link="${javadoc.extdocs}"
+		     header="&lt;B&gt;${javadoc.header}&lt;br&gt;Version ${dist.version}&lt;/B&gt;"
+		     footer="&lt;B&gt;${javadoc.footer}&lt;br&gt;Version ${dist.version}&lt;/B&gt;"
+             bottom="${copyright}"
+             maxmemory="${javadoc.maxmemory}"
+             source="1.4">
+      <doclet name ="${javadoc.doclet}"
+              path="${buildtools.jar}">
+              <param name="-d" value="${doc.dst}"/>
+              <param name="-author"/>
+              <param name="-version"/>
+              <param name="-J-Xmx${javadoc.maxmemory}"/>
+      </doclet>
+    </freehep.javadoc>
+  </target>
+
+  <target name="doc.clean" depends="init">
+     <freehep.not.defined property="doc.dst" message="Target 'doc.clean' only available with '-Ddoc.dst=destination' option"/>
+     <delete dir="${doc.dst}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Creates the web                                                     -->
+  <!-- =================================================================== -->
+  <target name="web" depends="init" description="&lt;gen-target&gt; creates web">
+     <freehep.not.defined property="web.dst" message="Target 'web' only available with '-Dweb.dst=destination' option"/>
+     <copy todir="${web.dst}">
+        <fileset dir="${web.src}"
+                 includes="${web.src.includes}"
+                 excludes="${web.src.excludes}"
+        />
+     </copy>
+  </target>
+
+  <target name="web.clean" depends="init">
+     <freehep.not.defined property="web.dst" message="Target 'web.clean' only available with '-Dweb.dst=destination' option"/>
+     <delete dir="${web.dst}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Creates the distribution                                            -->
+  <!-- =================================================================== -->
+  <target name="dist" depends="all, reldoc" description="&lt;gen-target&gt; creates distribution kits">
+     <freehep.defined property="jar" message="Target 'dist' only available without '-Djar=suffix' option"/>
+     <freehep.not.defined property="dist.dst" message="Target 'dist' only available with '-Ddist.dst=destination' option"/>
+     <freehep.not.defined property="dist.dst" message="Target 'dist' only available with '-Ddist.doc.dst=doc-destination' option"/>
+
+     <mkdir dir="${dist.doc.dst}"/>
+     <mkdir dir="${dist.dir}"/>
+     <mkdir dir="${dist.dir}/lib"/>
+     <mkdir dir="${dist.dir}/doc"/>
+     <mkdir dir="${dist.dir}/doc/api"/>
+     <mkdir dir="${dist.dir}/src"/>
+     <mkdir dir="${dist.dir}/tools"/>
+     <mkdir dir="${dist.dst}"/>
+     <mkdir dir="${dist.dst}/${dist.version}"/>
+
+     <!-- remove the distribution files -->
+     <delete>
+        <fileset dir="${dist.dir}"
+                 includes="*.tar.gz, *.zip, *.war"
+        />
+     </delete>
+
+     <!-- Copy source files -->
+     <copy todir="${dist.dir}/src">
+        <fileset dir="${src}"
+                 includes="${dist.src.includes}"
+                 excludes="${dist.src.excludes}"
+        />
+     </copy>
+
+     <!-- Copy libraries -->
+     <copy todir="${dist.dir}/lib">
+        <fileset dir="lib"
+                 includes="${dist.lib.includes}"
+                 excludes="${dist.lib.excludes}"
+        />
+     </copy>
+
+     <!-- Copy documentation -->
+     <copy todir="${dist.dir}/doc">
+        <fileset dir="doc"
+                 includes="${dist.doc.includes}"
+                 excludes="${dist.doc.excludes}"
+        />
+     </copy>
+
+     <!-- Copy tools -->
+     <copy todir="${dist.dir}/tools">
+        <fileset dir="tools"
+                 includes="${dist.tools.includes}"
+                 excludes="${dist.tools.excludes}"
+        />
+     </copy>
+
+     <!-- Copy license and readme files -->
+     <copy todir="${dist.dir}">
+        <fileset dir="."
+                 includes="${dist.readme.includes}"
+                 excludes="${dist.readme.excludes}"
+        />
+     </copy>
+
+     <!-- Copy API documentation -->
+     <copy todir="${dist.dir}/doc/api">
+        <fileset dir="${doc.dst}"/>
+     </copy>
+
+     <!-- Build distribution targets WINDOWS -->
+     <fixcrlf srcDir="${dist.dir}"
+              eol="crlf"
+              eof="remove"
+              includes="${dist.fixcrlf.includes}"
+              excludes="${dist.fixcrlf.excludes}"
+     />
+     <zip destfile="${projectname}-${dist.version}.zip"
+          basedir="${dist.dir}"
+          includes="**"
+          excludes="doc/**, src/**"
+     />
+     <zip destfile="${projectname}-${dist.version}-doc.zip"
+          basedir="${dist.dir}"
+          includes="**"
+          excludes="${dist.readme.includes}, lib/**, src/**, bin/**, tools/**"
+     />
+     <zip destfile="${projectname}-${dist.version}-src.zip"
+          basedir="${dist.dir}"
+          includes="**"
+          excludes="${dist.readme.includes}, lib/**, doc/**, bin/**, tools/**"
+     />
+
+     <!-- Build distribution targets UNIX -->
+     <fixcrlf srcDir="${dist.dir}"
+              eol="lf"
+              eof="remove"
+              includes="${dist.fixcrlf.includes}"
+              excludes="${dist.fixcrlf.excludes}"
+     />
+     <tar destfile="${projectname}-${dist.version}.tar.gz"
+          compression="gzip"
+          basedir="${dist.dir}"
+          includes="**"
+          excludes="doc/**, src/**"
+     />
+
+     <tar destfile="${projectname}-${dist.version}-doc.tar.gz"
+          compression="gzip"
+          basedir="${dist.dir}"
+          includes="**"
+          excludes="${dist.readme.includes}, lib/**, src/**, bin/**"
+     />
+
+     <tar destfile="${projectname}-${dist.version}-src.tar.gz"
+          compression="gzip"
+          basedir="${dist.dir}"
+          includes="**"
+          excludes="${dist.readme.includes}, lib/**, doc/**, bin/**"
+     />
+
+     <!-- Build distribution targets GENERIC -->
+     <war destfile="${projectname}-${dist.version}-doc.war"
+         webxml="doc/web.xml"
+         basedir="${dist.dir}/doc"
+     >
+     </war>
+
+     <!-- Move the distribution files -->
+     <move file="${projectname}-${dist.version}.zip"        todir="${dist.dst}/${dist.version}"/>
+     <move file="${projectname}-${dist.version}-doc.zip"    todir="${dist.dst}/${dist.version}"/>
+     <move file="${projectname}-${dist.version}-src.zip"    todir="${dist.dst}/${dist.version}"/>
+     <move file="${projectname}-${dist.version}.tar.gz"     todir="${dist.dst}/${dist.version}"/>
+     <move file="${projectname}-${dist.version}-doc.tar.gz" todir="${dist.dst}/${dist.version}"/>
+     <move file="${projectname}-${dist.version}-src.tar.gz" todir="${dist.dst}/${dist.version}"/>
+     <move file="${projectname}-${dist.version}-doc.war"    todir="${dist.doc.dst}"/>
+
+  </target>
+
+  <target name="dist.clean" depends="init">
+     <freehep.not.defined property="dist.dst" message="Target 'dist.clean' only available with '-Ddist.dst=destination' option"/>
+     <freehep.not.defined property="dist.version" message="Target 'dist.clean' only available with '-Ddist.version=version' option"/>
+     <delete dir="${dist.dst}/${dist.version}"/>
+     <freehep.not.defined property="dist.doc.dst" message="Target 'dist.clean' only available with '-Ddist.doc.dst=destination' option"/>
+     <delete dir="${dist.doc.dst}/${dist.version}/doc"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Cleans up generated stuff                                           -->
+  <!-- =================================================================== -->
+  <target name="clean" depends="init" description="&lt;    target&gt; cleans up the jar and class files">
+    <freehep.defined property="jar" target="clean.jar"/>
+    <freehep.not.defined property="jar" target="clean.all"/>
+  </target>
+
+  <target name="clean.jar" depends="init.jar">
+    <freehep.defined property="src.dir" target="clean.jar.ok"/>
+  </target>
+
+  <target name="clean.jar.ok">
+    <freehep.delete dir="${src.dir}" packages="${packages}"/>
+    <freehep.delete file="${jar.dir}/${name}.jar"/>
+  </target>
+
+  <target name="clean.all">
+    <echo message="   Cleaning all"/>
+    <freehep.ant jars="${jars}" args="clean"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Total cleanup                                                       -->
+  <!-- =================================================================== -->
+  <target name="veryclean" depends="clean" description="&lt;    target&gt; cleans up the distribution, jar and class files">
+    <freehep.defined property="jar" target="veryclean.jar"/>
+    <freehep.not.defined property="jar" target="veryclean.all"/>
+  </target>
+
+  <target name="veryclean.jar">
+  </target>
+
+  <target name="veryclean.all">
+    <echo message="   Cleaning all"/>
+    <freehep.ant jars="${jars}" args="clean"/>
+    <freehep.ant jars="${wars}" args="war.clean"/>
+    <freehep.ant jars="${jlinks}" args="jlink.clean"/>
+    <freehep.ant args="dist.clean"/>
+  </target>
+
+</project>
+

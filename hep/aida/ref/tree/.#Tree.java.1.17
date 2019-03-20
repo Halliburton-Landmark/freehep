@@ -1,0 +1,797 @@
+package hep.aida.ref.tree;
+
+import java.io.*;
+import java.util.*;
+
+import hep.aida.*;
+import hep.aida.ref.*;
+import hep.aida.ref.event.*;
+import org.freehep.util.FreeHEPLookup;
+
+import org.openide.util.Lookup;
+
+/**
+ *
+ * @author The AIDA team @ SLAC.
+ *
+ * @version $Id: Tree.java,v 1.17 2002/12/02 23:51:47 tonyj Exp $
+ */
+public class Tree extends AIDAObservable implements ITree {
+    private Folder    root;
+    private Path      currentPath;
+    private String    separatorChar = "/";
+    private String    storeName;
+    private boolean   readOnly;
+    private boolean   createNew;
+    private String    storeType = null;
+    private Map optionsMap;
+    private Hashtable manObjHash = new Hashtable();
+    private Hashtable pathHash   = new Hashtable();
+    private int mountCount = 0;   
+    /**
+     * Create a new Tree.
+     *
+     */
+    protected Tree() {
+        root = new Folder("/");
+        currentPath = new Path();
+        setIsValidAfterNotify(true);
+    }
+    
+    /**
+     * Get the name of the store.
+     * @return The store's name.
+     *
+     */
+    public String storeName() {
+        return storeName;
+    }
+    
+    /**
+     * Get the IManagedObject at a given path in the ITree. The path can either be
+     * absolute or relative to the current working directory.
+     * @param path The path.
+     * @return     The corresponding IManagedObject.
+     * @throws     IllegalArgumentException If the path does not correspond to an IManagedObject.
+     *
+     */
+    public IManagedObject find(String path) throws IllegalArgumentException {
+        Path p = new Path(currentPath, path);
+//        Object obj = manObjHash.get(p.toString());
+        IManagedObject obj = followPath(p);
+        if ( obj instanceof Folder ) throw new IllegalArgumentException("The path "+path+" does not correspond to an IManagedObject");
+        if ( obj == null || obj instanceof Folder ) throw new IllegalArgumentException("The path "+path+" does not correspond to an IManagedObject");
+        registerManagedObject(obj,p);
+        return (IManagedObject)obj;
+    }
+    
+    /**
+     * Closes the underlying store.
+     * Changes will be saved only if commit() has been called before.
+     * The call is propagated to the dependent mounted trees.
+     * @throws IOException If there are problems writing out
+     *         the underlying store.
+     *
+     */
+    public void close() throws IOException {
+        if (storeName == null || storeName.length()==0) return;
+        String type = storeType;
+        if (type == null || type.length()==0) type = "xml";
+        // Look for a handler for this storeType
+        Lookup.Template template = new Lookup.Template(IStore.class,type,null);
+        Lookup.Item item = FreeHEPLookup.instance().lookupItem(template);
+        if (item != null)
+        {
+           IStore store = (IStore) item.getInstance();
+           store.close();    
+        }
+    }
+    
+    /**
+     * Change to a given directory.
+     * @param path The absolute or relative path of the directory we are changing to.
+     * @throws     IllegalArgumentException If the path does not exist.
+     *
+     */
+    public void cd(String path) throws IllegalArgumentException {
+       Path newPath = new Path(currentPath,path);
+       IManagedObject node = followPath(newPath);
+       if (!(node instanceof Folder)) throw new IllegalArgumentException(path+" is not a folder");
+       currentPath = newPath;
+       if (isValid) fireStateChanged(new TreeEvent(this, TreeEvent.CHANGE_DIRECTORY, currentPath.toArray(), null, TreeEvent.FOLDER_MASK));
+    }
+    
+    /**
+     * Get the path of the current working directory.
+     * @return The path of the current working directory.
+     *
+     */
+    public String pwd() {
+        return currentPath.toString();
+    }
+    
+    /**
+     * List, into a given output stream, all the IManagedObjects, including directories
+     * (but not "." and ".."), in a given path. Directories end with "/". The list can be recursive.
+     *                  in all the directories under path (the default is <code>false</code>.
+     * @throws          IllegalArgumentException If the path does not exist.
+     *
+     */
+    public void ls() throws IllegalArgumentException {
+        ls(".",false,null);
+    }
+    
+    /**
+     * List, into a given output stream, all the IManagedObjects, including directories
+     * (but not "." and ".."), in a given path. Directories end with "/". The list can be recursive.
+     * @param path      The path where the list has to be performed (by default the current directory ".").
+     *                  in all the directories under path (the default is <code>false</code>.
+     * @throws          IllegalArgumentException If the path does not exist.
+     *
+     */
+    public void ls(String path) throws IllegalArgumentException {
+       ls(path,false,null);
+    }
+    
+    /**
+     * List, into a given output stream, all the IManagedObjects, including directories
+     * (but not "." and ".."), in a given path. Directories end with "/". The list can be recursive.
+     * @param path      The path where the list has to be performed (by default the current directory ".").
+     * @param recursive If <code>true</code> the list is extended recursively
+     *                  in all the directories under path (the default is <code>false</code>.
+     * @throws          IllegalArgumentException If the path does not exist.
+     *
+     */
+    public void ls(String path, boolean recursive) throws IllegalArgumentException {
+       ls(path,recursive,null);
+    }
+    
+    /**
+     * List, into a given output stream, all the IManagedObjects, including directories
+     * (but not "." and ".."), in a given path. Directories end with "/". The list can be recursive.
+     * @param path      The path where the list has to be performed (by default the current directory ".").
+     * @param recursive If <code>true</code> the list is extended recursively
+     *                  in all the directories under path (the default is <code>false</code>.
+     * @param os        The output stream into which the list is dumped (by default the standard output).
+     * @throws          IllegalArgumentException If the path does not exist.
+     *
+     */
+    public void ls(String path, boolean recursive, OutputStream os) throws IllegalArgumentException {
+      if (os == null) os = System.out;
+      Path p = new Path(currentPath, path);
+      IManagedObject obj = followPath(p);
+      if ( obj == null ) throw new IllegalArgumentException("Wrong path "+path);
+      if ( obj instanceof Folder && ! path.endsWith(separatorChar) ) path += separatorChar;
+        
+      PrintWriter pw = new PrintWriter(os,true);
+      if ( obj instanceof Folder ) {
+         int childNumb = ((Folder)obj).getChildCount();
+         for ( int i = 0; i<childNumb; i++ ) {
+             IManagedObject child = ((Folder)obj).getChild(i);
+             if ( child instanceof Folder ) {
+                 pw.println(path+child.name()+separatorChar);
+                 if ( recursive ) ls( path+child.name(), recursive, os );
+             } else pw.println(path+child.name());
+         }
+      } else {
+         pw.println(path);
+      }
+    }
+    
+    /**
+     * Get the list of names of the IManagedObjects under a given path, including directories
+     * (but not "." and ".."). Directories end with "/".
+     * The returned names are appended to the given path unless the latter is ".".
+     *                  in all the directories under path (the default is <code>false</code>.
+     * @throws          IllegalArgumentException If the path does not exist.
+     *
+     */
+    public String[] listObjectNames() throws IllegalArgumentException {
+        return listObjectNames(currentPath.getName());
+    }
+    
+    /**
+     * Get the list of names of the IManagedObjects under a given path, including directories
+     * (but not "." and ".."). Directories end with "/".
+     * The returned names are appended to the given path unless the latter is ".".
+     * @param path      The path where the list has to be performed (by default the current directory ".").
+     *                  in all the directories under path (the default is <code>false</code>.
+     * @throws          IllegalArgumentException If the path does not exist.
+     *
+     */
+    public String[] listObjectNames(String path) throws IllegalArgumentException {
+        return listObjectNames(path,false);
+    }
+    
+    /**
+     * Get the list of names of the IManagedObjects under a given path, including directories
+     * (but not "." and ".."). Directories end with "/".
+     * The returned names are appended to the given path unless the latter is ".".
+     * @param path      The path where the list has to be performed (by default the current directory ".").
+     * @param recursive If <code>true</code> the list is extended recursively
+     *                  in all the directories under path (the default is <code>false</code>.
+     * @throws          IllegalArgumentException If the path does not exist.
+     *
+     */
+    public String[] listObjectNames(String path, boolean recursive) throws IllegalArgumentException {
+       Path p = new Path(currentPath,path);
+        IManagedObject obj = followPath(p);
+        if ( obj == null ) throw new IllegalArgumentException("Wrong path "+path);
+        if ( obj instanceof Folder && ! path.endsWith(separatorChar) ) path += separatorChar;
+        
+        Vector names = new Vector();
+        if ( obj instanceof Folder ) {
+            int childNumb = ((Folder)obj).getChildCount();
+            for ( int i = 0; i<childNumb; i++ ) {
+                IManagedObject child = ((Folder)obj).getChild(i);
+                if ( child instanceof Folder ) {
+                    names.add( path+child.name()+separatorChar );
+                    if ( recursive ) {
+                        String[] childNames = listObjectNames( path+child.name(), recursive );
+                        for ( int j = 0; j < childNames.length; j++ )
+                            names.add( childNames[j] );
+                    }
+                }
+                else
+                    names.add( path+child.name() );
+            }
+        } else
+            names.add(path);
+        
+        String[] objNames = new String[names.size()];
+        for ( int i = 0; i < names.size(); i++ )
+            objNames[i] = (String) names.get(i);
+        return objNames;
+    }
+    
+    /**
+     * Get the list of types of the IManagedObjects under a given path.
+     * The types are the leaf class of the Interface, e.g. "IHistogram1D", "ITuple", etc.
+     * Directories are marked with "dir".
+     * The order of the types is the same as the order for the listObjectNames() method
+     * to achieve a one-to-one correspondance between object names and types.
+     *                  in all the directories under path (the default is <code>false</code>.
+     * @throws          IllegalArgumentException If the path does not exist.
+     *
+     */
+    public String[] listObjectTypes() throws IllegalArgumentException {
+        return listObjectTypes(currentPath.getName());
+    }
+    
+    /**
+     * Get the list of types of the IManagedObjects under a given path.
+     * The types are the leaf class of the Interface, e.g. "IHistogram1D", "ITuple", etc.
+     * Directories are marked with "dir".
+     * The order of the types is the same as the order for the listObjectNames() method
+     * to achieve a one-to-one correspondance between object names and types.
+     * @param path      The path where the list has to be performed (by default the current directory ".").
+     *                  in all the directories under path (the default is <code>false</code>.
+     * @throws          IllegalArgumentException If the path does not exist.
+     *
+     */
+    public String[] listObjectTypes(String path) throws IllegalArgumentException {
+        return listObjectTypes(path,false);
+    }
+    
+    /**
+     * Get the list of types of the IManagedObjects under a given path.
+     * The types are the leaf class of the Interface, e.g. "IHistogram1D", "ITuple", etc.
+     * Directories are marked with "dir".
+     * The order of the types is the same as the order for the listObjectNames() method
+     * to achieve a one-to-one correspondance between object names and types.
+     * @param path      The path where the list has to be performed (by default the current directory ".").
+     * @param recursive If <code>true</code> the list is extended recursively
+     *                  in all the directories under path (the default is <code>false</code>.
+     * @throws          IllegalArgumentException If the path does not exist.
+     *
+     */
+    public String[] listObjectTypes(String path, boolean recursive) throws IllegalArgumentException {
+        if ( ! path.endsWith(separatorChar) ) path += separatorChar;
+        Path p = new Path(currentPath,path);
+        IManagedObject obj = followPath(p);
+        if ( obj == null ) throw new IllegalArgumentException("Wrong path "+path);
+        
+        Vector types = new Vector();
+        if ( obj instanceof Folder ) {
+            int childNumb = ((Folder)obj).getChildCount();
+            for ( int i = 0; i<childNumb; i++ ) {
+                IManagedObject child = ((Folder)obj).getChild(i);
+                types.add( getAIDAType(child) );
+                if ( child instanceof Folder ) {
+                    if ( recursive ) {
+                        String[] childTypes = listObjectTypes( path+child.name(), recursive );
+                        for ( int j = 0; j < childTypes.length; j++ )
+                            types.add( childTypes[j] );
+                    }
+                }
+            }
+        } else {
+            types.add( getAIDAType(obj) );
+        }
+        
+        String[] objTypes = new String[types.size()];
+        for ( int i = 0; i < types.size(); i++ )
+            objTypes[i] = (String) types.get(i);
+        return objTypes;
+    }
+    private String getAIDAType(Object obj)
+    {
+       if (obj instanceof ManagedObject)
+       {
+          return ((ManagedObject) obj).getAIDAType();
+       }
+       else
+       {
+           Class[] interfaces = obj.getClass().getInterfaces();
+           for (int k = 0; k < interfaces.length; k++ )
+           {
+               if (interfaces[k].getName().startsWith("hep.aida.I") && interfaces[k] != hep.aida.IManagedObject.class ) {
+                   String className = interfaces[k].getName();
+                   return className.substring( className.lastIndexOf(".")+1 );
+               }
+           }
+           return "IUnknown";
+       }
+    }
+    /**
+     * Create a new directory. Given a path only the last directory
+     * in it is created if all the intermediate subdirectories already exist.
+     * @param path The absolute or relative path of the new directory.
+     * @throws     IllegalArgumentException If a subdirectory within the path does
+     *             not exist or it is not a directory.
+     *
+     */
+    public void mkdir(String path) throws IllegalArgumentException {
+       Path p = new Path(currentPath,path);
+       Path parentPath = p.parent();
+       if ( path.endsWith( separatorChar ) ) path = path.substring( 0, path.length()-1 );
+       IManagedObject obj = followPath(parentPath);
+       if (obj == null) throw new IllegalArgumentException("Cannot create directory "+path);
+       if (obj instanceof Folder)
+       {
+          Folder parent = (Folder) obj;
+          if (parent.getChild(p.getName()) != null) throw new IllegalArgumentException(p.getName()+" already exists");
+          Folder child = new Folder(p.getName());
+          parent.add(child);
+          if (isValid && parent.isBeingWatched()) fireStateChanged(new TreeEvent(this, TreeEvent.NODE_ADDED, p.toArray(), getAIDAType(child), TreeEvent.FOLDER_MASK));
+       }
+       else throw new IllegalArgumentException("Cannot create directory "+path);
+    }
+    
+    /**
+     * Create a directory recursively. Given a path the last directory
+     * and all the intermediate non-existing subdirectories are created.
+     * @param path The absolute or relative path of the new directory.
+     * @throws     IllegalArgumentException If an intermediate subdirectory
+     *             is not a directory.
+     *
+     */
+    public void mkdirs(String path) throws IllegalArgumentException {
+       Path p = new Path(currentPath,path);
+       IManagedObject target = followPath(p,true);
+       if (target == null) 
+       {
+          Folder folder = (Folder) followPath(p.parent());
+          Folder child = new Folder(p.getName());
+          folder.add(child);
+          if (isValid && folder.isBeingWatched()) fireStateChanged(new TreeEvent(this, TreeEvent.NODE_ADDED, p.toArray(), getAIDAType(child), TreeEvent.FOLDER_MASK));
+       }
+       else if (!(target instanceof Folder)) throw new IllegalArgumentException(path+" is not a folder");
+    }
+    
+    /**
+     * Remove a directory and all the contents underneath.
+     * @param path The absolute or relative path of the directory to be removed.
+     * @throws     IllegalArgumentException If path does not exist or if it is not
+     *             a directory.
+     *
+     */
+    public void rmdir(String path) throws IllegalArgumentException {
+       Path p = new Path(currentPath, path);
+       IManagedObject parent = followPath(p.parent());
+       IManagedObject target = followPath(p);
+       if (!(target instanceof Folder)) throw new IllegalArgumentException(path+" is not a folder");
+       if (target == root) throw new IllegalArgumentException("Cannot delete root");
+       Folder folder = (Folder) parent;
+       folder.remove(target);
+       if (isValid && folder.isBeingWatched()) fireStateChanged(new TreeEvent(this, TreeEvent.NODE_DELETED, p.toArray(), null, TreeEvent.FOLDER_MASK));
+    }
+    
+    /**
+     * Remove an IManagedObject by specifying its path.
+     * If the path points to a mount point, the mount point should first commit, then
+     * close and delete the tree object.
+     * @param path The absolute or relative path of the IManagedObject to be removed.
+     * @throws     IllegalArgumentException If path does not exist.
+     *
+     */
+    public void rm(String path) throws IllegalArgumentException {
+       Path p = new Path(currentPath, path);
+       IManagedObject parent = followPath(p.parent());
+       IManagedObject target = followPath(p);
+       if ( target == null ) throw new IllegalArgumentException("Cannot remove path "+path);
+       Folder folder = (Folder) parent;
+       folder.remove(target);
+       if ( ! (target instanceof Folder) ) unRegisterManagedObject(target);
+       if (isValid && folder.isBeingWatched()) fireStateChanged(new TreeEvent(this, TreeEvent.NODE_DELETED, p.toArray(), null, TreeEvent.FOLDER_MASK));
+    }
+    
+    /**
+     * Get the full path of an IManagedObject.
+     * @param object The IManagedObject whose path is to be returned.
+     * @return       The object's absolute path.
+     *               In C++ if the object does not exist, an empty string is returned.
+     * @throws       IllegalArgumentException If the IManagedObject does not exist.
+     *
+     */
+    // TODO: This needs to be reimplemented, it is way to inefficient
+    public String findPath(IManagedObject object) throws IllegalArgumentException {
+        Object path = pathHash.get(object);
+        if ( path == null ) throw new IllegalArgumentException("Object "+object+" could not be found in tree");
+        return ( (Path)path ).toString();
+        /*
+        Folder folder = (Folder) followPath(currentPath);
+        String path = followObject( folder, object );
+        if ( path.equals("") ) throw new IllegalArgumentException("Object "+object+" could not be found in tree");
+        return path;
+         */
+    }
+    
+    /**
+     * Move an IManagedObject or a directory from one directory to another.
+     * @param oldPath The path of the IManagedObject or direcoty to be moved.
+     * @param newPath The path of the diretory in which the object has to be moved to.
+     * @throws        IllegalArgumentException If either path does not exist.
+     *
+     */
+    public void mv(String oldPath, String newPath) throws IllegalArgumentException {
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Commit any open transaction to the underlying store(s).
+     * It flushes objects into the disk for non-memory-mapped stores.
+     * @throws IOException If the underlying store cannot be written out.
+     *
+     */
+    public void commit() throws IOException {
+        if (storeName == null || storeName.length()==0) return;
+        String type = storeType;
+        if (type == null || type.length()==0) type = "xml";
+        // Look for a handler for this storeType
+        Lookup.Template template = new Lookup.Template(IStore.class,type,null);
+        Lookup.Item item = FreeHEPLookup.instance().lookupItem(template);
+        if (item == null) throw new IOException("Unknown store type: "+type);
+        IStore store = (IStore) item.getInstance();
+        if (store.isReadOnly()) throw new IOException("Cannot commit readonly store");
+        store.commit(this,optionsMap);      
+    }
+    
+    /**
+     * Set the strategy of what should happen if two objects have the same path.
+     * Default is overwrite.
+     *
+     */
+    public void setOverwrite() {
+        setOverwrite(true);
+    }
+    
+    /**
+     * Set the strategy of what should happen if two objects have the same path.
+     * Default is overwrite.
+     * @param overwrite <code>true</code> to enable overwriting.
+     *
+     */
+    public void setOverwrite(boolean overwrite) {
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Copy an object from a path to another.
+     * @param oldPath   The path of the object to be copied.
+     * @param newPath   The path where the object is to be copied.
+     * @throws          IllegalArgumentException If either path does not exist.
+     *
+     */
+    public void cp(String oldPath, String newPath) throws IllegalArgumentException {
+        cp(oldPath, newPath, false);
+    }
+    
+    /**
+     * Copy an object from a path to another.
+     * @param oldPath   The path of the object to be copied.
+     * @param newPath   The path where the object is to be copied.
+     * @param recursive <code>true</code> if a recursive copy has to be performed.
+     * @throws          IllegalArgumentException If either path does not exist.
+     *
+     */
+    public void cp(String oldPath, String newPath, boolean recursive) throws IllegalArgumentException {
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Create a symbolic link to an object in the ITree.
+     * @param path  The absolute or relative path of the object to be linked.
+     * @param alias The absolute or relative name of the link.
+     * @throws      IllegalArgumentException If path or any
+     *              subidrectory within path does not exist.
+     *
+     */
+    public void symlink(String path, String alias) throws IllegalArgumentException {
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Mounts a tree within another (target) tree. A tree can only be mounted once.
+     * Example:
+     * <pre>
+     *     target.mount("/home/tonyj",tree,"/");
+     * </pre>
+     * @param path     The path in the target tree
+     * @param tree     The tree to mount within the target tree
+     * @param treePath The mount point within the tree to be mounted.
+     * @throws         IllegalArtumentException If something does not exist.
+     *
+     */
+    public void mount(String path, ITree tree, String treePath) throws IllegalArgumentException {
+        // We only support mounting trees we created
+       if (tree instanceof Tree)
+       {
+          Path p = new Path(currentPath,path);
+          Folder parent = (Folder) followPath(p.parent());
+          IManagedObject obj = followPath(p);
+          if (obj != null) throw new IllegalArgumentException(path+" already exists");
+          
+          Tree t = (Tree) tree;
+          Path mountPath = new Path(new Path(), treePath);
+          IManagedObject mountPoint = t.followPath(mountPath);
+          if (mountPoint instanceof Folder)
+          {
+             MountPoint mp = new MountPoint(this, p, t, (Folder) mountPoint, mountPath);
+             parent.add(mp);
+             t.incrementMountCount();
+
+             /*
+             IManagedObject[] manObjs = t.getAllManagedObjectsInPath(mountPath);
+             for ( int i = 0; i < manObjs.length; i++ ) 
+                 registerManagedObject( manObjs[i], new Path(p, t.findPath(manObjs[i]).substring( mountPath.toString().length() ) ) );
+              */
+             if (isValid && parent.isBeingWatched()) fireStateChanged(new TreeEvent(this, TreeEvent.NODE_ADDED, p.toArray(), getAIDAType(mp), TreeEvent.FOLDER_MASK));
+          }
+          else throw new IllegalArgumentException(treePath+" does not point to a folder");
+       }
+       else throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Unmount a subtree at a given path (mount point).
+     * Whenever a tree is destroyed it first unmounts all dependent trees.
+     * @param path The path of the subtree to be unmounted.
+     * @throws     IllegalArgumentException If path does not exist.
+     *
+     */
+    public void unmount(String path) throws IllegalArgumentException {
+        Path p = new Path(currentPath,path);
+        IManagedObject obj = followPath(p);
+        if (obj instanceof MountPoint)
+        {
+           MountPoint mp = (MountPoint) obj;
+           Folder parent = (Folder) followPath(p.parent());
+           parent.remove(mp);
+           
+           IManagedObject[] manObjs = getAllManagedObjectsInPath(p);
+           for ( int i = 0; i < manObjs.length; i++ ) 
+               if ( manObjHash.containsValue(manObjs[i]) )
+                   unRegisterManagedObject( manObjs[i] );
+           
+           if (isValid && parent.isBeingWatched()) fireStateChanged(new TreeEvent(this, TreeEvent.NODE_DELETED, p.toArray(), null, TreeEvent.FOLDER_MASK));
+
+           try
+           {
+              Tree t = mp.getTree();
+              if (t.decrementMountCount() == 0) t.close();
+           }
+           catch (IOException x)
+           {
+              x.printStackTrace();
+           }
+        }
+        else throw new IllegalArgumentException("Not a mount point");
+    }
+    
+    
+    /**
+     *
+     * Non-AIDA methods are down here.
+     *
+     */
+    
+    /**
+     * Associate the tree with a store
+     * @param storeName The name of the output storage unit.
+     * @param readOnly  <code>true</code> if the tree is readonly.
+     * @param createNew  <code>true</code> if the tree has to create a new file.
+     * @param storeType The type of the output storage unit.
+     *
+     */
+    public void init( String storeName, boolean readOnly, boolean createNew, String storeType, String options ) throws IOException {
+        this.storeName = storeName;
+        this.readOnly = readOnly;
+        this.createNew = createNew;
+        this.storeType = storeType;
+        
+        if (readOnly && createNew) throw new IllegalArgumentException("readOnly and createNew not allowed");
+        optionsMap = AidaUtils.parseOptions( options );
+        
+        if (storeName!=null && storeName.length()>0 && !createNew) {
+            if (storeType == null || storeType.length()==0) storeType = "xml";
+            
+            // Look for a handler for this storeType
+            Lookup.Template template = new Lookup.Template(IStore.class,storeType,null);
+            Lookup.Item item = FreeHEPLookup.instance().lookupItem(template);
+            if (item == null) throw new IOException("Unknown store type: "+storeType);
+            IStore store = (IStore) item.getInstance();
+            store.read(this,optionsMap, readOnly, createNew);
+        }
+    }
+    
+    /**
+     * Get the storeType.
+     * @return The storeType.
+     *
+     */
+    private String getStoreType() {
+        return storeType;
+    }
+   public void add(String path, IManagedObject child) 
+   {
+      Path p = new Path(currentPath,path);
+      IManagedObject o = followPath(p,true);
+      if (!(o instanceof Folder)) throw new IllegalArgumentException("Illegal path for add: "+path);
+      Folder f = (Folder) o;
+      f.add(child);
+      registerManagedObject( child, new Path(p,child.name()) );
+      if (isValid && f.isBeingWatched()) fireStateChanged(new TreeEvent(this, TreeEvent.NODE_ADDED, p.toArray(child.name()), getAIDAType(child), 0));
+   }
+   public void add(IManagedObject child)
+   {
+       if ( followPath( new Path(currentPath,child.name()) ) != null ) rm( child.name() );
+       Folder f = (Folder) followPath(currentPath);
+       f.add(child);
+       registerManagedObject( child, new Path(currentPath,child.name()) );
+       if (isValid && f.isBeingWatched()) fireStateChanged(new TreeEvent(this, TreeEvent.NODE_ADDED, currentPath.toArray(child.name()), getAIDAType(child), 0));
+    } 
+    
+    protected IManagedObject[] getAllManagedObjectsInPath(Path path) {
+        ArrayList list = new ArrayList();
+        for (Enumeration e = manObjHash.keys() ; e.hasMoreElements() ;) {
+            String fullPath = (String)e.nextElement();
+            if ( fullPath.startsWith(path.toString()) )
+                list.add( manObjHash.get(fullPath) );
+        }
+        IManagedObject[] manObjs = new IManagedObject[list.size()];
+        for ( int i = 0; i < list.size(); i++ )
+            manObjs[i] = (IManagedObject) list.get(i);
+        return manObjs;
+    }
+
+    protected void registerManagedObject( IManagedObject obj, Path path ) {
+       manObjHash.put(path.toString(),obj);
+       pathHash.put(obj,path);
+    }
+    
+    protected void unRegisterManagedObject( IManagedObject obj ) {
+       manObjHash.remove( findPath(obj) );
+       pathHash.remove(obj);
+    }
+    /**
+     * List the content of an IManagedObject in the Tree
+     * @param obj The IManagedObject to be listed
+     * @param recursive <code>true</code> if a recursive list is to be performed
+     * @return the ArrayList containing all the IManagedObjects listed
+     *
+     */
+    private List ls( IManagedObject obj, boolean recursive ) {
+        ArrayList list = new ArrayList();
+        
+        if ( obj instanceof Folder ) {
+            int childNumb = ((Folder)obj).getChildCount();
+            for ( int i = 0; i<childNumb; i++ ) {
+                IManagedObject child = ((Folder)obj).getChild(i);
+                list.add( child );
+                if ( child instanceof Folder && recursive )
+                    list.addAll( ls( (Folder)child, recursive ) );
+            }
+        } else {
+            list.add(obj);
+        }
+        return list;
+    }
+    
+    private IManagedObject followPath(Path path) throws IllegalArgumentException {
+        return followPath(path,false);
+    }
+    
+    private IManagedObject followPath(Path path, boolean createFoldersAsNecessary) throws IllegalArgumentException {
+      Folder here = root;
+      int depth = 0;
+      for (Iterator i=path.iterator(); i.hasNext(); )
+      {
+         depth++;
+         String name = (String) i.next();
+         IManagedObject obj = here.getChild(name);
+         if (!i.hasNext()) return obj;
+         if (obj == null)
+         {
+            if (createFoldersAsNecessary)
+            { 
+               Folder f = new Folder(name);
+               here.add(f);
+               if (isValid && f.isBeingWatched()) fireStateChanged(new TreeEvent(this, TreeEvent.NODE_ADDED, path.toArray(depth), getAIDAType(obj), TreeEvent.FOLDER_MASK));
+               obj = f;
+            }
+            else throw new IllegalArgumentException("Invalid path: "+name);
+         }
+         if (obj instanceof Folder) here = (Folder) obj;
+         else throw new IllegalArgumentException("Invalid path: "+name);
+      }
+      return here;
+    } 
+    void fireStateChanged(TreeEvent te)
+    {
+       super.fireStateChanged(te);
+    }
+    /**
+     * This message is sent by a listener to indicate interest in a particular
+     * path within the tree. If the path corresponds to a folder, that folder will 
+     * be asked to notify listeners of all existing children, and to continue to notify
+     * listeners of any future changes.
+     */
+    public void checkForChildren(String path)
+    {
+       Path p = new Path(currentPath,path);
+       IManagedObject obj = followPath(p);
+       System.out.println("checkForChildren obj="+obj);
+       if (obj instanceof Folder)
+       {
+          Folder folder = (Folder) obj;
+          synchronized (folder)
+          {
+            for (int i=0; i<folder.getChildCount(); i++)
+            {
+               IManagedObject child = folder.getChild(i);
+               int mask = (child instanceof Folder) ? TreeEvent.FOLDER_MASK : 0;
+               TreeEvent te = new TreeEvent(this, TreeEvent.NODE_ADDED, p.toArray(child.name()), getAIDAType(child), mask);
+               System.out.println("te="+te);
+               fireStateChanged(te);
+            }
+            folder.setIsBeingWatched(true);
+          }
+       }
+    }
+    public void setStore(String name, String type, String options)
+    {
+       storeName = name;
+       storeType = type;
+       Map extra = AidaUtils.parseOptions( options );
+       optionsMap.putAll(extra);
+    }
+    public Map getOptions()
+    {
+       return optionsMap;
+    }
+    private int getMountCount()
+    {
+       return mountCount;
+    }
+    private int incrementMountCount()
+    {
+       mountCount++;
+       return mountCount;
+    }
+    private int decrementMountCount()
+    {
+       mountCount--;
+       return mountCount;
+    }
+}

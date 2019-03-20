@@ -1,0 +1,139 @@
+<html><!-- #BeginTemplate "/Templates/yappi.dwt" -->
+<head>
+<!-- #BeginEditable "doctitle" --> 
+<title>YaPPI - XML Schema</title>
+<!-- #EndEditable --> 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="../images/site.css">
+</head>
+
+<body bgcolor="#FFFFFF">
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr> 
+    <td width="171" valign="top" align="left" class="nav"> 
+      <p align="center"> <a href="../index.html"><img src="../images/yappi.gif" width="150" height="46" border="0"></a><br>
+        <span class="YaPPIsubtext">The XML Particle Property Database</span> </p>
+      <table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#FF6666" align="right">
+        <tr> 
+          <td bgcolor="#FF6666"><img src="../images/1bit.gif" width="100" height="2"></td>
+        </tr>
+      </table>
+      <br>
+      <table border="0" cellspacing="0" cellpadding="2" width="100%">
+        <tr> 
+          <td colspan="2" class="nav1"><a href="http://java.freehep.org/">FreeHEP 
+            Home <img src="../images/out.gif" width="17" height="11" border="0"></a> 
+          </td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="../index.html">YaPPI Home</a></td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">&nbsp;</td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">YaPPI Java API </td>
+        </tr>
+        <tr class="nav2"> 
+          <td width="20">&nbsp;</td>
+          <td class="nav2"> 
+            <p><a href="guide.html">Mini User's Guide</a><br>
+              <a href="xmlschema.html">XML Schema</a> <br>
+              <a href="classdiagram.html">Class Diagram</a> <br>
+              <a href="http://java.freehep.org/lib/freehep/api/hep/physics/yappi/package-summary.html">YaPPI&nbsp;JavaDocs 
+              <img src="../images/out.gif" width="17" height="11" border="0"> 
+              </a> <br>
+              <a href="http://java.freehep.org/servlet/fhcvs/list/freehep/hep/physics/yappi">Source 
+              Code <img src="../images/out.gif" width="17" height="11" border="0"></a> 
+            </p>
+          </td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="browsedata.html">Browse&nbsp;Particle&nbsp;Data</a> 
+          </td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="http://java.freehep.org/download.thtml">Downlaod&nbsp;<img src="../images/out.gif" width="17" height="11" border="0"> 
+            </a></td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="../project/authors.html">Authors</a></td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">&nbsp;</td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">For&nbsp;YaPPI&nbsp;Developers</td>
+        </tr>
+        <tr class="nav2"> 
+          <td>&nbsp;</td>
+          <td class="nav2"> 
+            <p><a href="http://java.freehep.org/rules.thtml">FreeHEP&nbsp;Rules&nbsp;<img src="../images/out.gif" width="17" height="10" border="0"></a> 
+              <br>
+              <a href="../report/YaPPI.pdf">Project Report</a> [PDF]<br>
+              <a href="http://java.freehep.org/source.thtml">Get Sources&nbsp;<img src="../images/out.gif" width="17" height="11" border="0"></a> 
+              <br>
+              <a href="todo.html">To Do List </a></p>
+            </td>
+        </tr>
+      </table>
+      <br>
+    </td>
+    <td width="14" valign="top" align="left"> 
+      <table width="14" border="0" cellspacing="0" cellpadding="0" >
+        <tr> 
+          <td bgcolor="#FF6666" width="2"><img src="../images/1bit.gif" width="2" height="360"></td>
+          <td width="12">&nbsp;</td>
+        </tr>
+      </table>
+    </td>
+    <td width="*" valign="top"> 
+      <h1 class="pageHeading"><!-- #BeginEditable "pageHeading" -->XML Schema<!-- #EndEditable --></h1>
+      <!-- #BeginEditable "pageContent" --> 
+      <p>The YaPPI XML data model is shown below. The base PPML element may contain 
+        Family and ParticleType elements, and so on. Elements may have attributes 
+        (required attributes are shown in bold). A ParticleType, in addition to 
+        its attributes, can contain arbitrary Data elements. Decays are stored 
+        in separate Decay elements, and may also be grouped in DecayGroups. Independently 
+        of particle properties, a heirarchy of Family elements (referring to particles 
+        by their name) defines the particle family tree. </p>
+      <p class="center"><img src="diagrams/XMLDataModel.gif" width="336" height="469"> 
+      </p>
+      <p><a href="http://java.freehep.org/servlet/fhcvs/list/freehep/hep/physics/yappi/xml/2000"><strong>The 
+        XML data files&nbsp;<img src="../images/out.gif" width="17" height="11" border="0"> 
+        </strong></a><br>
+        The particle data in xml may be conveniently broken up into several files, 
+        according to what best fits how the data will be used. Following the link 
+        above will give you access to these data files: </p>
+      
+        <ul>
+          <li>PDG-Family.xml </li>
+          <li>PDG-Properties.xml </li>
+          <li>PDG-NormalDecayChannels.xml </li>
+          <li>PDG-LimitDecayChannels.xml </li>
+          <li>PDG-RareDecayChannels.xml </li>
+        </ul>
+  
+      <p>Decay information has been broken up into three separate files, according 
+        to their fraction size, categorized as either <strong>normal</strong>, 
+        <strong>limit</strong> or <strong>rare</strong>. Normal decay information 
+        is what a physicist would most likely use most often. For applications 
+        that also need to include more decay precision, the limit and rare files 
+        may also be read as necessary. </p>
+      <p>&nbsp;</p>
+      <!-- #EndEditable --> </td>
+  </tr>
+  <tr>
+    <td width="171" valign="top" align="left" class="nav">&nbsp;</td>
+    <td width="14" valign="top" align="left">&nbsp;</td>
+    <td width="*" valign="top" align="right"> 
+      <table border="0" cellspacing="0" cellpadding="0" width="121" bgcolor="#FF6666">
+        <tr> 
+          <td bgcolor="#FF6666"><img src="../images/1bit.gif" width="121" height="2"></td>
+        </tr>
+      </table>
+      <a href="mailto:developers@freehep.org" class="nav2">developers@freehep.org</a></td>
+  </tr>
+</table>
+</body>
+<!-- #EndTemplate --></html>

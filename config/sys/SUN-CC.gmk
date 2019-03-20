@@ -1,0 +1,91 @@
+#
+# SUN - CC
+#
+
+ARCH = sparc
+
+INCFLAGS += -I$(JDK_HOME)/include/solaris
+
+#
+# Compiler
+#
+ifneq ($(DEBUG),)
+	DEBUGSUFFIX =
+	CFLAGS += -g
+else
+	DEBUGSUFFIX =
+	CFLAGS += -O
+endif
+
+CXX = CC
+CC = cc
+CFLAGS += -c -mt -lpthread -KPIC -DSOLARIS2
+CXXFLAGS += -features=no%anachronisms
+CXXTARGET = -o # leave the space!
+F77 = f77
+F77FLAGS += -O -c
+F77TARGET = -o # leave the space!
+#
+# Librarian
+#
+LIB = CC -xar
+LIBTARGET = -o # leave the space!
+
+#
+# Linker
+#
+LINK = $(CXX) -mt -lpthread -KPIC
+#
+# On Solaris link with C++, otherwise sunmath.so is not referenced.
+#
+LINKCC = $(CXX) -mt -lpthread -KPIC
+DLLFLAGS += -G
+ifeq ($(LINKNOJAVA),)
+    LINKFLAGS += -L$(JDK_HOME)/jre/lib/$(ARCH)/client
+    LINKFLAGS += -L$(JDK_HOME)/jre/lib/$(ARCH)/server
+    LINKFLAGS += -L$(JDK_HOME)/jre/lib/$(ARCH)
+    LINKFLAGS += -L$(JDK_HOME)/jre/bin/
+    LINKLIBS += -ljvm
+endif   # LINKNOJAVA
+
+
+#
+# CERN Lib
+#
+ifneq ($(CERN_ROOT),)
+    LINKLIBS += `cernlib packlib geant`
+endif   # CERN_ROOT
+
+#
+# Generic Unix
+#
+LINKFLAGS += $(addsuffix  /$(REF), $(addprefix -L, $(EXTLIBDIRS)))
+LINKFLAGS += $(addsuffix  /$(DST), $(addprefix -L, $(LIBDIRS)))
+LINKFLAGS += $(addprefix -L, $(UNIXLIBDIRS))
+LINKLIBS += $(addsuffix $(DEBUGSUFFIX), $(addprefix -l, $(INCLUDELIBS)))
+LINKLIBS += $(addsuffix $(DEBUGSUFFIX), $(addprefix -l, $(INCLUDEUNIXLIBS)))
+
+LINKTARGET = -o # leave ths space
+DLL = ld
+
+#
+# For Fortran (Forte 7 does not have M77 and F77 so we rely on Forte 6 update 1 to be 
+# installed as well
+#
+ifneq ($(LINKFORTRAN),)
+    LINKFLAGS += -L/opt/SUNWspro.WS6U1/lib
+    LINKLIBS += -lm -lsunmath -lM77 -lF77
+endif   # LINKFORTRAN
+
+#
+# System
+#
+OBJEXT = .o
+LIBEXT = .a
+DLLEXT = .so
+LIBPRE = lib
+EXEEXT =
+TAREXT = .tar.gz
+CACHEDIR = SunWS_cache
+DTMP = /tmp/$(DST)
+DTAR = gtar z

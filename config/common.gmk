@@ -1,0 +1,268 @@
+#
+# Common Makefile to produce JNI related Libraries
+# on Windows, Linux and Solaris
+#
+# The following targets are available:
+#   all:        build everything
+#   info:       shows which libraries will be built and which jdk is used
+#   dist:       builds th distributable .zip or tar.gz file
+#   clean:      cleans up libraries and object files
+#   veryclean:  cleans up destination directories completely
+#
+# The following Variables can be set:
+#   DEFINES         List of defines
+#   INCLUDEDIRS     List of include directories
+#   LIBDIRS         List of library directories
+#   INCLUDELIBS     List of libraries for linking
+#   INCLUDEUNIXLIBS List of unix libraries for linking
+#   OBJS            List of object files to produce (without extension)
+#   LIBS            Static Library to produce (one only, without extension)
+#   DLLS            Shared Library to produce (one only, without extension)
+#   EXE             Executables to produce
+#   TEST            Test script to run
+#
+# For the dist target
+#   DNAME           distributions name (obligatory for the dist target
+#   TMP             (WIN32) where the distributions temporary files are copied (/tmp on unix).
+#   DDIR            List of files/directories that end up in the top-level dir
+#   DBIN            List of files/directories for the bin dir
+#   DSBIN           List of system dependent files/directories for the bin/OS_CMP dir (e.g. bin/WIN32-VC)
+#   DINC            List of files/directories for the include dir
+#   DLIB            List of files/directories for the (generic) lib dir
+#   DSLIB           List of system dependent files/directories for the lib/OS_CMP dir (e.g. lib/WIN32-VC)
+#   DSRC            List of files/directories for the src dir
+#   DEXAMPLES       List of files/directories for the examples dir
+#
+# (directories are copied recursively and may include CVS dirs. There is currently no filter)
+#
+# One needs JDK 2 minimum to compile
+#
+# The following environment variables need to be set:
+#   JDK_HOME    top-level of a Java 2 Development Kit
+#   OS          specific operating system (Windows_XX, Solaris, Linux)
+#   COMPILER    (optional) specific operating system (Windows_XX: VC; Solaris: CC, g++; Linux: g++)
+#   DEBUG       (optional) creates Debug library (true, false)
+#
+# Platforms: Windows2000/NT, SunOS 5.6, Linux Red Hat 6.1
+# Compilers: VisualC++ 6.0, Sun CC 5.1 (refsol7.cern.ch), Linux/Sun g++ egcs-1.1.2
+#
+# Notes on usage of JDK:
+#   The libjvm.so search order is lib (sun) followed by bin (ibm)
+#   The libjvm.so search order for type is hotspot, classic followed by default
+#
+# Author: Mark Donszelmann
+# Version: $Id: common.gmk,v 1.28 2004/11/05 19:29:38 duns Exp $
+#
+
+#============================================================================
+# Below NO User Coniguration
+#============================================================================
+
+include $(FREEHEP)/config/architecture.gmk
+
+#
+# Build target list
+#
+TARGETS = $(DST)
+TOBJS =
+TLINKOBJS = 
+TLIBS =
+TEXP =
+TEXE =
+TTEST = $(TEST)
+TDLLS =
+TCACHEDIR =
+MKDST =
+ifdef OBJS
+	TOBJS = $(addprefix $(DST)/, $(addsuffix $(OBJEXT), $(OBJS)))
+	TARGETS += $(TOBJS)
+    MKDST = -mkdir $(DST)
+endif
+ifdef LINKOBJS
+	TLINKOBJS = $(addprefix $(DST)/, $(addsuffix $(OBJEXT), $(LINKOBJS)))
+	TARGETS += $(TLINKOBJS)
+    MKDST = -mkdir $(DST)
+endif
+ifdef LIBS
+ifdef OBJS
+	TLIBS = $(DST)/$(LIBPRE)$(LIBS)$(DEBUGSUFFIX)$(LIBEXT)
+    TEXP = $(EXP)
+	TARGETS += $(TLIBS)
+	INFOLIBS = "Building LIB $(LIBPRE)$(LIBS)$(DEBUGSUFFIX)$(LIBEXT)"
+endif
+endif
+ifdef DLLS
+	TDLLS = $(DST)/$(LIBPRE)$(DLLS)$(DEBUGSUFFIX)$(DLLEXT)
+	TARGETS += $(TDLLS)
+	INFODLLS = "Building DLL $(LIBPRE)$(DLLS)$(DEBUGSUFFIX)$(DLLEXT)"
+endif
+ifdef EXE
+#	TEXE = $(DST)/$(EXE)$(EXEEXT)
+	TEXE = $(addprefix $(DST)/, $(addsuffix $(EXEEXT), $(EXE)))
+	TARGETS += $(TEXE)
+endif
+ifdef CACHEDIR
+    TCACHEDIR = $(CACHEDIR)
+endif
+#
+# Distributions
+#
+ifeq ($(DIRNAME),)
+    DIRNAME = $(DLLS)
+endif
+ifneq ($(DNAME),)
+	DRMDIR  = @-rm -fr $(DTMP)
+	DRMTAR  = @-rm $(DNAME)
+	DMKTAR  = $(DTAR)cf $(DNAME) -C $(DTMP) $(DIRNAME)
+	DXHTML  = @-cp -f $(DTMP)/$(DIRNAME)/ReleaseNotes.xhtml $(DTMP)/$(DIRNAME)/ReleaseNotes.html; rm $(DTMP)/$(DIRNAME)/ReleaseNotes.xhtml
+	DXHTML2 = @-cp -f $(DTMP)/$(DIRNAME)/ReleaseNotes-$(DVERSION).xhtml $(DTMP)/$(DIRNAME)/ReleaseNotes.html; rm $(DTMP)/$(DIRNAME)/ReleaseNotes-$(DVERSION).xhtml
+endif
+ifneq ($(DDIR),)
+	DCOPYDIR = @mkdir -p $(DTMP)/$(DIRNAME); cp -R -f $(DDIR) $(DTMP)/$(DIRNAME)
+endif
+ifneq ($(DBIN),)
+	DCOPYBIN = @mkdir -p $(DTMP)/$(DIRNAME)/bin; cp -R -f $(DBIN) $(DTMP)/$(DIRNAME)
+endif
+ifneq ($(DSBIN),)
+	DCOPYSBIN = @mkdir -p $(DTMP)/$(DIRNAME)/bin/$(DST); cp -R -f $(DSBIN) $(DTMP)/$(DIRNAME)/bin/$(DST)
+endif
+ifneq ($(DINC),)
+	DCOPYINC = @mkdir -p $(DTMP)/$(DIRNAME)/include; cp -R -f $(DINC) $(DTMP)/$(DIRNAME)/include
+endif
+ifneq ($(DLIB),)
+	DCOPYLIB = @mkdir -p $(DTMP)/$(DIRNAME)/lib; cp -R -f $(DLIB) $(DTMP)/$(DIRNAME)/lib
+endif
+ifneq ($(DSLIB),)
+	DCOPYSLIB = @mkdir -p $(DTMP)/$(DIRNAME)/lib/$(DST); cp -R -f $(DSLIB) $(DTMP)/$(DIRNAME)/lib/$(DST)
+endif
+ifneq ($(DSRC),)
+	DCOPYSRC = @mkdir -p $(DTMP)/$(DIRNAME)/src; cp -R -f $(DSRC) $(DTMP)/$(DIRNAME)/src
+endif
+ifneq ($(DEXAMPLES),)
+	DCOPYEXAMPLES = @mkdir -p $(DTMP)/$(DIRNAME)/examples; cp -R -f $(DEXAMPLES) $(DTMP)/$(DIRNAME)/examples
+endif
+
+
+#
+# Generic Targets Below
+#
+
+.PHONY: all info dist clean veryclean test
+
+.SECONDARY: $(DST)/%$(OBJEXT)
+
+all: $(JDK_HOME) $(OS_DEFINED) $(TARGETS)
+
+$(JDK_HOME):
+	@echo
+	@echo ERROR: JDK_HOME=$(JDK_HOME)
+	@echo
+	@echo ERROR: You should set JDK_HOME to the a valid top-level dir of a Java 2 Development Kit
+	@echo
+	@exit 1;
+
+$(OS_DEFINED):
+	@echo
+	@echo ERROR: OS=$(OS)
+	@echo
+	@echo ERROR: You should set OS to either "Windows_xx", "Solaris" or "Linux"
+	@echo
+	@exit 1;
+
+info:
+	@echo "==================================================================="
+	@echo $(INFOLIBS)
+	@echo $(INFODLLS)
+	@echo "For      OS  $(OS)"
+	@echo "Using    CMP $(COMPILER)"
+	@echo "Using    JDK $(JDK_HOME)"
+	@echo "==================================================================="
+	@-echo
+
+$(DST):
+	$(MKDST)
+	@-echo
+
+$(LIBPRE)%$(LIBEXT): $(addprefix $(DST)/, $(addsuffix $(OBJEXT), $(OBJS)))
+	$(LIB) $(LIBFLAGS) $(LIBTARGET)$@ $(addprefix $(DST)/, $(addsuffix $(OBJEXT), $(OBJS)))
+	@-echo
+
+$(LIBPRE)%$(DLLEXT): $(addprefix $(DST)/, $(addsuffix $(OBJEXT), $(OBJS)))
+	$(LINK) $(LINKFLAGS) $(DLLFLAGS) $(addprefix $(DST)/, $(addsuffix $(OBJEXT), $(OBJS))) $(LINKLIBS) $(LIBEXEC) $(LINKTARGET)$@
+	@-echo
+
+#
+# WARNING: On windows we link against the .lib wrapper, on Unix we link against the static .a
+# Build single exe against library
+#
+%$(EXEEXT): %$(OBJEXT) $(LIBPRE)%$(DLLS)$(DEBUGSUFFIX)$(LIBEXT)
+	$(LINK) $(LINKFLAGS) $(LINKTARGET)$@ $< $(DST)/$(LIBPRE)$(DLLS)$(DEBUGSUFFIX)$(LIBEXT) $(LINKLIBS) $(LIBEXEC)
+	@-echo
+#
+# Build exe from object and linkobjects (no library)
+#
+%$(EXEEXT): %$(OBJEXT)
+	$(LINK) $(LINKFLAGS) $(LINKTARGET)$@ $< $(TLINKOBJS) $(LINKLIBS) $(LIBEXEC)
+	@-echo
+
+#$(DST)/%$(OBJEXT): %.cc %.hh
+#	$(CXX) $(CXXFLAGS) $(CXXEXEC) $(CXXTARGET)$@ $(PDBTARGET)$(PDB) $<
+#	@-echo
+
+#$(DST)/%$(OBJEXT): %.cpp %.h
+#	$(CXX) $(CXXFLAGS) $(CXXTARGET)$@ $(PDBTARGET)$(PDB) $<
+#	@-echo
+
+$(DST)/%$(OBJEXT): %.cc
+	$(CXX) $(CFLAGS) $(CXXFLAGS) $(CXXEXEC) $(CXXTARGET)$@ $(PDBTARGET)$(PDB) $<
+	@-echo
+
+$(DST)/%$(OBJEXT): %.cpp
+	$(CXX) $(CFLAGS) $(CXXFLAGS) $(CXXEXEC) $(CXXTARGET)$@ $(PDBTARGET)$(PDB) $<
+	@-echo
+
+$(DST)/%$(OBJEXT): %.c %.h
+	$(CC) $(CFLAGS) $(CCFLAGS) $(CCEXEC) $(CXXTARGET)$@ $(PDBTARGET)$(PDB) $<
+	@-echo
+
+$(DST)/%$(OBJEXT): %.c
+	$(CC) $(CFLAGS) $(CCFLAGS) $(CCEXEC) $(CXXTARGET)$@ $(PDBTARGET)$(PDB) $<
+	@-echo
+
+$(DST)/%$(OBJEXT): %.f
+	$(F77) $(F77FLAGS) $(F77TARGET)$(subst /,$(SEPARATOR),$(@)) $(PDBTARGET)$(PDB) $<
+	@-echo
+
+dist: all
+	$(DRMDIR)
+	$(DRMTAR)
+	$(DCOPYBIN)
+	$(DCOPYSBIN)
+	$(DCOPYINC)
+	$(DCOPYLIB)
+	$(DCOPYSLIB)
+	$(DCOPYSRC)
+	$(DCOPYEXAMPLES)
+	$(DCOPYDIR)
+	$(DXHTML)
+	$(DXHTML2)
+	$(DMKTAR)
+
+clean:
+	-rm -f $(TOBJS)
+	-rm -f $(TLINKOBJS)
+	-rm -f $(TLIBS)
+	-rm -f $(TDLLS)
+	-rm -f $(PDB)
+	-rm -f $(TEXP)
+	-rm -f $(TEXE)
+	-rm -f $(DNAME)
+	-rm -rf $(DST)/$(TCACHEDIR)
+	@-echo
+
+veryclean:
+	-rm -fr $(DST)
+	@-echo
+
+test:
+	$(TTEST)

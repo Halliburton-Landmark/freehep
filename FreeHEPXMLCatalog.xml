@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : FreeHEPXMLCatalog.xml
+    Created on : April 24, 2003, 2:10 PM
+    Author     : tonyj
+    Description:
+        Purpose of the OASIS XML Catalog document follows.
+-->
+
+<!-- see http://www.oasis-open.org/committees/entity/spec.html -->
+
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+
+    <system systemId="http://java.freehep.org/schemas/menus/1.0/menus.dtd" uri="file:org/freehep/xml/menus/menus.dtd"/>
+    <system systemId="http://java.freehep.org/schemas/plugin/1.1/plugin.dtd" uri="file:org/freehep/application/studio/plugin.dtd"/>
+    <system systemId="http://java.freehep.org/schemas/redirect/1.0/RedirectData.dtd" uri="file:org/freehep/tools/servlet/RedirectData.dtd"/>
+
+</catalog>

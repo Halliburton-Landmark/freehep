@@ -1,0 +1,54 @@
+##############################################################
+# Copyright 2001, CERN, Geneva, Swizterland.
+#
+# distribute.frisbee
+# Test frisbee release configuration, using WIRED CVS repository
+#
+# @author Mario Ruggier
+# @author Mark Donszelmann
+# @version $Id: distribute.frisbee,v 1.1 2001/02/26 10:41:17 duns Exp $
+##############################################################
+# Reserved (target.)variables names:
+#   module, submodule, antrundir, tag, version
+# Plus, the <tag> and <version> are not explicit variables
+# and should appear only as part of the target lines. 
+# They are passed on to ant as: 
+# -Dtarget.tag=value -Dtarget.version=value
+##############################################################
+
+# Parameters for all distributions
+
+*       *.module = wired2
+*       *.antrundir = wired2
+*       web.dst  = tobeoverridden
+
+
+# WIRED web
+
+pubweb  web.dst = /afs/cern.ch/user/r/ruggier/work/frisbee/wired/ref/web
+pubweb  web     build-1
+
+devweb  *.antrundir = wired2
+devweb  *.submodule = atlas
+devweb  web.dst = /afs/cern.ch/user/r/ruggier/work/frisbee/wired/dev/web
+devweb  web     *
+devweb  web     build-2 ver
+
+
+# WIRED doc
+
+pubdoc  doc.dst = /afs/cern.ch/user/r/ruggier/work/frisbee/wired/ref/doc
+pubdoc  doc     build-1
+
+devdoc  *.xyz   = something
+devdoc  doc.dst = /afs/cern.ch/user/r/ruggier/work/frisbee/wired/dev/doc
+devdoc  doc     *           ver
+
+
+# WIRED dist
+
+release dist.dst = /afs/cern.ch/user/r/ruggier/work/frisbee/wired/ref/releases
+release dist    build-1     test-b1
+release dist    build-2     test-b2
+
+##############################################################

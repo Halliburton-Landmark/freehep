@@ -1,0 +1,5 @@
+- Tool used is: Visio Technical
+- Save in .vsd (master), .wmf (for report), and .gif (for web)
+- Invisible small horizontal line below image is there to 
+  workaround bug when saving as gif
+- After saving as gif, crop the extra white space (autocrop in xv)

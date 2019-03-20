@@ -1,0 +1,241 @@
+// Copyright 2000, CERN, Switzerland.  All rights reserved.
+
+package hep.graphics.heprep.ref;
+
+import java.io.*;
+import java.util.*;
+
+import hep.graphics.heprep.*;
+import hep.graphics.heprep.util.*;
+
+/**
+ *
+ * @author M.Donszelmann
+ *
+ * @version $Id: DefaultHepRepInstance.java,v 1.24 2003/11/24 22:34:50 duns Exp $
+ */
+
+public class DefaultHepRepInstance extends DefaultHepRepAttribute implements HepRepInstance, Serializable {
+    public static final String cvsId = "$Id: DefaultHepRepInstance.java,v 1.24 2003/11/24 22:34:50 duns Exp $";
+
+    private HepRepType type = null;
+
+    private HepRepInstance parent;
+//    private transient LinkedList pointList;           // first entry in list of HepRepPoints
+//    private transient LinkedList instanceList;        // first entry in list of HepRepInstances
+    private List pointList;
+    private List instanceList;
+    private transient Object userObject;              // to cache information, not persistent
+
+    public DefaultHepRepInstance(HepRepInstance parent, HepRepType type) {
+        super();
+        if (type == null) throw new RuntimeException("HepRepInstance cannot be created without a HepRepType.");
+        this.type = type;
+        this.parent = parent;
+        try {
+            if (parent != null) parent.addInstance(this);
+        } catch (IOException e) {
+            System.err.println(getClass()+": FATAL IOException "+e);
+        }
+    }
+
+    public DefaultHepRepInstance(HepRepInstanceTree parent, HepRepType type) {
+        this((HepRepInstance)null, type);
+        try {
+            parent.addInstance(this);
+        } catch (IOException e) {
+            System.err.println(getClass()+": FATAL IOException "+e);
+        }
+    }
+
+    private DefaultHepRepInstance(HepRepType type) {
+        this((HepRepInstance)null, type);
+    }
+
+    public HepRepInstance getSuperInstance() {
+        return parent;
+    }
+
+    public void overlay(HepRepInstance instance) {
+        // check #of subinstances are equal
+        if (getInstances().size() != instance.getInstances().size()) {
+            throw new RuntimeException("HepRepInstance cannot overlay; not a compatible structure in terms of sub-instances.");
+        }
+
+        // check #of points are equal if greater than 0
+        if ((getPoints().size() > 0) && (getPoints().size() != instance.getPoints().size())) {
+            throw new RuntimeException("HepRepInstance cannot overlay; not a compatible structure in terms of points.");
+        }
+
+        // add points of instance if #of points is 0
+        for (Iterator i=instance.getPoints().iterator(); i.hasNext(); ) {
+            HepRepPoint point = (HepRepPoint)i.next();
+            addPoint(point);
+        }
+
+        // merge all attValues, where instance overrides the values of "this".
+        for (Iterator i=instance.getAttValuesFromNode().iterator(); i.hasNext(); ) {
+            HepRepAttValue value = (HepRepAttValue)i.next();
+            addAttValue(value);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream stream) throws IOException {
+//        System.out.println("DHRInstance: Serializing "+this);
+        stream.defaultWriteObject();
+//        LinkedList.writeList(stream, pointList);
+//        LinkedList.writeList(stream, instanceList);
+    }
+
+    private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+//        System.out.println("DHRInstance: Deserializing "+this);
+        stream.defaultReadObject();
+//        pointList = LinkedList.readList(stream);
+//        instanceList = LinkedList.readList(stream);
+    }
+
+    public HepRepInstance copy(HepRep heprep, HepRepInstance parent)
+            throws CloneNotSupportedException {
+        return copy(heprep, parent, null);
+    }
+
+    public HepRepInstance copy(HepRep heprep, HepRepInstanceTree parent)
+            throws CloneNotSupportedException {
+        return copy(heprep, parent, null);
+    }
+
+    public HepRepInstance copy(HepRep heprep, HepRepInstance parent, HepRepSelectFilter filter)
+            throws CloneNotSupportedException {
+        HepRepType type = heprep.getType(getType().getName());
+        DefaultHepRepInstance instanceCopy = new DefaultHepRepInstance(parent, type);
+        return copy(heprep, instanceCopy, filter);
+    }
+
+    public HepRepInstance copy(HepRep heprep, HepRepInstanceTree parent, HepRepSelectFilter filter)
+            throws CloneNotSupportedException {
+        HepRepType type = heprep.getType(getType().getName());
+        DefaultHepRepInstance instanceCopy = new DefaultHepRepInstance(parent, type);
+        return copy(heprep, instanceCopy, filter);
+    }
+
+    private HepRepInstance copy(HepRep heprep, DefaultHepRepInstance instanceCopy, HepRepSelectFilter filter)
+            throws CloneNotSupportedException {
+        HepRepUtil.copyAttributes(this, instanceCopy);
+
+	    // copy points
+        for (Iterator i=getPoints().iterator(); i.hasNext(); ) {
+            HepRepPoint point = (HepRepPoint)i.next();
+            // auto addition due to parent
+            point.copy(instanceCopy);
+        }
+
+        // copy sub-instances
+        for (Iterator i=getInstances().iterator(); i.hasNext(); ) {
+            HepRepInstance instance = (HepRepInstance)i.next();
+            if ((filter == null) || (filter.select(instance))) {
+                // auto addition due to parent
+                instance.copy(heprep, instanceCopy, filter);
+            }
+        }
+
+        return instanceCopy;
+    }
+
+    public void setUserObject(Object object) {
+        userObject = object;
+    }
+
+    public Object getUserObject() {
+        return userObject;
+    }
+
+    public HepRepType getType() {
+        return type;
+    }
+
+    public void addPoint(HepRepPoint point) throws UnsupportedOperationException {
+        if (pointList == null) pointList = new ArrayList();
+        pointList.add(point);
+/*
+        try {
+            DefaultHepRepPoint node = (DefaultHepRepPoint)point;
+            pointList = LinkedList.add(pointList, node);
+        } catch (ClassCastException cce) {
+            System.err.println("DefaultHepRepInstance.add() cannot add node of class: "+point.getClass()+", ignored.");
+        }
+*/
+    }
+
+    public Collection getPoints() {
+        if (pointList == null) return HepRepUtil.emptyCollection;
+        return pointList;
+    }
+
+    public void addInstance(HepRepInstance instance) throws UnsupportedOperationException {
+        if (instanceList == null) instanceList = new ArrayList();
+        instanceList.add(instance);
+/*
+        try {
+            DefaultHepRepInstance node = (DefaultHepRepInstance)instance;
+            instanceList = LinkedList.add(instanceList, node);
+        } catch (ClassCastException cce) {
+            System.err.println("DefaultHepRepInstance.add() cannot add node of class: "+instance.getClass()+", ignored.");
+        }
+*/
+    }
+
+    public void removeInstance(HepRepInstance instance) throws UnsupportedOperationException {
+        if (instanceList != null) instanceList.remove(instance);
+/*
+        try {
+            DefaultHepRepInstance node = (DefaultHepRepInstance)instance;
+            if (instanceList != null) instanceList = instanceList.remove(node);
+        } catch (ClassCastException cce) {
+            System.err.println("DefaultHepRepInstanceTree.remove() cannot remove node of class: "+instance.getClass()+", ignored.");
+        }
+*/
+    }
+
+    public Collection getInstances() {
+        if (instanceList == null) return HepRepUtil.emptyCollection;
+        return instanceList;
+    }
+
+    /**
+     * search for attribute on node, then search on type
+     */
+    public HepRepAttValue getAttValue(String name) {
+        String lowerCaseName = name.toLowerCase();
+        HepRepAttValue value = getAttValueFromNode(lowerCaseName);
+        return (value != null) ? value : type.getAttValue(lowerCaseName);
+    }
+
+    public String toString() {
+        return "DefaultHepRepInstance: "+getType();
+    }
+
+    public int getNoOfInstances() {
+        int n = 0;
+        for (Iterator i=getInstances().iterator(); i.hasNext(); ) {
+            DefaultHepRepInstance instance = (DefaultHepRepInstance)i.next();
+            n++;
+            n += instance.getNoOfInstances();
+        }
+        return n;
+    }
+
+    public int getNoOfPoints() {
+        int p = getPoints().size();
+
+        for (Iterator i=getInstances().iterator(); i.hasNext(); ) {
+            DefaultHepRepInstance instance = (DefaultHepRepInstance)i.next();
+            p += instance.getNoOfPoints();
+        }
+        return p;
+    }
+
+    public int getNoOfAttValues() {
+        return getAttValuesFromNode().size();
+    }
+}
+

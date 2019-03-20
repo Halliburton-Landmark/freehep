@@ -1,0 +1,9 @@
+#set( $webName = "YourWeb" )
+<table border="1">
+    <tr>
+    <td>
+        <i>Create a file "<b>Header.ivm</b>" with the header you want to go here.
+        <p>You can also add <b>\#set (\$webName="YourWeb")</b> to replace the sub-web search name.</i>
+    </td>
+    </tr>
+</table>

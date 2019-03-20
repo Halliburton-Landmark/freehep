@@ -1,0 +1,310 @@
+package hep.graphics.heprep.util;
+
+import java.io.*;
+import java.util.*;
+
+import hep.graphics.heprep.*;
+import hep.graphics.heprep.ref.*;
+
+/**
+ *
+ * @author Mark Donszelmann
+ *
+ * @version $Id: HepRepUtil.java,v 1.17 2003/11/24 22:34:51 duns Exp $
+ */
+
+public class HepRepUtil {
+    public static final String cvsId = "$Id: HepRepUtil.java,v 1.17 2003/11/24 22:34:51 duns Exp $";
+    public static final Iterator empty = new EmptyIterator();
+    public static final Collection emptyCollection = new EmptyCollection();
+    public static final List emptyList = new EmptyList();
+
+    // Static class, not to be instantiated
+    private HepRepUtil() {
+    }
+
+    /**
+     * Decodes a String into a Double. The string can have the following formats:
+     * <pre>
+     *      0ds<number> :   where number is the DoubleToLongBits encoding in special format
+     *      0d0x<number>:   where number is the DoubleToLongBits encoding in hex
+     *      0d#<number> :   where number is the DoubleToLongBits encoding in hex
+     *      0d<number>  :   where number is the DoubleToLongBits encoding in decimal
+     *      0x<number>  :   where number is the Hex encoding of a Long
+     *      <number>    :   where number contains (.Ee) and is parsed into a Double
+     *      <number>    :   where number contains no (.Ee) and is parsed into a Long
+     * </pre>
+     */
+    public static double decodeNumber(String s) {
+        double d = 0;
+        try {
+        if (s.startsWith("0ds")) {
+            d = Double.longBitsToDouble(decodeSpecial(s.substring(3)));
+        } else if (s.startsWith("0d0x")) {
+            d = Double.longBitsToDouble(decodeHex(s.substring(4)));
+        } else if (s.startsWith("0d#")) {
+            d = Double.longBitsToDouble(decodeHex(s.substring(3)));
+        } else if (s.startsWith("0d")) {
+            d = Double.longBitsToDouble(decodeHex(s.substring(2)));
+        } else if (s.startsWith("0x")) {
+            d = Long.decode(s).doubleValue();
+        } else if ((s.indexOf(".") < 0) && (s.indexOf("E") < 0) && (s.indexOf("e") < 0)) {
+            d = Long.decode(s).doubleValue();
+        } else {
+            d = Double.valueOf(s).doubleValue();
+        }
+        } catch (NumberFormatException nfe) {
+            System.err.println("decodeNumber: "+s);
+            nfe.printStackTrace();
+            throw nfe;
+        }
+        return d;
+    }
+
+    private static char[] hexChars = new char[16];
+
+    /**
+     * Decodes a non-negative Hex number into a long
+     */
+    public static long decodeHex(String s) throws NumberFormatException {
+        long result = 0;
+        int len = Math.min(hexChars.length, s.length());
+        s.getChars(0, len, hexChars, 0);
+
+        for (int i=0; i<len; i++) {
+            result = result << 4;
+            char c = hexChars[i];
+            if ((48 <= c) && (c <= 57)) {
+                // 0..9
+                result += (c-48);
+            } else if ((65 <= c) && (c <= 70)) {
+                result += (c-65+10);
+            } else if ((97 <= c) && (c <= 102)) {
+                result += (c-97+10);
+            } else {
+                throw new NumberFormatException("Not a hex number: "+s);
+            }
+        }
+
+        return result;
+    }
+
+    // NOTE this should be less than 16
+    private static char[] specialChars = new char[16];
+
+    /**
+     * Decodes a non-negative Special number into a long
+     */
+    public static long decodeSpecial(String s) throws NumberFormatException {
+        long result = 0;
+        int len = Math.min(specialChars.length, s.length());
+        s.getChars(0, len, specialChars, 0);
+
+        for (int i=0; i<len; i++) {
+            result = result << 6;
+            char c = specialChars[i];
+            if ((48 <= c) && (c <= 57)) {
+                // 0..9
+                result += (c-48);
+            } else if ((65 <= c) && (c <= 90)) {
+                // A..Z
+                result += (c-65+10);
+            } else if ((97 <= c) && (c <= 124)) {
+                // a..z,{,|
+                result += (c-97+10+26);
+            } else {
+                throw new NumberFormatException("Not a special number: "+s);
+            }
+        }
+
+        return result;
+    }
+
+    public static String encodeSpecial(long d) {
+
+        for (int i=10; i>=0; i--) {     // 64 bits in 6 bit parts, 11 parts
+            int c = (int)(d & 0x3f);        // 6 bits
+            if (c < 10) {
+                specialChars[i] = (char)('0'+c);
+            } else if (c < 10+26) {
+                specialChars[i] = (char)('A'+c-10);
+            } else if (c < 10+26+26+2) {
+                specialChars[i] = (char)('a'+c-10-26);
+            } else {
+                System.err.println("encodeSpecial: this looks bad.");
+            }
+            d = d >>> 6;
+        }
+
+        return new String(specialChars, 0, 11);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(""+Long.toHexString(decodeSpecial("0123456789ABCDEF")));
+        System.out.println(""+Long.toHexString(decodeSpecial("GHIJKLMNOPQRSTUV")));
+        System.out.println(""+Long.toHexString(decodeSpecial("WXYZabcdefghijkl")));
+        System.out.println(""+encodeSpecial(0x59a7a29aabb2dbafL));
+        System.out.println(""+Long.toHexString(decodeSpecial("mnopqrstuvwxyz{|")));
+        System.out.println(""+encodeSpecial(0x5db7e39ebbf3dfbfL));
+    }
+
+
+    /**
+     * copy all attributes (defs and values) from node src to node dst
+     */
+    public static void copyAttributes(HepRepAttribute src, HepRepAttribute dst) throws CloneNotSupportedException {
+
+        // BUG FIX.  Do something special for layers, because these do not end
+        // up in the normal iteration.
+        HepRepAttValue layerAtt = src.getAttValueFromNode("layer");
+        if (layerAtt!=null) {
+            try {
+                dst.addAttValue(layerAtt.copy());
+            } catch (IOException e) {
+                System.err.println("HepRepUtil: FATAL IOException "+e);
+            }
+        }
+
+        // copy all att values
+        for (Iterator i=src.getAttValuesFromNode().iterator(); i.hasNext(); ) {
+            HepRepAttValue value = (HepRepAttValue)i.next();
+            try {
+                dst.addAttValue(value.copy());
+            } catch (IOException e) {
+                System.err.println("HepRepUtil: FATAL IOException "+e);
+            }
+        }
+    }
+
+    public static HepRepType getTypeFromTrees(Collection trees, String name) {
+        for (Iterator i = trees.iterator(); i.hasNext(); ) {
+            HepRepTypeTree tree = (HepRepTypeTree)i.next();
+            HepRepType type = getTypeFromTypes(tree.getTypes(), name);
+            if (type != null) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    public static HepRepType getTypeFromTypes(Collection types, String name) {
+        for (Iterator i=types.iterator(); i.hasNext(); ) {
+            // this type
+            HepRepType type = (HepRepType)i.next();
+            if (type.getName().equals(name)) {
+                return type;
+            }
+            // subtypes
+            type = getTypeFromTypes(type.getTypes(), name);
+            if (type != null) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns an iterator which walks the full list of instances within a HepRepInstanceTree
+     *
+     * @param instanceTree HepRepInstanceTree to be iterated over
+     * @param layers list of layers to iteratate over or null.
+     */
+    public static HepRepIterator getInstances(HepRepInstanceTree instanceTree, List layers) {
+        return new DefaultHepRepIterator(instanceTree, layers);
+    }
+
+    /**
+     * iterates two iterations in order
+     */
+    public static Iterator iterator(Iterator first, Iterator second) {
+        final Iterator f = (first != null) ? first : empty;
+        final Iterator s = (second != null) ? second : empty;
+        return new Iterator() {
+
+            public boolean hasNext() {
+                return f.hasNext() || s.hasNext();
+            }
+
+            public Object next() {
+                if (f.hasNext()) {
+                    return f.next();
+                }
+
+                return s.next();
+            }
+
+            public void remove() {
+                // for now, if implemented think about the semantics of the last entry in the first enum
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+}
+
+
+class EmptyIterator implements Iterator {
+    public boolean hasNext() {
+        return false;
+    }
+
+    public Object next() {
+        throw new NoSuchElementException();
+    }
+
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
+}
+
+
+class EmptyCollection extends AbstractCollection {
+    private Iterator iterator = new Iterator() {
+        public boolean hasNext() {
+            return false;
+        }
+
+        public Object next() {
+            throw new NoSuchElementException();
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    };
+
+    public Iterator iterator() {
+        return iterator;
+    }
+
+    public int size() {
+        return 0;
+    }
+}
+
+class EmptyList extends AbstractList {
+    private Iterator iterator = new Iterator() {
+        public boolean hasNext() {
+            return false;
+        }
+
+        public Object next() {
+            throw new NoSuchElementException();
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    };
+
+    public Iterator iterator() {
+        return iterator;
+    }
+
+    public int size() {
+        return 0;
+    }
+
+    public Object get(int index) {
+        throw new IndexOutOfBoundsException();
+    }
+}

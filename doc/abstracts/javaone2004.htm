@@ -1,0 +1,169 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Abstract</title>
+</head>
+
+<body>
+
+<h1>JavaOne 2004, Session 2858</h1>
+<h2>Title</h2>
+<p>The FreeHEP Open Source Vector Graphics Package and Lightweight Application 
+Framework</p>
+<h2>Abstract</h2>
+<p>Java has been used extensively as a tool for scientific visualization and 
+data mining in High-Energy Physics. A number of components have emerged from 
+this work which are useful in a much wider context. These have been packaged and 
+made available as part of an open-source Java library, called the FreeHEP Java 
+Library. </p>
+<p>In this presentation we will discuss two components of the FreeHEP Java 
+library:</p>
+<ol>
+  <li>The FreeHEP Vector Graphics package, which allows any Java2D based application to 
+  write high quality output using vector rather than bitmap graphics formats, 
+  such as CGM, EMF, EPS/PS, SVG and SWF. The Vector Graphics package is 
+  sandwiched between the standard Graphics2D class and Java's IO system. A set 
+  of base and utility classes are provided to allow current and new formats to 
+  reuse existing functionality. Classes for a particular format are packaged in 
+  self-registering jar files, which allows easy addition and removal of any 
+  driver.</li>
+  <li>The FreeHEP Lightweight Application Framework - a toolkit which allows 
+  rapid development of desktop Java applications. Key features include the 
+  ability to define menus and toolbars using simple XML files, a simple &quot;command 
+  dispatch&quot; mechanism for coupling menu items to code, and a &quot;plug-in&quot; mechanism 
+  which enables applications to be assembled from independent modules.</li></li>
+</ol>
+<p>We will describe how to use these components in your own applications, and 
+cover some of the design issues and problems involved in implementing them. We 
+will also demonstrate several applications built using these components: 
+ 
+Icon Browser, a simple demonstration application, JAS, a general purpose data 
+analysis tool, and WIRED, a reusable physics visualization tool.</p>
+</p>
+<h2>Outline</h2>
+<ul>
+  <li>Introduction</li>
+  <li>FreeHEP<ul>
+    <li>Open Source Project</li>
+    <li>High Energy Physics</li>
+  </ul>
+  </li>
+  <li>The FreeHEP Vector Graphics Export package<ul>
+    <li>Importance of Vector Graphics</li>
+    <li>Vector Formats: CGM, EMF, EPS/PS, PDF, SVG and SWF</li>
+    <li>Bitmap Formats using javax.imageio</li>
+    <li>Selecting Formats: the Export Dialog</li>
+    <li>Copy-and-Pasting Vector Graphics</li>
+    <li>Registering Formats using jar files</li>
+    <li>Architecture: the sandwich construction</li>
+  </ul>
+  <ul>
+    <li>Vector Graphics<ul>
+      <li>Sticking to the java.awt.Graphics2D class</li>
+      <li>Useful extension to Graphics2D</li>
+      <li>Graphics Contexts</li>
+      <li>Draw/Fill Path Construction</li>
+      <li>Font handling and embedding</li>
+      <li>Setting general and format-specific options</li>
+      <li>Adding additional drivers</li>
+    </ul>
+    </li>
+  </ul>
+  <ul>
+    <li>Graphics IO<ul>
+      <li>ASCII/XML versus Binary Formats</li>
+      <li>Tagged Formats</li>
+      <li>Readers and Writers</li>
+    </ul>
+    </li>
+    <li>FreeHEP IO<ul>
+      <li>Encoder and Decoder classes</li>
+      <li>Bit Streams, Byte Order Streams and Tag Streams</li>
+    </ul>
+    </li>
+  </ul>
+  </li>
+  <li>The FreeHEP Lightweight Application Framework<ul>
+    <li>Design Goals</li>
+    <li>Developing A Simple Application using the Framework<ul>
+      <li>Application Properties</li>
+      <li>User Preferences</li>
+      <li>Using XML to define menus and toolbars</li>
+      <li>Command Dispatch mechanism</li>
+    </ul>
+    </li>
+    <li>MDI support and Window Management<ul>
+      <li>Writing a custom &quot;window manager&quot;</li>
+    </ul>
+    </li>
+    <li>Extending the Application using Plug-ins<ul>
+      <li>Plug-in framework</li>
+      <li>Communication between plug-ins</li>
+    </ul>
+    </li>
+    <li>Comparison with other Application Frameworks (NetBeans, Eclipse, etc)</li>
+  </ul>
+  </li>
+  <li>Applications and Demonstrations<ul>
+    <li>Icon Browser Demo</li>
+    <li>JAS Analysis Studio</li>
+    <li>WIRED Event Display</li>
+  </ul>
+  </li>
+  <li>Future Plans</li>
+</ul>
+<h2>Miscellaneous</h2>
+<p>Technical Session in the 10 - Desktop Category, Advanced Skill Level, J2SE.</p>
+<p>APIs: </p>
+<ul>
+  <li>Drag and Drop</li>
+  <li>Java 2D</li>
+  <li>Java Foundation Classes (J.F.C./Swing) Components</li>
+  <li>Java Web Start</li>
+  <li>XML</li>
+</ul>
+<h2>Biography Mark Dönszelmann</h2>
+<p>Mark is a Computer Scientist and leads the WIRED Event Display visualization project in High Energy Physics. Formerly working at the European 
+Laboratory for Particle Physics (CERN) near Geneva, he recently moved to&nbsp; the Stanford Linear Accelerator Center (SLAC) 
+near Palo Alto. He 
+is one of the main contributors of FreeHEP project, working on subjects such as 
+Vector Graphics and Abstract Interfaces for Data Analysis (AIDA). Though he 
+prefers using Java, his surroundings compel him to interface to C++ using the 
+Java Native Interface (JNI). </p>
+<p>Being at CERN at the time of the birth of the World-Wide Web, he worked with 
+Tim Berners-Lee on the VMS port of the CERN web server. He gave many 
+talks at conferences about the Web and its application in High Energy Physics. As a lecturer  of the CERN School of 
+Computing he has given lectures and tutorials in Java and Java-related subjects, 
+such as Information Systems and Mobile Agents. </p>
+<h2>Biography Tony S. Johnson</h2>
+<p>Tony is a physicist working at the Stanford Linear Accelerator Center near 
+Palo Alto where he has developed software for scientific analysis and 
+visualization for over 20 years. He was an early contributor to the World-Wide 
+Web, developing the Midas web browser, a precursor to the Mosaic browser. Tony 
+is the project lead for the JAS data mining application.</p>
+<p>He has made many presentations at international conferences and schools on 
+data analysis and visualization, software architecture and novel web 
+applications.</p>
+<h2>URLs:</h2>
+
+<p>FreeHEP: <a href="http://www.freehep.org">http://www.freehep.org</a></p>
+
+<p>FreeHEP Java Libraries: <a href="http://java.freehep.org">http://java.freehep.org</a></p>
+
+<p>FreeHEP Vector Graphics: <a href="http://java.freehep.org/VectorGraphics">
+http://java.freehep.org/VectorGraphics</a></p>
+
+<p>FreeHEP Lightweight Application Framework:
+<a href="http://java.freehep.org/AppFramework">http://java.freehep.org/AppFramework</a></p>
+
+<p>SLAC: <a href="http://www.slac.stanford.edu">http://www.slac.stanford.edu</a></p>
+
+<p>CERN: <a href="http://www.cern.ch">http://www.cern.ch</a></p>
+
+</body>
+
+</html>

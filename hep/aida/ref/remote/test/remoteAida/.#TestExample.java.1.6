@@ -1,0 +1,275 @@
+package hep.aida.ref.remote.test.remoteAida;
+
+import java.net.InetAddress;
+import java.util.EventObject;
+import java.util.Random;
+import junit.framework.*;
+
+import hep.aida.*;
+import hep.aida.dev.*;
+import hep.aida.ref.event.AIDAListener;
+import hep.aida.ref.event.IsObservable;
+import hep.aida.ref.tree.Tree;
+
+import hep.aida.ref.remote.*;
+import hep.aida.ref.remote.rmi.client.*;
+import hep.aida.ref.remote.rmi.interfaces.*;
+import hep.aida.ref.remote.rmi.server.*;
+
+import hep.aida.test.AidaTestCase;
+
+/**
+ *
+ * @author tonyj
+ * @version $Id: TestExample.java,v 1.7 2005/05/31 16:31:21 chuli Exp $
+ */
+public class TestExample extends RAIDATestCase {
+
+    private IDevTree serverTree;
+    private ITree clientTree;
+    private RemoteServer treeServer;
+    private RmiServer rmiTreeServer;
+    private String localHost;
+    private int port;
+    private String serverName;
+
+    //Paramters adapted from AIDA test suite;
+    private int nEntries = 1234;
+    private int xbins = 40;
+    private int ybins = 20;
+    private int zbins = 10;
+
+    private String histPath = "/hists";
+	private String cloudPath= "/clouds";
+	private String profilePath = "/profiles";
+	private String pntsetPath = "/pointset";
+
+    private double xLowerEdge = -2.3;
+    private double xUpperEdge = 4.2;
+    private double yLowerEdge = -6.1;
+    private double yUpperEdge = 1.2;
+    private double zLowerEdge = -0.6;
+    private double zUpperEdge = 7.5;
+
+    private String hist1DTitle = "Aida 1D Histogram";
+    private String hist2DTitle = "Aida 2D Histogram";
+    private String hist3DTitle = "Aida 3D Histogram";
+
+	private String cloud1DTitle = "Aida 1D Cloud";
+	private String cloud2DTitle = "Aida 2D Cloud";
+
+	private String profile1DTitle = "Aida 1D Profile";
+	private String profile2DTitle = "Aida 2D Profile";
+
+	private String dataPntSetTitle = "Aida Data Point Set";
+
+    //private String cloud1DOpts  = "Some, options=false , for=true, cloud1D=maybe ; autoConvert = true";
+    private String cloud1DOpts  = "autoConvert = true";
+    private String cloud2DOpts  = "autoConvert = true";
+
+    public TestExample(String testName) {
+        super(testName);
+    }
+    
+    // is run by JUnit framework before the test
+    protected void setUp() throws Exception {
+        super.setUp();
+        
+        // Set host name, port, and server name
+        localHost = null;
+        try {
+             localHost = InetAddress.getLocalHost().getHostName();
+        } catch (Exception e) {
+            e.printStackTrace();          
+        }        
+        assertTrue(localHost != null);
+        
+        port = 2001;
+        serverName = "RmiAidaServer";
+    }
+    
+    // is run by JUnit framework after the test
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        
+        // disconnect client
+        clientTree.close();
+        
+        // disconnect and shut down server
+        ((RmiServerImpl) rmiTreeServer).disconnect(); 
+        rmiTreeServer = null;
+        
+        treeServer.close(); 
+        treeServer = null;
+        
+        serverTree.close();
+        serverTree = null;
+    }
+
+	public void testCaseExample() {
+
+        // create AIDA factories and AIDA Tree
+        IAnalysisFactory af = IAnalysisFactory.create();
+        ITreeFactory tf = af.createTreeFactory();
+        serverTree = (IDevTree) tf.create();
+        IHistogramFactory hf = af.createHistogramFactory(serverTree);
+
+		IDataPointSetFactory dpsf = af.createDataPointSetFactory(serverTree);
+
+		serverTree.mkdir(histPath);
+		serverTree.mkdir(cloudPath);
+		serverTree.mkdir(profilePath);
+		serverTree.mkdir(pntsetPath);
+
+		serverTree.cd(histPath);
+        // create Histograms in a tree
+        IHistogram1D h1 = hf.createHistogram1D(hist1DTitle, xbins, xLowerEdge, xUpperEdge);
+		IHistogram2D h2 = hf.createHistogram2D(hist2DTitle, xbins, xLowerEdge, xUpperEdge, ybins, yLowerEdge, yUpperEdge);
+
+		assertTrue(h1 != null);
+		assertTrue(h2 != null);
+
+		serverTree.cd(cloudPath);
+		//ICloud1D c1 = hf.createCloud1D(cloudPath, cloud1DTitle, 10 * nEntries, cloud1DOpts);
+		//ICloud1D c1 = hf.createCloud1D("", cloud1DTitle, 10 * nEntries, cloud1DOpts);
+		ICloud1D c1 = hf.createCloud1D(cloud1DTitle);
+		ICloud2D c2 = hf.createCloud2D(cloud2DTitle);
+		assertTrue(c1 != null);
+		assertTrue(c2 != null);
+
+		serverTree.cd(profilePath);
+		//IProfile1D p1 = hf.createProfile1D(profilePath, profile1DTitle, xbins, xLowerEdge, xUpperEdge);
+		IProfile1D p1 = hf.createProfile1D(profile1DTitle, xbins, xLowerEdge, xUpperEdge);
+		assertTrue(p1 != null);
+
+		serverTree.cd(pntsetPath);
+		//IDataPointSet d1 = dpsf.create(pntsetPath, dataPntSetTitle, 1);
+		IDataPointSet d1 = dpsf.create(dataPntSetTitle, 1);
+		assertTrue(d1 != null);
+
+        // fill histograms
+        Random r = getRandomNumberGenerator();
+
+        for (int i = 0; i < 10 * nEntries; i++) {
+            double xVal = r.nextGaussian();
+            double yVal = r.nextGaussian();
+	    	double w = r.nextDouble();
+            h1.fill(xVal);
+	    	h2.fill(xVal, yVal);
+	
+			c1.fill(xVal);
+			c2.fill(xVal, yVal);
+
+			p1.fill(xVal, yVal);
+
+			d1.addPoint();
+			d1.point(i).coordinate(0).setValue(xVal);
+			d1.point(i).coordinate(0).setErrorPlus(Math.abs(yVal / 10.0));
+        }
+
+        ////////////////////////////////
+        // Now create RMI Server
+        ////////////////////////////////        
+        
+        // RMI bind name for server
+        String treeBindName = "//"+localHost+":"+port+"/"+serverName;
+        try {
+            // General server that uses Remote AIDA interfaces (hep.aida.ref.remote.interfaces)
+            boolean serverDuplex = true;
+            treeServer = new RemoteServer(serverTree, serverDuplex);
+
+            // Transport-layer RMI server that talks Remote AIDA to treeServer and RMI to the client
+            rmiTreeServer = new RmiServerImpl(treeServer, treeBindName); 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertTrue(treeServer != null);
+        assertTrue(rmiTreeServer != null);
+        
+        ////////////////////////////////
+        // Now create RMI Client
+        // Use RMIStoreFactory for that
+        ////////////////////////////////        
+        
+        // Create Rmi Client Tree 
+        boolean clientDuplex = true;
+        boolean hurry = false;
+        String options = "duplex=\""+clientDuplex+"\",RmiServerName=\"rmi:"+treeBindName+"\",hurry=\""+hurry+"\"";
+        try {
+			clientTree = tf.create(localHost, RmiStoreFactory.storeType, true, false, options);   
+        } catch (Exception e) { 
+           	e.printStackTrace(); 
+        }
+
+        assertTrue(clientTree != null);
+
+		System.out.println("------We try to list the object name and types here!");
+		String[] objNames = clientTree.listObjectNames(profilePath);
+		String[] objTypes = clientTree.listObjectTypes(profilePath);
+		for(int i = 0; i < objTypes.length; i++){
+			System.out.println("------Name = " + objNames[i] + "; ------Type = " + objTypes[i]);
+		}
+        
+        // retrieve h1 using the RMI
+        IHistogram1D rh1 = null;
+        IHistogram2D rh2 = null;
+
+		ICloud1D rc1 = null;
+		ICloud2D rc2 = null;
+
+		IProfile1D rp1 = null;
+
+		IDataPointSet rd1 = null;
+
+        try {
+			rh1 = (IHistogram1D) clientTree.find(histPath + "/" + hist1DTitle);
+           	rh2 = (IHistogram2D) clientTree.find(histPath + "/" + hist2DTitle);
+
+			rc1 = (ICloud1D) clientTree.find(cloudPath + "/" + cloud1DTitle);
+			rc2 = (ICloud2D) clientTree.find(cloudPath + "/" + cloud2DTitle);
+
+			rp1 = (IProfile1D) clientTree.find(profilePath + "/" + profile1DTitle);
+
+			rd1 = (IDataPointSet) clientTree.find(pntsetPath + "/" + dataPntSetTitle);
+
+        } catch (Exception e) { 
+			e.printStackTrace(); 
+        }
+        assertTrue(rh1 != null);
+        assertTrue(rh2 != null);
+
+		assertTrue(rc1 != null);
+		assertTrue(rc2 != null);
+
+		assertTrue(rp1 != null);
+		assertTrue(rd1 != null);
+
+        // check if two histograms are equal
+        assertEquals(h1, (RemoteHistogram1D) rh1);
+        assertEquals(h2, (RemoteHistogram2D) rh2);
+
+        // check if two clouds are equal
+		assertEquals(c1, (RemoteCloud1D) rc1);
+		assertEquals(c2, (RemoteCloud2D) rc2);
+
+		// check if two profiles are equal
+		//assertEquals(p1, (RemoteProfile1D) rp1);
+
+		//check of two data point sets are equal;
+		assertEquals(d1, (RemoteDataPointSet) rd1);
+   }
+      
+   // Just for convenience, not used within JUnit framework
+   public static void main(String[] args) throws Exception {
+
+       	TestExample te = new TestExample("TestExample");
+        
+       	te.setUp();
+       	try {
+       		te.testCaseExample();
+       	} catch(Exception e) {
+       		e.printStackTrace();
+       	}
+       	te.tearDown();
+   }
+}

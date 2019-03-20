@@ -1,0 +1,327 @@
+==========================
+User Requirements Document 
+==========================
+
+Issue:          Draft
+Revision:       $Id: urd.txt,v 1.4 2000/07/21 10:36:46 patrick Exp $
+
+Institution:    CERN
+Project:        PDXML
+                Particle Property Data in XML
+
+Reference:      
+Created:        17/07/2000 
+Last modified:  21/07/2000 
+Prepared By:    Patrick Hellwig
+                 
+
+
++-------------------------------------------------------------------------+
+ This document has been prepared using the CERN PSS-05 Templates. The CERN 
+ PSS-05 Templates have been prepared by the Information and Programming 
+ Technology Group, ECP Division, CERN (The European Laboratory for Particle 
+ Physics) and conform to the PSS-05 Software Engineering Standards 
+ (ISBN 0-13-106568-8) defined by the ESA (European Space Agency) BSSC 
+ (Board for Software Standardisation and Control). For more information 
+ please contact docsys@ptsun00.cern.ch.
++---------------------------------------------------------------------------+
+
+Abstract 
+========
+
+This documents describes the User Requirements for a Particle Properties
+database. A general description of the functions and requirements of the 
+Software and Database will be provided.
+
+
+Document Status Sheet 
+=====================
+
+1. Document Title: Particle Properties in XML 
+2. Document Reference Number: $Id: urd.txt,v 1.4 2000/07/21 10:36:46 patrick Exp $
+3. Issue      4. Revision  5. Date      6. Reason for change 
+Draft		  0	   17 July 2000 First Draft
+		  1.3	   19 July 2000 Changes in Data Model
+		  1.4	   21 July 2000 technical details cutted out
+
+
+Document Change Record 
+======================
+
+DCR No.:
+Date: 
+Originator: 
+Approved By: 
+
+1. Document Title: 
+2. Document Reference Number: 
+3. Document Issue/Revision Number: 
+3. Page      4. Paragraph  6. Reason for change 
+
+
+
+Table of contents
+=================
+
+Abstract
+Document Status Sheet
+Document Change Record
+1  Introduction
+   1.1  Purpose of the document
+   1.2  Scope of the software
+   1.3  Definitions, acronyms and abbreviations
+   1.4  References
+   1.5  Overview of the document
+2  General Description
+   2.1  Product perspective
+   2.2  General capabilities
+   2.3  General constraints
+   2.4  User characteristics
+   2.5  Operational environment
+   2.6  Assumptions and dependencies
+3  Specific Requirements
+   3.1  Capability Requirements
+   3.2  Constraint requirements
+
+
+
+1  Introduction
+===============
+
+1.1  Purpose of the document
+----------------------------
+
+This document describes the requirement of a database providing the
+user with Particle Properties. Therefore a well structured data modell
+has to be formed. To have the possibility to access the Particle Data
+in a wide range a common and open platform should be used. 
+
+1.2  Scope of the software 
+--------------------------
+
+The software should provide a easy administratable and actual database
+of Particle Data. For this reason there are different parts.
+
+1.2.1 The datamodell
+
+The data is structured with a special data modell, which has to be defined.
+This data modell must provide the following data and options:
+ 	 a) Often used particle properties (e.g. Mass, Width, etc.)
+ 	 b) If required the "Decay Modes" of a Particle
+ 	 c) An easy way to add user defined data
+ 	 
+The data consists of files providing different information. The data
+structure puts all the information together to one consistent database.
+Depending to the user additional information can be inserted into the
+database with separat files.
+
+1.2.2 The Import-function
+
+The data can be provided by different existing databases and sources. 
+a) The information can be provided by existing database (PDG ?)
+b) Typing in the data by hand
+The data extraction process should work automatically.
+
+1.2.3 The Parser
+
+To provide the information to different applications there must be an Parser.
+This interface provides the information to a given application in the
+right structure and the fitting style.
+
+As a first task a interface to JAS should be implemented.
+
+To provide a online library (database) a additional HTML-Java-Servelet
+could be written, which interacts with the Internet-User.
+
+
+1.3  Definitions, acronyms and abbreviations 
+--------------------------------------------
+
+ESA	European Space Agency 
+CERN	European Laboratory for Particle Physics 
+
+
+
+1.4  References
+---------------
+
+[1]     The PDG Online WEB-site http://pdg.lbl.gov
+
+
+
+1.5  Overview of the document
+-----------------------------
+
+This document is just a short description about what has to be done.
+
+
+2  General Description 
+======================
+
+
+2.1  Product perspective 
+------------------------
+
+There exist several aplications running with hardcoded Particle Data,
+some other use a little database for their own. This database project is
+designed to provide updated and well structurized data for everybody who wants
+to use this information. 
+
+
+2.2  General capabilities
+-------------------------
+
+The database provides particle information which varies on the needs of the user.
+There should be multiple sources, the user can choose from:
+ 	 a) Often used particle properties (e.g. Mass, Width, etc.)
+ 	 b) "Decay Modes" of a Particle
+ 	 c) user defined data
+
+
+2.3  General constraints
+------------------------
+
+The database must provide the same information, which is already hardcoded
+in other dataformats.
+
+
+2.4  User characteristics
+-------------------------
+
+The users use analysis tools which already exist. The user will see no difference
+between the version before the use of the databank and after. 
+
+The users can after the database-installation type in their own data and it is
+easier to upgrade the data.
+
+
+2.5  Operational environment 
+----------------------------
+
+The final database should be published on the Web.
+Other tools will be implemented to provide a easy to use database-management.
+
+
+2.6  Assumptions and dependencies 
+---------------------------------
+
+
+
+3  Specific Requirements
+========================
+UR [DM1]
+A data structure fitting to the requirements has to be modelled. 
+
+UR [DB1]
+A database-Schema in the specific database format of this data structure has to be implemented.
+
+UR [DB2]
+Test data should be added to the database.
+
+UR [DB3]
+A simple Parser must be implemented to test the data model with the database.
+
+UR [DB4]
+Users can overwrite data and insert their own data.
+
+UR [DB5]
+New Properties must be easy integratable.
+
+UR [DB6]
+Every data must be provided with extra information about origin, date and reliability of data.
+
+UR [DC1]
+A converter for existing particle data has to be created to build up database-files with real data.
+
+UR [DC2]
+A Parser for this data must be configured.
+
+UR [JAS1]
+A new Particle Property Provider Class should be done for JAS, directly accessing the database-file.
+
+UR [JAS2]
+A datacompare routine should be implemented to compare the old ParticleData of JAS with the database-version, 
+no differences should appear.
+
+UR [WEB1]
+A Java-Servlet could be implemented to get an online-browsing system for Particle Data build up on the XML-data.
+
+UR [UTIL1]
+A lookup program should be implemented to look up Particle Properties.
+
+UR [IF1]
+The data should be accessible in multiple ways and for many applications.
+
+
+3.1  Capability Requirements
+----------------------------
+
+UR [CR1]
+The database must provide the same information, which is already hardcoded
+in other dataformats.
+
+	This information is for each particle:
+
+		- Family (Bosons, Mesons, etc.)
+		- Name in ASCII encoding (see definition for giving names)
+		- Name in typsetting format (see definition for giving names)
+		- Standard Particle ID
+		- Charge 
+		- Width (+Error, -Error)
+		- Mass (+Error, -Error)
+		- has antiparticle (yes / no)
+		- 2J (Quantum Information)
+
+		- <add more general data>
+
+Need:	       essential
+Priority:      highest 
+Stability:     very stable, because base element
+Source:        all users
+Clarity:
+Verifiability: Test if database-interface provides the same information like the old
+	       hardcoded programs.
+
+
+
+UR [id1]
+[UR Statement] 
+
+Need  [How essential is this UR]
+Priority  [Priority for incremental delivery] 
+Stability  [How subject to change is this UR] 
+Source  [Name of person, group, document, ... from which UR originates]
+Clarity  [If more than one interpretation possible, this must be qualified]
+Verifiability  [Check that UR can be incorporated into the design, is
+               implementable in the software, and can be tested]
+
+
+UR [id2]
+[UR Statement]
+
+Need  [How essential is this UR]
+Priority  [Priority for incremental delivery] 
+Stability  [How subject to change is this UR] 
+Source  [Name of person, group, document, ... from which the UR originates]
+Clarity  [If more than one interpretation possible, this must be qualified] 
+Verifiability  [Check that UR is incorporatable into the design, is
+               implementable in the software, and can be tested]
+
+
+
+3.2  Constraint requirements
+----------------------------
+
+
+UR [id3]
+[UR Statement]
+
+Need  [How essential is this UR]
+Priority  [Priority for incremental delivery] 
+Stability  [How subject to change is this UR] 
+Source  [Name of person, group, document, ... from which the UR originates]
+Clarity  [If more than one interpretation possible, this must be qualified] 
+Verifiability  [Check that UR is incorporatable into the design, is
+               implementable in the software, and can be tested]
+
+

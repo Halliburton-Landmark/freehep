@@ -1,0 +1,436 @@
+// Copyright 2000, CERN, Switzerland.  All rights reserved.
+
+package hep.graphics.heprep.ref;
+
+import java.awt.Color;
+import java.io.Serializable;
+import java.util.StringTokenizer;
+import java.util.Map;
+import java.util.HashMap;
+
+import org.freehep.util.ScientificFormat;
+
+import hep.graphics.heprep.*;
+import hep.graphics.heprep.util.*;
+
+/**
+ *
+ * @author M.Donszelmann
+ *
+ * @version $Id: DefaultHepRepAttValue.java,v 1.27 2003/11/24 22:34:50 duns Exp $
+ */
+
+public class DefaultHepRepAttValue /*extends LinkedList*/ implements HepRepAttValue, Serializable {
+    public static final String cvsId = "$Id: DefaultHepRepAttValue.java,v 1.27 2003/11/24 22:34:50 duns Exp $";
+
+    private static final ScientificFormat scientific = new ScientificFormat();
+    private String name;
+    private String lowerCaseName;
+
+    // values implemented as separate items, so that they do not take up unnecessary space for an Object
+    // only ONE of these is filled
+    private String lowerCaseString;
+    private Object objectValue;
+    private long longValue;
+    private double doubleValue;
+    private boolean booleanValue;
+
+    private int type;
+    private int showLabel;
+
+    private DefaultHepRepAttValue() {
+        // Un-initialized, for clone
+    }
+
+    void replace(DefaultHepRepAttValue attValue) {
+        name = attValue.name;
+        lowerCaseName = attValue.lowerCaseName;
+        
+        lowerCaseString = attValue.lowerCaseString;
+        objectValue = attValue.objectValue;
+        longValue = attValue.longValue;
+        doubleValue = attValue.doubleValue;
+        booleanValue = attValue.booleanValue;
+        type = attValue.type;
+        showLabel = attValue.showLabel;
+    }
+
+    public DefaultHepRepAttValue(String name, String value, int showLabel) {
+        init(name, TYPE_STRING, showLabel);
+        objectValue = (value == null) ? null : value.intern();
+        lowerCaseString = (value == null) ? null : value.toLowerCase().intern();
+    }
+
+    public DefaultHepRepAttValue(String name, Color value, int showLabel) {
+        init(name, TYPE_COLOR, showLabel);
+        objectValue = value;
+    }
+
+    public DefaultHepRepAttValue(String name, long value, int showLabel) {
+        init(name, TYPE_LONG, showLabel);
+        longValue = value;
+    }
+
+    public DefaultHepRepAttValue(String name, int value, int showLabel) {
+        init(name, TYPE_INT, showLabel);
+        longValue = value;
+    }
+
+    public DefaultHepRepAttValue(String name, double value, int showLabel) {
+        init(name, TYPE_DOUBLE, showLabel);
+        doubleValue = value;
+    }
+
+    public DefaultHepRepAttValue(String name, boolean value, int showLabel) {
+        init(name, TYPE_BOOLEAN, showLabel);
+        booleanValue = value;
+    }
+
+    public DefaultHepRepAttValue(String name, String value, String type, int showLabel) {
+        int t = toType(type);
+        init(name, t, showLabel);
+        switch (t) {
+            case TYPE_STRING:
+                objectValue = value.intern();
+                lowerCaseString = value.toLowerCase().intern();
+                break;
+            case TYPE_COLOR:
+                objectValue = HepRepColor.get(value);
+                break;
+            case TYPE_LONG:
+                longValue = Long.decode(value).longValue();
+                break;
+            case TYPE_INT:
+                longValue = Integer.decode(value).intValue();
+                break;
+            case TYPE_DOUBLE:
+                doubleValue = HepRepUtil.decodeNumber(value);
+                break;
+            case TYPE_BOOLEAN:
+                booleanValue = Boolean.valueOf(value).booleanValue();
+                break;
+            default:
+                System.err.println("Unknown type in DefaultHepRepAttValue: '"+type+"'");
+                objectValue = value;
+                break;
+        }
+    }
+
+    private void init(String name, int type, int showLabel) {
+        this.name = name.intern();
+        this.lowerCaseName = name.toLowerCase().intern();
+        this.type = type;
+        this.showLabel = showLabel;
+    }
+
+    public HepRepAttValue copy() throws CloneNotSupportedException {
+        DefaultHepRepAttValue copy = new DefaultHepRepAttValue();
+        copy.init(name, type, showLabel);
+        copy.lowerCaseString = lowerCaseString;
+        copy.objectValue = objectValue;
+        copy.longValue = longValue;
+        copy.doubleValue = doubleValue;
+        copy.booleanValue = booleanValue;
+        return copy;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLowerCaseName() {
+        return lowerCaseName;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    // Use the toString method of object, so that this is well defined
+    // for all data types.
+    public String getTypeName() {
+        return toString(type);
+    }
+
+    private static String labelStrings[] = {"NAME", "DESC", "VALUE", "EXTRA"};
+    private static Map labelTable;
+    static {
+        labelTable = new HashMap(5);
+        // FIXME: FREEHEP-366
+        labelTable.put("NONE", new Integer(HepRepAttValue.SHOW_NONE));
+        labelTable.put("NAME", new Integer(HepRepAttValue.SHOW_NAME));
+        labelTable.put("DESC", new Integer(HepRepAttValue.SHOW_DESC));
+        labelTable.put("VALUE", new Integer(HepRepAttValue.SHOW_VALUE));
+        labelTable.put("EXTRA", new Integer(HepRepAttValue.SHOW_EXTRA));
+    }
+
+    public static int toShowLabel(String labelString) {
+        int showLabel = SHOW_NONE;
+        if (labelString != null) {
+            StringTokenizer st = new StringTokenizer(labelString, ", ");
+            while (st.hasMoreTokens()) {
+                String label = st.nextToken();
+                Integer number = (Integer)labelTable.get(label);
+                if (number != null) {
+                    showLabel += number.intValue();
+                } else {
+                    showLabel += Integer.decode(label).intValue();
+                }
+            }
+        }
+        return showLabel;
+    }
+
+    public static String toShowLabel(int showLabel) {
+        String label = null;
+        if (showLabel == HepRepAttValue.SHOW_NONE) {
+            label = "NONE";
+        } else {
+            for (int i=0; i<16; i++) {
+                if (((showLabel >> i) & 0x0001) == 0x0001) {
+                    if (label == null) {
+                        label = "";
+                    } else {
+                        label += ", ";
+                    }
+                    if (i < labelStrings.length) {
+                        label += labelStrings[i];
+                    } else {
+                        label += "0x"+Integer.toHexString(0x0001 << i);
+                    }
+                }
+            }
+        }
+        return label;
+    }
+
+    public static String toString(int type) {
+        switch(type) {
+            case TYPE_STRING: return("String");
+            case TYPE_COLOR: return("Color");
+            case TYPE_LONG: return("long");
+            case TYPE_INT: return("int");
+            case TYPE_DOUBLE: return("double");
+            case TYPE_BOOLEAN: return("boolean");
+            default: throw new RuntimeException("Unknown type stored in HepRepAttDef: '"+type+"'");
+        }
+    }
+
+    private static final Map stringToType;
+    static {
+        stringToType = new HashMap(6);
+        stringToType.put("String",      new Integer(TYPE_STRING));
+        stringToType.put("Color",       new Integer(TYPE_COLOR));
+        stringToType.put("long",        new Integer(TYPE_LONG));
+        stringToType.put("int",         new Integer(TYPE_INT));
+        stringToType.put("double",      new Integer(TYPE_DOUBLE));
+        stringToType.put("boolean",     new Integer(TYPE_BOOLEAN));
+    }
+
+    /**
+     * @return code for type or -1 if unknown
+     */
+    public static int toType(String type) {
+        Integer code = (Integer)stringToType.get(type);
+        return (code == null) ? TYPE_UNKNOWN : code.intValue();
+    }
+
+    /**
+     * A utility method which determines the appropriate type for
+     * the given name.
+     */
+    // FIXME: FREEHEP-367
+    public static String guessTypeFromName(String name, String type) {
+        if (type != null) return type;
+        name = name.toLowerCase().intern();
+
+        if ((name == "fonthasframe") ||
+            (name == "hasframe") ||
+            (name == "fonthasbanner") ||
+            (name == "linehasarrow") ||
+            (name == "fill")) {
+
+            // Handle all of the boolean values first.
+            return "boolean";
+
+        } else if ((name == "marksize") ||
+                   (name == "linewidth") ||
+                   (name == "fontframewidth") ||
+                   (name == "framewidth") ||
+                   (name == "radius") ||
+                   (name == "phi") ||
+                   (name == "theta") ||
+                   (name == "omega") ||
+                   (name == "sum") ||
+                   (name == "curvature") ||
+                   (name == "flylength") ||
+                   (name == "vpos") ||
+                   (name == "hpos")) {
+
+            // Handle all of the double values.
+            return "double";
+
+        } else if (name == "fontsize") {
+
+            // Now handle all of the integers.
+            return "int";
+
+        } else if ((name == "fontcolor") ||
+                   (name == "fontframecolor") ||
+                   (name == "color") ||
+                   (name == "framecolor") ||
+                   (name == "fillcolor") ||
+                   (name == "fontbannercolor")) {
+
+            // Now handle all of the colors.
+            return "Color";
+
+        } else {
+
+            // Everything else is treated as a string.
+            return "String";
+        }
+    }
+
+
+    public int showLabel() {
+        return showLabel;
+    }
+
+    public String getString() throws HepRepTypeException {
+        try {
+            return (String)objectValue;
+        } catch (ClassCastException cce) {
+            throw new HepRepTypeException("Attribute Value for '"+getName()+
+                                          "' with value '"+getAsString()+
+                                          "' of type '"+getTypeName()+
+                                          "' cannot be converted to type 'String'");
+        }
+    }
+
+    public String getLowerCaseString() throws HepRepTypeException {
+        try {
+            return lowerCaseString;
+        } catch (ClassCastException cce) {
+            throw new HepRepTypeException("Attribute Value for '"+getName()+
+                                          "' with value '"+getAsString()+
+                                          "' of type '"+getTypeName()+
+                                          "' cannot be converted to type 'String'");
+        }
+    }
+
+    public Color getColor() throws HepRepTypeException {
+        try {
+            return (Color)objectValue;
+        } catch (ClassCastException cce) {
+            throw new HepRepTypeException("Attribute Value for '"+getName()+
+                                          "' with value '"+getAsString()+
+                                          "' of type '"+getTypeName()+
+                                          "' cannot be converted to type 'Color'");
+        }
+    }
+
+    public long getLong() throws HepRepTypeException {
+        if ((type != TYPE_LONG) && (type != TYPE_INT)) {
+            throw new HepRepTypeException("Attribute Value for '"+getName()+
+                                          "' with value '"+getAsString()+
+                                          "' of type '"+getTypeName()+
+                                          "' cannot be converted to type 'long'");
+        }
+        return longValue;
+    }
+
+    public int getInteger() throws HepRepTypeException {
+        if (type != TYPE_INT) {
+            throw new HepRepTypeException("Attribute Value for '"+getName()+
+                                          "' with value '"+getAsString()+
+                                          "' of type '"+getTypeName()+
+                                          "' cannot be converted to type 'int'");
+        }
+        return (int)longValue;
+    }
+
+    public double getDouble() throws HepRepTypeException {
+        if ((type != TYPE_DOUBLE) && (type != TYPE_LONG) && (type != TYPE_INT)) {
+            throw new HepRepTypeException("Attribute Value for '"+getName()+
+                                          "' with value '"+getAsString()+
+                                          "' of type '"+getTypeName()+
+                                          "' cannot be converted to type 'double'");
+        }
+        return (type == TYPE_DOUBLE) ? doubleValue : longValue;
+    }
+
+    public boolean getBoolean() throws HepRepTypeException {
+        if (type != TYPE_BOOLEAN) {
+            throw new HepRepTypeException("Attribute Value for '"+getName()+"'and value+'"+objectValue+"' of type'"+getTypeName()+"' cannot be converted to type 'boolean'");
+        }
+        return booleanValue;
+    }
+
+    public String getAsString() {
+        return getAsString(this);
+    }
+
+    public static String getAsString(HepRepAttValue attValue) {
+        switch(attValue.getType()) {
+            case TYPE_STRING:
+                return attValue.getString();
+            case TYPE_COLOR:
+                return HepRepColor.get(attValue.getColor());
+            case TYPE_LONG:
+                return Long.toString(attValue.getLong());
+            case TYPE_INT:
+                return Integer.toString(attValue.getInteger());
+            case TYPE_DOUBLE:
+                return scientific.format(attValue.getDouble());
+            case TYPE_BOOLEAN:
+                return (attValue.getBoolean()) ? "true" : "false";
+            default:
+                return "Unknown typecode: "+attValue.getType();
+        }
+    }
+
+    public int hashCode() {
+        long hash = name.hashCode();
+        hash |= type;
+        hash |= showLabel;
+        hash |= objectValue.hashCode();
+        hash |= longValue;
+        hash |= Double.doubleToLongBits(doubleValue);
+        hash |= (booleanValue) ? 1 : 2;
+        return (int)hash;
+    }
+
+    public boolean equals(Object o) {
+        if (o instanceof DefaultHepRepAttValue) {
+            DefaultHepRepAttValue attValue = (DefaultHepRepAttValue)o;
+            if ((attValue.getLowerCaseName() == lowerCaseName) &&
+                (attValue.getType() == type) &&
+                (attValue.showLabel() == showLabel)) {
+
+                switch(attValue.getType()) {
+                    case TYPE_STRING:
+                        return attValue.getString().equals(objectValue);
+                    case TYPE_COLOR:
+                        return attValue.getColor().equals(objectValue);
+                    case TYPE_LONG:
+                        return attValue.getLong() == longValue;
+                    case TYPE_INT:
+                        return attValue.getInteger() == longValue;
+                    case TYPE_DOUBLE:
+                        return attValue.getDouble() == doubleValue;
+                    case TYPE_BOOLEAN:
+                        return attValue.getBoolean() == booleanValue;
+                    default:
+                        return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    public String toString() {
+        return getName()+": "+getAsString()+" "+toShowLabel(showLabel);
+    }
+}
+

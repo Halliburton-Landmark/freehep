@@ -1,0 +1,314 @@
+// Copyright 2000-2003, SLAC, Stanford, U.S.A.
+package hep.graphics.heprep.xml;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import hep.graphics.heprep.HepRepInstanceTree;
+import hep.graphics.heprep.HepRepTreeID;
+import hep.graphics.heprep.HepRepType;
+import hep.graphics.heprep.HepRepTypeTree;
+import hep.graphics.heprep.ref.DefaultHepRep;
+import hep.graphics.heprep.ref.DefaultHepRepAction;
+import hep.graphics.heprep.ref.DefaultHepRepAttValue;
+import hep.graphics.heprep.ref.DefaultHepRepInstance;
+import hep.graphics.heprep.ref.DefaultHepRepInstanceTree;
+import hep.graphics.heprep.ref.DefaultHepRepPoint;
+import hep.graphics.heprep.ref.DefaultHepRepTreeID;
+import hep.graphics.heprep.ref.DefaultHepRepType;
+import hep.graphics.heprep.ref.DefaultHepRepTypeTree;
+import hep.graphics.heprep.util.HepRepUtil;
+
+/**
+ *
+ * @author M.Donszelmann
+ *
+ * @version $Id: XMLHepRepHandler.java,v 1.26 2003/11/24 22:34:52 duns Exp $
+ */
+
+public class XMLHepRepHandler extends DefaultHandler {
+    public static final String cvsId = "$Id: XMLHepRepHandler.java,v 1.26 2003/11/24 22:34:52 duns Exp $";
+
+    private DefaultHepRep heprep;
+    private int level = 0;
+
+// NOTE: we could use HepRepTreeID to index this Map, but we need to override equals() and
+//       hashCode() in DefaultHepRepTreeID and DefaultHepRepTree...
+    private Map/*<name:version, HepRepTypeTree>*/ typeTrees = null;
+    private Map/*<name:version,Map<String,HepRepType>>*/ flatTypeTrees = new HashMap();      
+                               // if null, typetree does not have flat space
+
+    private HepRepTypeTree currentTypeTree = null;
+    private HepRepTreeID currentTypeTreeRef = null;
+    private HepRepInstanceTree instanceTree = null;
+
+    private DefaultHepRepPoint currentPoint = null;
+
+    private Stack/*<HepRepInstance>*/ instanceStack = new Stack();
+    private DefaultHepRepInstance currentInstance = null;
+
+    private Stack/*<HepRepType>*/ typeStack = new Stack();
+    private DefaultHepRepType currentType = null;
+
+    public XMLHepRepHandler(DefaultHepRep heprep) {
+        this.heprep = heprep;
+    }
+
+    public void startDocument() throws SAXException {
+        typeTrees = new HashMap();
+        currentTypeTree = null;
+        currentTypeTreeRef = null;
+        instanceTree = null;
+        currentPoint = null;
+        flatTypeTrees = new HashMap();
+        instanceStack = new Stack();
+        currentInstance = null;
+        typeStack = new Stack();
+        currentType = null;
+        level = 0;
+    }
+
+    public void startElement(String namespace, String tag, String qName, Attributes atts) throws SAXException {
+        level++;
+        tag = tag.intern();
+        try {
+//               System.out.println(namespace+", "+tag+", "+qName);
+            if (tag == "point") {
+                double x = HepRepUtil.decodeNumber(atts.getValue("x"));
+                double y = HepRepUtil.decodeNumber(atts.getValue("y"));
+                double z = HepRepUtil.decodeNumber(atts.getValue("z"));
+                currentPoint = new DefaultHepRepPoint(currentInstance, x, y, z);
+
+            } else if (tag == "instancetree") {
+                String name = atts.getValue("name");
+                String version = atts.getValue("version");
+                currentTypeTreeRef = new DefaultHepRepTreeID(atts.getValue("typetreename"), atts.getValue("typetreeversion"));
+                instanceTree = new DefaultHepRepInstanceTree(name, version, currentTypeTreeRef);
+                heprep.addInstanceTree(instanceTree);
+//                System.out.println("Created Instance Tree: "+name+", "+version);
+
+            } else if (tag == "treeid") {
+                String name = atts.getValue("name");
+                String treeName = atts.getValue("treename");
+                String treeVersion = atts.getValue("treeversion");
+                instanceTree.addInstanceTree(new DefaultHepRepTreeID(name, treeName, treeVersion));
+
+            } else if (tag == "action") {
+                String name = atts.getValue("name");
+                String expression = atts.getValue("expression");
+                // FIXME: FREEHEP-369
+                new DefaultHepRepAction(name, expression);
+
+            } else if (tag == "layer") {
+                String order = atts.getValue("order");
+                StringTokenizer st = new StringTokenizer(order,",");
+                while (st.hasMoreTokens()) {
+                    heprep.addLayer(st.nextToken().trim());
+                }
+
+            } else if (tag == "instance") {
+                String typeName = atts.getValue("type");
+                if (typeName == null) {
+                    throw new SAXException("[XMLHepRepReader] Instance cannot exist without referring to a type.");
+                }
+                HepRepType type = getType(typeName);
+                if (type == null) {
+                    throw new SAXException("[XMLHepRepReader] Cannot find type: '"+typeName+"' "+
+                                           "in tree: '"+getID(currentTypeTreeRef)+"'");
+                }
+                instanceStack.push(currentInstance);
+                if (currentInstance != null) {
+                    currentInstance = new DefaultHepRepInstance(currentInstance, type);
+                } else {
+                    currentInstance = new DefaultHepRepInstance(instanceTree, type);
+                }
+
+            } else if (tag == "typetree") {
+                String name = atts.getValue("name");
+                String version = atts.getValue("version");
+                HepRepTreeID id = new DefaultHepRepTreeID(name, version);
+                currentTypeTree = new DefaultHepRepTypeTree(id);
+                heprep.addTypeTree(currentTypeTree);
+                
+                typeTrees.put(getID(id), currentTypeTree);
+                flatTypeTrees.put(getID(id), new HashMap());
+//                System.out.println("Created Type Tree: "+name+", "+version);
+
+            } else if (tag == "type") {
+                String name = atts.getValue("name");
+                typeStack.push(currentType);
+                if (currentType != null) {
+                    currentType = new DefaultHepRepType(currentType, name);
+                } else {
+                    currentType = new DefaultHepRepType(name);
+                    currentTypeTree.addType(currentType);
+                }
+                Map/*<String, HepRepType>*/ types = (Map)flatTypeTrees.get(getID(currentTypeTree));
+                if (types != null) {
+                    if (types.get(name) == null) {
+                        types.put(name, currentType);
+                    } else {
+                        flatTypeTrees.put(getID(currentTypeTree), null);
+                    }
+                }
+                
+
+            } else if (tag == "heprep") {
+                // ignored: heprep already created
+            } else if (tag == "attvalue") {
+                String name = atts.getValue("name");
+                String value = atts.getValue("value");
+                String type = DefaultHepRepAttValue.guessTypeFromName(name, atts.getValue("type"));
+                // Here for backward compatibility with G4.5.0 we keep the cased showLabel around
+                String showLabelString = atts.getValue("showlabel");
+                if (showLabelString == null) showLabelString = atts.getValue("showLabel");
+                int showLabel = DefaultHepRepAttValue.toShowLabel(showLabelString);
+
+                if (currentPoint != null) {
+                    currentPoint.addAttValue(name, value, type, showLabel);
+                } else if (currentInstance != null) {
+                    currentInstance.addAttValue(name, value, type, showLabel);
+                } else {
+                    if (currentType == null) {
+                        throw new SAXException("[XMLHepRepReader] Cannot use 'attvalue' outside 'type' tag.");
+                    }
+                    currentType.addAttValue(name, value, type, showLabel);
+                }
+
+            } else if (tag == "attdef") {
+                String name = atts.getValue("name");
+                String desc = atts.getValue("desc");
+                String category = atts.getValue("category");
+                String extra = atts.getValue("extra");
+                if (currentType == null) {
+                    throw new SAXException("[XMLHepRepReader] Cannot use 'attdef' outside 'type' tag.");
+                }
+                currentType.addAttDef(name, desc, category, extra);
+
+            } else {
+                throw new SAXException("[XMLHepRepReader] Unknown tag: <"+
+                                       ((namespace != null) ? namespace+":" : "")+
+                                       tag+"> qualfiedName: '"+qName+"'");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SAXException(e);
+        }
+
+        if (Thread.interrupted()) throw new SAXException(new InterruptedException());
+    }
+
+    public void endElement(String namespace, String tag, String qName) throws SAXException {
+        try {
+//                System.out.println("/"+namespace+", "+tag+", "+qName);
+            if (tag.lastIndexOf(':') >= 0) tag = tag.substring(tag.lastIndexOf(':')+1);
+            tag = tag.intern();
+            if (tag == "point") {
+                currentPoint = null;
+            } else if (tag == "instancetree") {
+                instanceTree = null;
+                currentTypeTreeRef = null;
+            } else if (tag == "treeid") {
+            } else if (tag == "layer") {
+            } else if (tag == "instance") {
+                currentInstance = (DefaultHepRepInstance)instanceStack.pop();
+            } else if (tag == "typetree") {
+                currentTypeTree = null;
+            } else if (tag == "type") {
+                currentType = (DefaultHepRepType)typeStack.pop();
+            } else if (tag == "heprep") {
+                // ignored, toplevel already stored
+            } else if (tag == "attvalue") {
+            } else if (tag == "attdef") {
+            } else {
+                throw new SAXException("[XMLHepRepReader] Unknown tag: "+tag);
+            }
+        } catch (Exception e) {
+            throw new SAXException(e);
+        }
+
+        if (Thread.interrupted()) throw new SAXException(new InterruptedException());
+
+        // make sure this is at the end, and that heprep is set!
+        level--;
+//        if (level == 0) throw new DocumentFinishedException();
+    }
+
+	public InputSource resolveEntity(String publicId, String systemId) {
+	    System.out.println("Resolving: "+systemId);
+	    if (publicId != null) {
+	        return null;
+	    }
+
+        // try to open systemId directly
+        InputStream is = null;
+        URL url = null;
+
+        try {
+            url = new URL(systemId);
+            is = url.openStream();
+        } catch (MalformedURLException mfue) {
+            return null;
+        } catch (IOException ioe) {
+            // try to resolve systemId relative to object or class
+            String file = url.getFile().substring(url.getFile().lastIndexOf('/')+1);
+            is = getClass().getResourceAsStream(file);
+        }
+
+        return new InputSource(is);
+	}
+
+    private String getID(HepRepTreeID id) {
+        return id.getName()+":"+id.getVersion();
+    }
+    
+    private HepRepType getType(String name) {
+        HepRepType type = null;
+
+        // flat types
+        Map/*<String, HepRepType>*/ flatTypes = (Map)flatTypeTrees.get(getID(currentTypeTreeRef));
+        if (flatTypes != null) {
+            type = (HepRepType)flatTypes.get(name);
+        } 
+        if (type != null) return type;
+                
+        // hierarchical types        
+        HepRepTypeTree tree = (HepRepTypeTree)typeTrees.get(getID(currentTypeTreeRef));
+        if (tree == null) return null;
+        
+        // remove leading slash
+        if (name.charAt(0) == '/') name = name.substring(1);
+        
+        Collection types = tree.getTypes();
+            
+        // look if all partNames can be found in all types
+        int slash;
+        do {
+            // split name into leading partName and everything else behind the slash
+            slash = name.indexOf("/");
+            String partName = (slash < 0) ? name : name.substring(0, slash);
+            name = (slash < 0) ? "" : name.substring(slash+1);
+            
+            // look for partName in all types
+            if (types == null) return null;
+            Iterator typeIterator = types.iterator();
+            boolean found = false;
+            while (!found && typeIterator.hasNext()) {
+                type = (HepRepType)typeIterator.next();
+                if (type.getName().equals(partName)) {
+                    types = type.getTypes();
+                    found = true;
+                }
+            }
+            if (!found) return null;
+        } while (slash >= 0);
+
+        return type;
+    }
+}

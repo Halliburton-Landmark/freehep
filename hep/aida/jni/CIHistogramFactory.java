@@ -1,0 +1,91 @@
+package hep.aida.jni;
+
+import hep.aida.*;
+
+public class CIHistogramFactory extends CProxy implements IHistogramFactory {
+
+    public CIHistogramFactory(long crefID) {
+        super(crefID);
+    }
+
+    public native void destroy(IBaseHistogram hist) throws IllegalArgumentException;
+    public native ICloud1D createCloud1D(String path, String title) throws IllegalArgumentException;
+    public native ICloud1D createCloud1D(String path, String title, int nMax) throws IllegalArgumentException;
+    public native ICloud1D createCloud1D(String path, String title, int nMax, String options) throws IllegalArgumentException;
+    public native ICloud1D createCloud1D(String pathAndTitle) throws IllegalArgumentException;
+    public native ICloud1D createCopy(String path, ICloud1D cloud) throws IllegalArgumentException;
+    public native ICloud2D createCloud2D(String path, String title) throws IllegalArgumentException;
+    public native ICloud2D createCloud2D(String path, String title, int nMax) throws IllegalArgumentException;
+    public native ICloud2D createCloud2D(String path, String title, int nMax, String options) throws IllegalArgumentException;
+    public native ICloud2D createCloud2D(String pathAndTitle) throws IllegalArgumentException;
+    public native ICloud2D createCopy(String path, ICloud2D cloud) throws IllegalArgumentException;
+    public native ICloud3D createCloud3D(String path, String title) throws IllegalArgumentException;
+    public native ICloud3D createCloud3D(String path, String title, int nMax) throws IllegalArgumentException;
+    public native ICloud3D createCloud3D(String path, String title, int nMax, String options) throws IllegalArgumentException;
+    public native ICloud3D createCloud3D(String pathAndTitle) throws IllegalArgumentException;
+    public native ICloud3D createCopy(String path, ICloud3D cloud) throws IllegalArgumentException;
+    public native IHistogram1D createHistogram1D(String path, String title, int nBins, double lowerEdge, double upperEdge) throws IllegalArgumentException;
+    public native IHistogram1D createHistogram1D(String path, String title, int nBins, double lowerEdge, double upperEdge, String options) throws IllegalArgumentException;
+    public native IHistogram1D createHistogram1D(String pathAndTitle, int nBins, double lowerEdge, double upperEdge) throws IllegalArgumentException;
+    public native IHistogram1D createHistogram1D(String path, String title, double[] binEdges) throws IllegalArgumentException;
+    public native IHistogram1D createHistogram1D(String path, String title, double[] binEdges, String options) throws IllegalArgumentException;
+    public native IHistogram1D createCopy(String path, IHistogram1D hist) throws IllegalArgumentException;
+    public native IHistogram2D createHistogram2D(String path, String title, int nBinsX, double lowerEdgeX, double upperEdgeX, int nBinsY, double lowerEdgeY, double upperEdgeY);
+    public native IHistogram2D createHistogram2D(String path, String title, int nBinsX, double lowerEdgeX, double upperEdgeX, int nBinsY, double lowerEdgeY, double upperEdgeY, String options);
+    public native IHistogram2D createHistogram2D(String pathAndTitle, int nBinsX, double lowerEdgeX, double upperEdgeX, int nBinsY, double lowerEdgeY, double upperEdgeY) throws IllegalArgumentException;
+    public native IHistogram2D createHistogram2D(String path, String title, double[] binEdgesX, double[] binEdgesY) throws IllegalArgumentException;
+    public native IHistogram2D createHistogram2D(String path, String title, double[] binEdgesX, double[] binEdgesY, String options) throws IllegalArgumentException;
+    public native IHistogram2D createCopy(String copy, IHistogram2D hist) throws IllegalArgumentException;
+    public native IHistogram3D createHistogram3D(String path, String title, int nBinsX, double lowerEdgeX, double upperEdgeX, int nBinsY, double lowerEdgeY, double upperEdgeY, int nBinsZ, double lowerEdgeZ, double upperEdgeZ) throws IllegalArgumentException;
+    public native IHistogram3D createHistogram3D(String path, String title, int nBinsX, double lowerEdgeX, double upperEdgeX, int nBinsY, double lowerEdgeY, double upperEdgeY, int nBinsZ, double lowerEdgeZ, double upperEdgeZ, String options) throws IllegalArgumentException;
+    public native IHistogram3D createHistogram3D(String pathAndTitle, int nBinsX, double lowerEdgeX, double upperEdgeX, int nBinsY, double lowerEdgeY, double upperEdgeY, int nBinsZ, double lowerEdgeZ, double upperEdgeZ) throws IllegalArgumentException;
+    public native IHistogram3D createHistogram3D(String path, String title, double[] binEdgesX, double[] binEdgesY, double[] binEdgesZ) throws IllegalArgumentException;
+    public native IHistogram3D createHistogram3D(String path, String title, double[] binEdgesX, double[] binEdgesY, double[] binEdgesZ, String options) throws IllegalArgumentException;
+    public native IHistogram3D createCopy(String path, IHistogram3D hist) throws IllegalArgumentException;
+    public native IProfile1D createProfile1D(String path, String title, int nBins, double lowerEdge, double upperEdge) throws IllegalArgumentException;
+    public native IProfile1D createProfile1D(String path, String title, int nBins, double lowerEdge, double upperEdge, String options) throws IllegalArgumentException;
+    public native IProfile1D createProfile1D(String path, String title, int nBins, double lowerEdge, double upperEdge, double lowerValue, double upperValue) throws IllegalArgumentException;
+    public native IProfile1D createProfile1D(String path, String title, int nBins, double lowerEdge, double upperEdge, double lowerValue, double upperValue, String options) throws IllegalArgumentException;
+    public native IProfile1D createProfile1D(String path, String title, double[] binEdges) throws IllegalArgumentException;
+    public native IProfile1D createProfile1D(String path, String title, double[] binEdges, String options) throws IllegalArgumentException;
+    public native IProfile1D createProfile1D(String path, String title, double[] binEdges, double lowerValue, double upperValue) throws IllegalArgumentException;
+    public native IProfile1D createProfile1D(String path, String title, double[] binEdges, double lowerValue, double upperValue, String options) throws IllegalArgumentException;
+    public native IProfile1D createProfile1D(String pathAndTitle, int nBins, double lowerEdge, double upperEdge) throws IllegalArgumentException;
+    public native IProfile1D createProfile1D(String pathAndTitle, int nBins, double lowerEdge, double upperEdge, double lowerValue, double upperValue) throws IllegalArgumentException;
+    public native IProfile1D createCopy(String path, IProfile1D profile) throws IllegalArgumentException;
+    public native IProfile2D createProfile2D(String path, String title, int nBinsX, double lowerEdgeX, double upperEdgeX, int nBinsY, double lowerEdgeY, double upperEdgeY) throws IllegalArgumentException;
+    public native IProfile2D createProfile2D(String path, String title, int nBinsX, double lowerEdgeX, double upperEdgeX, int nBinsY, double lowerEdgeY, double upperEdgeY, String options) throws IllegalArgumentException;
+    public native IProfile2D createProfile2D(String path, String title, int nBinsX, double lowerEdgeX, double upperEdgeX, int nBinsY, double lowerEdgeY, double upperEdgeY, double lowerValue, double upperValue) throws IllegalArgumentException;
+    public native IProfile2D createProfile2D(String path, String title, int nBinsX, double lowerEdgeX, double upperEdgeX, int nBinsY, double lowerEdgeY, double upperEdgeY, double lowerValue, double upperValue, String options) throws IllegalArgumentException;
+    public native IProfile2D createProfile2D(String path, String title, double[] binEdgesX, double[] binEdgesY) throws IllegalArgumentException;
+    public native IProfile2D createProfile2D(String path, String title, double[] binEdgesX, double[] binEdgesY, String options) throws IllegalArgumentException;
+    public native IProfile2D createProfile2D(String path, String title, double[] binEdgesX, double[] binEdgesY, double lowerValue, double upperValue) throws IllegalArgumentException;
+    public native IProfile2D createProfile2D(String path, String title, double[] binEdgesX, double[] binEdgesY, double lowerValue, double upperValue, String options) throws IllegalArgumentException;
+    public native IProfile2D createProfile2D(String pathAndTitle, int nBinsX, double lowerEdgeX, double upperEdgeX, int nBinsY, double lowerEdgeY, double upperEdgeY) throws IllegalArgumentException;
+    public native IProfile2D createProfile2D(String pathAndTitle, int nBinsX, double lowerEdgeX, double upperEdgeX, int nBinsY, double lowerEdgeY, double upperEdgeY, double lowerValue, double upperValue) throws IllegalArgumentException;
+    public native IProfile2D createCopy(String path, IProfile2D profile) throws IllegalArgumentException;
+    public native IHistogram1D add(String path, IHistogram1D hist1, IHistogram1D hist2) throws IllegalArgumentException;
+    public native IHistogram1D subtract(String path, IHistogram1D hist1, IHistogram1D hist2) throws IllegalArgumentException;
+    public native IHistogram1D multiply(String path, IHistogram1D hist1, IHistogram1D hist2) throws IllegalArgumentException;
+    public native IHistogram1D divide(String path, IHistogram1D hist1, IHistogram1D hist2) throws IllegalArgumentException;
+    public native IHistogram2D add(String path, IHistogram2D hist1, IHistogram2D hist2) throws IllegalArgumentException;
+    public native IHistogram2D subtract(String path, IHistogram2D hist1, IHistogram2D hist2) throws IllegalArgumentException;
+    public native IHistogram2D multiply(String path, IHistogram2D hist1, IHistogram2D hist2) throws IllegalArgumentException;
+    public native IHistogram2D divide(String path, IHistogram2D hist1, IHistogram2D hist2) throws IllegalArgumentException;
+    public native IHistogram3D add(String path, IHistogram3D hist1, IHistogram3D hist2) throws IllegalArgumentException;
+    public native IHistogram3D subtract(String path, IHistogram3D hist1, IHistogram3D hist2) throws IllegalArgumentException;
+    public native IHistogram3D multiply(String path, IHistogram3D hist1, IHistogram3D hist2) throws IllegalArgumentException;
+    public native IHistogram3D divide(String path, IHistogram3D hist1, IHistogram3D hist2) throws IllegalArgumentException;
+    public native IHistogram1D projectionX(String path, IHistogram2D hist) throws IllegalArgumentException;
+    public native IHistogram1D projectionY(String path, IHistogram2D hist) throws IllegalArgumentException;
+    public native IHistogram1D sliceX(String path, IHistogram2D hist, int index) throws IllegalArgumentException;
+    public native IHistogram1D sliceY(String path, IHistogram2D hist, int index) throws IllegalArgumentException;
+    public native IHistogram1D sliceX(String path, IHistogram2D hist, int index1, int index2) throws IllegalArgumentException;
+    public native IHistogram1D sliceY(String path, IHistogram2D hist, int index1, int index2) throws IllegalArgumentException;
+    public native IHistogram2D projectionXY(String path, IHistogram3D hist) throws IllegalArgumentException;
+    public native IHistogram2D projectionXZ(String path, IHistogram3D hist) throws IllegalArgumentException;
+    public native IHistogram2D projectionYZ(String path, IHistogram3D hist) throws IllegalArgumentException;
+    public native IHistogram2D sliceXY(String path, IHistogram3D hist, int index1, int index2) throws IllegalArgumentException;
+    public native IHistogram2D sliceXZ(String path, IHistogram3D hist, int index1, int index2) throws IllegalArgumentException;
+    public native IHistogram2D sliceYZ(String path, IHistogram3D hist, int index1, int index2) throws IllegalArgumentException;
+} 

@@ -1,0 +1,184 @@
+// Copyright 2000, CERN, Switzerland.  All rights reserved.
+
+package hep.graphics.heprep.ref;
+
+import java.awt.Color;
+import java.io.*;
+import java.util.*;
+
+import hep.graphics.heprep.*;
+import hep.graphics.heprep.util.*;
+
+
+/**
+ *
+ * @author M.Donszelmann
+ *
+ * @version $Id: DefaultHepRepAttribute.java,v 1.20 2003/11/24 22:34:50 duns Exp $
+ */
+
+public abstract class DefaultHepRepAttribute /*extends LinkedList*/ implements HepRepAttribute, Serializable {
+    public static final String cvsId = "$Id: DefaultHepRepAttribute.java,v 1.20 2003/11/24 22:34:50 duns Exp $";
+
+    private HepRepAttValue layerAttValue;             // for fast access to layer
+
+//    private transient LinkedList attValueList;       // first in the list of AttValue
+    private List attValueList;
+
+    public DefaultHepRepAttribute() {
+    }
+
+    private void writeObject(ObjectOutputStream stream) throws IOException {
+        stream.defaultWriteObject();
+//        LinkedList.writeList(stream, attValueList);
+    }
+
+    private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+//        System.out.println("DHRAttribute: Deserializing "+this);
+        stream.defaultReadObject();
+//        attValueList = LinkedList.readList(stream);
+    }
+
+    public Collection getAttValuesFromNode() {
+        if (attValueList == null) return HepRepUtil.emptyCollection;
+        return attValueList;
+    }
+
+    public void addAttValue(HepRepAttValue hepRepAttValue) {
+        try {
+            DefaultHepRepAttValue attValue = (DefaultHepRepAttValue)hepRepAttValue;
+            // special fast case for attribute value "layer"
+            String lowerCaseName = attValue.getLowerCaseName();
+            if (lowerCaseName == "layer") {
+                layerAttValue = attValue;
+            }
+
+            DefaultHepRepAttValue listedAttValue = (DefaultHepRepAttValue)getAttValueFromNode(lowerCaseName);
+            if (listedAttValue == null) {
+//                attValue.next = attValueList;
+//                attValueList = attValue;
+                if (attValueList == null) attValueList = new ArrayList();
+                attValueList.add(attValue);
+            } else {
+                listedAttValue.replace(attValue);
+            }
+        } catch (ClassCastException cce) {
+            System.err.println("DefaultHepRepAttribute.addValue() cannot add argument of class: "+hepRepAttValue.getClass()+", ignored.");
+        }
+    }
+
+    public void addAttValue(String key, String value) {
+        addAttValue(key, value, HepRepAttValue.SHOW_NONE);
+    }
+
+    public void addAttValue(String key, int value) {
+        addAttValue(key, value, HepRepAttValue.SHOW_NONE);
+    }
+
+    public void addAttValue(String key, double value) {
+        addAttValue(key, value, HepRepAttValue.SHOW_NONE);
+    }
+
+    public void addAttValue(String key, boolean value) {
+        addAttValue(key, value, HepRepAttValue.SHOW_NONE);
+    }
+
+    public void addAttValue(String key, Color value) {
+        addAttValue(key, value, HepRepAttValue.SHOW_NONE);
+    }
+
+    public void addAttValue(String key, String value, int showLabel) {
+        addAttValue(new DefaultHepRepAttValue(key, value, showLabel));
+    }
+
+    public void addAttValue(String key, int value, int showLabel) {
+        addAttValue(new DefaultHepRepAttValue(key, value, showLabel));
+    }
+
+    public void addAttValue(String key, double value, int showLabel) {
+        addAttValue(new DefaultHepRepAttValue(key, value, showLabel));
+    }
+
+    public void addAttValue(String key, boolean value, int showLabel) {
+        addAttValue(new DefaultHepRepAttValue(key, value, showLabel));
+    }
+
+    public void addAttValue(String key, Color value, int showLabel) {
+        addAttValue(new DefaultHepRepAttValue(key, value, showLabel));
+    }
+
+    public void addAttColor(String key, String colorName, int showLabel) {
+        // FIXME: FREEHEP-368
+        addAttValue(new DefaultHepRepAttValue(key, HepRepColor.get(colorName), showLabel));
+    }
+
+    public void addAttColor(String key, double r, double g, double b, double alpha, int showLabel) {
+        addAttColor(key, r+", "+g+", "+b+", "+alpha, showLabel);
+    }
+
+    public void addAttValue(String name, String value, String type, int showLabel) {
+        addAttValue(new DefaultHepRepAttValue(name, value, type, showLabel));
+    }
+
+    public HepRepAttValue getAttValueFromNode(String lowerCaseName) {
+        lowerCaseName = lowerCaseName.intern();
+        // special fast case for "layer"
+        if (lowerCaseName == "layer") {
+            return layerAttValue;
+        }
+
+//        LinkedList list = attValueList;
+        if (attValueList == null) return null;
+        Iterator i = attValueList.iterator();
+        while (/*list != null*/ i.hasNext()) {
+            DefaultHepRepAttValue attValue = (DefaultHepRepAttValue)/*list*/i.next();
+            if (attValue.getLowerCaseName() == lowerCaseName) {
+                return attValue;
+            }
+//            list = list.next;
+        }
+        return null;
+    }
+
+    public HepRepAttValue removeAttValue(String key) {
+        String lowerCaseName = key.toLowerCase().intern();
+
+        // special fast case for "layer"
+        if (lowerCaseName == "layer") {
+            HepRepAttValue value = layerAttValue;
+            layerAttValue = null;
+            return value;
+        }
+
+        if (attValueList == null) return null;
+        Iterator i = attValueList.iterator();
+        while (i.hasNext()) {
+            DefaultHepRepAttValue attValue = (DefaultHepRepAttValue)i.next();
+            if (attValue.getLowerCaseName() == lowerCaseName) {
+                attValueList.remove(attValue);
+                return attValue;
+            }
+        }
+/*
+        LinkedList list = attValueList;
+        LinkedList prev = null;
+        while (list != null) {
+            DefaultHepRepAttValue attValue = (DefaultHepRepAttValue)list;
+            if (attValue.getLowerCaseName() == lowerCaseName) {
+                if (prev != null) {
+                    prev.next = list.next;
+                } else {
+                    list = list.next;
+                }
+                return attValue;
+            }
+            prev = list;
+            list = list.next;
+        }
+*/
+        return null;
+    }
+
+    public abstract HepRepAttValue getAttValue(String name);
+}
+

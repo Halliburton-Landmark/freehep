@@ -1,0 +1,138 @@
+# ANT property file for freehep
+#
+# Author: Mark Donszelmann
+# Version: $Id: freehep.properties,v 1.58 2003/04/16 00:04:55 turri Exp $
+#
+jars=base, \
+     graphics2d, \
+     graphicsio, \
+     graphicsio-cgm, \
+     graphicsio-emf, \
+     graphicsio-pdf, \
+     graphicsio-ps, \
+     graphicsio-svg, \
+     graphicsio-swf, \
+     graphics3d, \
+     j3d, \
+     hep3d, \
+     heprep, \
+     hep, \
+     psviewer, \
+     tools, \
+     demo
+wars=yappi
+jlinks=all
+
+#
+#
+#
+title=FreeHEP Java Libraries
+mainpackage=org/freehep/
+copyright=Copyright &\#169; 2000-2003 FreeHEP, All Rights Reserved.
+classpath=.;tools/freehep-buildtools.jar;tools/ant.jar;tools/ant-optional.jar;tools/j3daudio.jar;tools/j3dcore.jar;tools/j3dutils.jar;tools/vecmath.jar;tools/jnlp.jar;tools/junit.jar;lib/aida.jar;lib/aida-dev.jar;lib/bcel.jar;lib/jh.jar;lib/log4j.jar;lib/servlet.zip;lib/velocity.jar;lib/xerces.jar;${java.home}/../lib/tools.jar;lib/jdom.jar;lib/optimizers.jar;lib/openide-lookup.jar;lib/jel.jar;lib/jas-plotter.jar
+exp.classpath=
+srcpath=.
+exp.srcpath=
+build.compiler.warnings=off
+debug=on
+deprecation=off
+optimization=off
+source=1.4
+
+#
+# Source settings
+#
+src.dir=.
+src=.
+
+#
+# JavaCC settings
+#
+javacc.home=tools
+
+#
+# Aid setting
+#
+aid.class=org.freehep.aid.Aid
+aid.classpath=lib/bcel.jar;lib/freehep-tools.jar;lib/freehep-base.jar
+aid.includes=
+aid.java.includes=
+aid.java.interface.includes=
+aid.java.class.includes=
+aid.java.dir=.
+aid.cpp.includes=
+aid.cpp.dir=.
+aid.jni.includes=
+aid.jni.dir=.
+
+#
+# web settings
+#
+web.src=doc
+web.src.includes=**/*.html, **/*.css, **/*.gif
+web.dst=web
+
+#
+# jar/war settings
+#
+jar.inf=
+jar.dir=lib
+war.dir=lib
+jar.signed.dir=slib
+jar.includes=hadnietgehoeve
+jar.excludes=
+
+#
+# jlink settings
+#
+jlink.dir=lib
+jlink.src.dir=lib
+
+#
+# signing
+#
+keystore=
+keystore.alias=
+
+#
+# JavaDoc settings
+#
+doc.dst=api
+javadoc.maxmemory=128m
+javadoc.packages=hep.*, org.*
+javadoc.packages.excludes=org.freehep.graphics3d.opengl.*, org.freehep.jaco.rtti.java.*, org.freehep.jaco.test.*
+javadoc.windowtitle=FreeHEP API Specification
+javadoc.header=FreeHEP API
+javadoc.footer=FreeHEP API
+javadoc.doctitle=FreeHEP Overview
+javadoc.extdocs=http://java.sun.com/j2se/1.3/docs/api
+javadoc.cvs=http://java.freehep.org/servlet/fhcvs/log/freehep
+javadoc.doclet=org.freehep.tools.doclet.Standard
+
+#
+# Tools
+#
+buildtools.jar=tools/freehep-buildtools.jar
+buildtools.generatestatus=org.freehep.tools.GenerateStatus
+buildtools.generatestatus.packages=org hep
+buildtools.transformstatus=org.freehep.tools.TransformStatus
+
+#
+# General definitions for project wide targets
+#
+dist.version=current
+dist.dst=release
+dist.doc.dst=release
+dist.dir=dist
+dist.src.includes=org/**/*, hep/**/*
+dist.src.excludes=**/*.class, **/WIN32-VC/*, **/WIN32-g++/*, **/Linux-g++/*, **/SUN-CC/*, **/SUN-g++/*
+dist.lib.includes=*.jar, *.txt
+dist.lib.excludes=
+dist.doc.includes=aida/**/*, jaco/**/*, root/**/*, web/**/*, yappi/**/*
+dist.doc.excludes=
+dist.tools.includes=ant, ant.bat, jaco, jaco.bat, jneeds, jneeds.bat, freehep-ant.jar
+dist.tools.excludes=
+dist.readme.includes=README.html, LICENSE.txt, LGPL.txt
+dist.readme.excludes=
+dist.fixcrlf.includes=bin/**, docs/**, src/**, README.html, LICENSE.txt, LGPL.txt
+dist.fixcrlf.excludes=**/*.class, **/*.jar, **/*.zip, **/*.exe, **/*.obj, **/*.lib, **/*.pdb, **/*.dll, **/*.o, **/*.a, **/*.so, **/*.gif, **/*.jpg, **/*.ppt, **/*.doc, **/*.opx

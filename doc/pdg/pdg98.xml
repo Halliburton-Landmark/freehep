@@ -1,0 +1,799 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<PPML Source="PDGConv">
+ 
+<Particle Name="gamma">
+  <data Name="PDGID" Value="22" />
+  <data Name="Mass" Value="0.0" PError="0.0" MError="-0.0"/>
+  <data Name="Width" Value="0.0" PError="0.0" MError="-0.0"/>
+</Particle>
+<Particle Name="W">
+  <data Name="PDGID" Value="24" />
+  <data Name="Mass" Value="80.41" PError="0.1" MError="-0.1"/>
+  <data Name="Width" Value="2.06" PError="0.06" MError="-0.06"/>
+</Particle>
+<Particle Name="Z">
+  <data Name="PDGID" Value="23" />
+  <data Name="Mass" Value="91.187" PError="0.0070" MError="-0.0070"/>
+  <data Name="Width" Value="0.0" PError="0.0" MError="-0.0"/>
+</Particle>
+<Particle Name="e">
+  <data Name="PDGID" Value="11" />
+  <data Name="Mass" Value="5.1099905E-4" PError="1.5E-10" MError="-1.5E-10"/>
+  <data Name="Width" Value="0.0" PError="0.0" MError="-0.0"/>
+</Particle>
+<Particle Name="mu">
+  <data Name="PDGID" Value="13" />
+  <data Name="Mass" Value="1.05658389" PError="3.4E-8" MError="-3.4E-8"/>
+  <data Name="Width" Value="2.99591E-19" PError="5.0E-24" MError="-5.0E-24"/>
+</Particle>
+<Particle Name="tau">
+  <data Name="PDGID" Value="15" />
+  <data Name="Mass" Value="1.77705" PError="2.9E-4" MError="-2.6E-4"/>
+  <data Name="Width" Value="2.27E-12" PError="9.0E-15" MError="-9.0E-15"/>
+</Particle>
+<Particle Name="nu(e)">
+  <data Name="PDGID" Value="12" />
+  <data Name="Mass" Value="0.0" PError="0.0" MError="-0.0"/>
+  <data Name="Width" Value="0.0" PError="0.0" MError="-0.0"/>
+</Particle>
+<Particle Name="nu(mu)">
+  <data Name="PDGID" Value="14" />
+  <data Name="Mass" Value="0.0" PError="0.0" MError="-0.0"/>
+  <data Name="Width" Value="0.0" PError="0.0" MError="-0.0"/>
+</Particle>
+<Particle Name="nu(tau)">
+  <data Name="PDGID" Value="16" />
+  <data Name="Mass" Value="0.0" PError="0.0" MError="-0.0"/>
+  <data Name="Width" Value="0.0" PError="0.0" MError="-0.0"/>
+</Particle>
+<Particle Name="t">
+  <data Name="PDGID" Value="6" />
+  <data Name="Mass" Value="174.0" PError="5.0" MError="-5.0"/>
+  <data Name="Width" Value="0.0" PError="0.0" MError="-0.0"/>
+</Particle>
+<Particle Name="pi">
+  <data Name="PDGID" Value="211" />
+  <data Name="Mass" Value="0.13956995" PError="3.5E-7" MError="-3.5E-7"/>
+  <data Name="Width" Value="2.5284E-17" PError="5.0E-21" MError="-5.0E-21"/>
+</Particle>
+<Particle Name="pi">
+  <data Name="PDGID" Value="111" />
+  <data Name="Mass" Value="0.1349764" PError="6.0E-7" MError="-6.0E-7"/>
+  <data Name="Width" Value="7.8E-9" PError="6.0E-10" MError="-5.0E-10"/>
+</Particle>
+<Particle Name="eta">
+  <data Name="PDGID" Value="221" />
+  <data Name="Mass" Value="0.5473" PError="1.2E-4" MError="-1.2E-4"/>
+  <data Name="Width" Value="1.18E-6" PError="1.1E-7" MError="-1.1E-7"/>
+</Particle>
+<Particle Name="rho(770)">
+  <data Name="PDGID" Value="113" />
+  <data Name="Mass" Value="0.77" PError="8.0E-4" MError="-8.0E-4"/>
+  <data Name="Width" Value="0.1507" PError="0.0011" MError="-0.0011"/>
+</Particle>
+<Particle Name="omega(782)">
+  <data Name="PDGID" Value="223" />
+  <data Name="Mass" Value="0.78194" PError="1.2E-4" MError="-1.2E-4"/>
+  <data Name="Width" Value="0.00841" PError="9.0E-5" MError="-9.0E-5"/>
+</Particle>
+<Particle Name="eta'(958)">
+  <data Name="PDGID" Value="331" />
+  <data Name="Mass" Value="0.95778" PError="1.4E-4" MError="-1.4E-4"/>
+  <data Name="Width" Value="2.03E-4" PError="1.6E-5" MError="-1.6E-5"/>
+</Particle>
+<Particle Name="f(0)(980)">
+  <data Name="PDGID" Value="9010221" />
+  <data Name="Mass" Value="0.98" PError="0.01" MError="-0.01"/>
+  <data Name="Width" Value="2.03E-4" PError="1.6E-5" MError="-1.6E-5"/>
+</Particle>
+<Particle Name="a(0)(980)">
+  <data Name="PDGID" Value="9000111" />
+  <data Name="Mass" Value="0.9834" PError="9.0E-4" MError="-9.0E-4"/>
+  <data Name="Width" Value="2.03E-4" PError="1.6E-5" MError="-1.6E-5"/>
+</Particle>
+<Particle Name="phi(1020)">
+  <data Name="PDGID" Value="333" />
+  <data Name="Mass" Value="1.019413" PError="8.0E-6" MError="-8.0E-6"/>
+  <data Name="Width" Value="0.00443" PError="5.0E-5" MError="-5.0E-5"/>
+</Particle>
+<Particle Name="h(1)(1170)">
+  <data Name="PDGID" Value="10223" />
+  <data Name="Mass" Value="1.17" PError="0.02" MError="-0.02"/>
+  <data Name="Width" Value="0.36" PError="0.04" MError="-0.04"/>
+</Particle>
+<Particle Name="b(1)(1235)">
+  <data Name="PDGID" Value="10113" />
+  <data Name="Mass" Value="1.2295" PError="0.0032" MError="-0.0032"/>
+  <data Name="Width" Value="0.142" PError="0.0090" MError="-0.0090"/>
+</Particle>
+<Particle Name="a(1)(1260)">
+  <data Name="PDGID" Value="20113" />
+  <data Name="Mass" Value="1.23" PError="0.04" MError="-0.04"/>
+  <data Name="Width" Value="0.142" PError="0.0090" MError="-0.0090"/>
+</Particle>
+<Particle Name="f(2)(1270)">
+  <data Name="PDGID" Value="225" />
+  <data Name="Mass" Value="1.275" PError="0.0012" MError="-0.0012"/>
+  <data Name="Width" Value="0.1855" PError="0.0038" MError="-0.0027"/>
+</Particle>
+<Particle Name="f(1)(1285)">
+  <data Name="PDGID" Value="20223" />
+  <data Name="Mass" Value="1.2819" PError="6.0E-4" MError="-6.0E-4"/>
+  <data Name="Width" Value="0.024" PError="0.0012" MError="-0.0012"/>
+</Particle>
+<Particle Name="eta(1295)">
+  <data Name="PDGID" Value="100221" />
+  <data Name="Mass" Value="1.297" PError="0.0028" MError="-0.0028"/>
+  <data Name="Width" Value="0.053" PError="0.0060" MError="-0.0060"/>
+</Particle>
+<Particle Name="pi(1300)">
+  <data Name="PDGID" Value="100111" />
+  <data Name="Mass" Value="1.3" PError="0.1" MError="-0.1"/>
+  <data Name="Width" Value="0.053" PError="0.0060" MError="-0.0060"/>
+</Particle>
+<Particle Name="a(2)(1320)">
+  <data Name="PDGID" Value="115" />
+  <data Name="Mass" Value="1.3181" PError="6.0E-4" MError="-6.0E-4"/>
+  <data Name="Width" Value="0.107" PError="0.0050" MError="-0.0050"/>
+</Particle>
+<Particle Name="f(1)(1420)">
+  <data Name="PDGID" Value="20333" />
+  <data Name="Mass" Value="1.4262" PError="0.0012" MError="-0.0012"/>
+  <data Name="Width" Value="0.055" PError="0.0030" MError="-0.0030"/>
+</Particle>
+<Particle Name="omega(1420)">
+  <data Name="PDGID" Value="100223" />
+  <data Name="Mass" Value="1.419" PError="0.031" MError="-0.031"/>
+  <data Name="Width" Value="0.17" PError="0.06" MError="-0.06"/>
+</Particle>
+<Particle Name="rho(1450)">
+  <data Name="PDGID" Value="100113" />
+  <data Name="Mass" Value="1.465" PError="0.025" MError="-0.025"/>
+  <data Name="Width" Value="0.31" PError="0.06" MError="-0.06"/>
+</Particle>
+<Particle Name="f(0)(1500)">
+  <data Name="PDGID" Value="9020221" />
+  <data Name="Mass" Value="1.5" PError="0.01" MError="-0.01"/>
+  <data Name="Width" Value="0.112" PError="0.01" MError="-0.01"/>
+</Particle>
+<Particle Name="f(2)'(1525)">
+  <data Name="PDGID" Value="335" />
+  <data Name="Mass" Value="1.525" PError="0.0050" MError="-0.0050"/>
+  <data Name="Width" Value="0.076" PError="0.01" MError="-0.01"/>
+</Particle>
+<Particle Name="omega(1600)">
+  <data Name="PDGID" Value="30223" />
+  <data Name="Mass" Value="1.649" PError="0.024" MError="-0.024"/>
+  <data Name="Width" Value="0.22" PError="0.035" MError="-0.035"/>
+</Particle>
+<Particle Name="omega(3)(1670)">
+  <data Name="PDGID" Value="227" />
+  <data Name="Mass" Value="1.667" PError="0.0040" MError="-0.0040"/>
+  <data Name="Width" Value="0.168" PError="0.01" MError="-0.01"/>
+</Particle>
+<Particle Name="pi(2)(1670)">
+  <data Name="PDGID" Value="10115" />
+  <data Name="Mass" Value="1.67" PError="0.02" MError="-0.02"/>
+  <data Name="Width" Value="0.258" PError="0.018" MError="-0.018"/>
+</Particle>
+<Particle Name="phi(1680)">
+  <data Name="PDGID" Value="100333" />
+  <data Name="Mass" Value="1.68" PError="0.02" MError="-0.02"/>
+  <data Name="Width" Value="0.15" PError="0.05" MError="-0.05"/>
+</Particle>
+<Particle Name="rho(3)(1690)">
+  <data Name="PDGID" Value="117" />
+  <data Name="Mass" Value="1.691" PError="0.0050" MError="-0.0050"/>
+  <data Name="Width" Value="0.16" PError="0.01" MError="-0.01"/>
+</Particle>
+<Particle Name="rho(1700)">
+  <data Name="PDGID" Value="30113" />
+  <data Name="Mass" Value="1.7" PError="0.02" MError="-0.02"/>
+  <data Name="Width" Value="0.24" PError="0.06" MError="-0.06"/>
+</Particle>
+<Particle Name="f(J)(1710)">
+  <data Name="PDGID" Value="9030221" />
+  <data Name="Mass" Value="1.712" PError="0.0050" MError="-0.0050"/>
+  <data Name="Width" Value="0.133" PError="0.014" MError="-0.014"/>
+</Particle>
+<Particle Name="phi(3)(1850)">
+  <data Name="PDGID" Value="337" />
+  <data Name="Mass" Value="1.854" PError="0.0070" MError="-0.0070"/>
+  <data Name="Width" Value="0.087" PError="0.028" MError="-0.023"/>
+</Particle>
+<Particle Name="f(2)(2010)">
+  <data Name="PDGID" Value="100335" />
+  <data Name="Mass" Value="2.01" PError="0.06" MError="-0.08"/>
+  <data Name="Width" Value="0.2" PError="0.06" MError="-0.06"/>
+</Particle>
+<Particle Name="f(4)(2050)">
+  <data Name="PDGID" Value="229" />
+  <data Name="Mass" Value="2.044" PError="0.011" MError="-0.011"/>
+  <data Name="Width" Value="0.208" PError="0.013" MError="-0.013"/>
+</Particle>
+<Particle Name="f(2)(2300)">
+  <data Name="PDGID" Value="9050225" />
+  <data Name="Mass" Value="2.297" PError="0.028" MError="-0.028"/>
+  <data Name="Width" Value="0.15" PError="0.04" MError="-0.04"/>
+</Particle>
+<Particle Name="f(2)(2340)">
+  <data Name="PDGID" Value="9060225" />
+  <data Name="Mass" Value="2.34" PError="0.06" MError="-0.06"/>
+  <data Name="Width" Value="0.32" PError="0.08" MError="-0.07"/>
+</Particle>
+<Particle Name="K">
+  <data Name="PDGID" Value="321" />
+  <data Name="Mass" Value="0.493677" PError="1.6E-5" MError="-1.6E-5"/>
+  <data Name="Width" Value="5.314E-17" PError="1.0E-19" MError="-1.0E-19"/>
+</Particle>
+<Particle Name="K">
+  <data Name="PDGID" Value="311" />
+  <data Name="Mass" Value="0.497672" PError="3.1E-5" MError="-3.1E-5"/>
+  <data Name="Width" Value="5.314E-17" PError="1.0E-19" MError="-1.0E-19"/>
+</Particle>
+<Particle Name="K(S)">
+  <data Name="PDGID" Value="310" />
+  <data Name="Mass" Value="0.497672" PError="3.1E-5" MError="-3.1E-5"/>
+  <data Name="Width" Value="5.314E-17" PError="1.0E-19" MError="-1.0E-19"/>
+</Particle>
+<Particle Name="K(L)">
+  <data Name="PDGID" Value="130" />
+  <data Name="Mass" Value="0.497672" PError="3.1E-5" MError="-3.1E-5"/>
+  <data Name="Width" Value="1.273E-17" PError="1.0E-19" MError="-1.0E-19"/>
+</Particle>
+<Particle Name="K*(892)">
+  <data Name="PDGID" Value="323" />
+  <data Name="Mass" Value="0.89166" PError="2.6E-4" MError="-2.6E-4"/>
+  <data Name="Width" Value="1.273E-17" PError="1.0E-19" MError="-1.0E-19"/>
+</Particle>
+<Particle Name="K*(892)">
+  <data Name="PDGID" Value="313" />
+  <data Name="Mass" Value="0.8961" PError="2.8E-4" MError="-2.8E-4"/>
+  <data Name="Width" Value="0.0505" PError="6.0E-4" MError="-6.0E-4"/>
+</Particle>
+<Particle Name="K(1)(1270)">
+  <data Name="PDGID" Value="10313" />
+  <data Name="Mass" Value="1.272" PError="0.0070" MError="-0.0070"/>
+  <data Name="Width" Value="0.09" PError="0.02" MError="-0.02"/>
+</Particle>
+<Particle Name="K(1)(1400)">
+  <data Name="PDGID" Value="20313" />
+  <data Name="Mass" Value="1.402" PError="0.0070" MError="-0.0070"/>
+  <data Name="Width" Value="0.174" PError="0.013" MError="-0.013"/>
+</Particle>
+<Particle Name="K*(1410)">
+  <data Name="PDGID" Value="100313" />
+  <data Name="Mass" Value="1.414" PError="0.015" MError="-0.015"/>
+  <data Name="Width" Value="0.232" PError="0.021" MError="-0.021"/>
+</Particle>
+<Particle Name="K(0)*(1430)">
+  <data Name="PDGID" Value="10311" />
+  <data Name="Mass" Value="1.429" PError="0.0060" MError="-0.0060"/>
+  <data Name="Width" Value="0.287" PError="0.023" MError="-0.023"/>
+</Particle>
+<Particle Name="K(2)*(1430)">
+  <data Name="PDGID" Value="325" />
+  <data Name="Mass" Value="1.4256" PError="0.0015" MError="-0.0015"/>
+  <data Name="Width" Value="0.287" PError="0.023" MError="-0.023"/>
+</Particle>
+<Particle Name="K(2)*(1430)">
+  <data Name="PDGID" Value="315" />
+  <data Name="Mass" Value="1.4324" PError="0.0013" MError="-0.0013"/>
+  <data Name="Width" Value="0.109" PError="0.0050" MError="-0.0050"/>
+</Particle>
+<Particle Name="K*(1680)">
+  <data Name="PDGID" Value="30313" />
+  <data Name="Mass" Value="1.717" PError="0.027" MError="-0.027"/>
+  <data Name="Width" Value="0.32" PError="0.11" MError="-0.11"/>
+</Particle>
+<Particle Name="K(2)(1770)">
+  <data Name="PDGID" Value="10315" />
+  <data Name="Mass" Value="1.773" PError="0.0080" MError="-0.0080"/>
+  <data Name="Width" Value="0.186" PError="0.014" MError="-0.014"/>
+</Particle>
+<Particle Name="K(3)*(1780)">
+  <data Name="PDGID" Value="317" />
+  <data Name="Mass" Value="1.776" PError="0.0070" MError="-0.0070"/>
+  <data Name="Width" Value="0.159" PError="0.021" MError="-0.021"/>
+</Particle>
+<Particle Name="K(2)(1820)">
+  <data Name="PDGID" Value="20315" />
+  <data Name="Mass" Value="1.816" PError="0.013" MError="-0.013"/>
+  <data Name="Width" Value="0.276" PError="0.035" MError="-0.035"/>
+</Particle>
+<Particle Name="K(4)*(2045)">
+  <data Name="PDGID" Value="319" />
+  <data Name="Mass" Value="2.045" PError="0.0090" MError="-0.0090"/>
+  <data Name="Width" Value="0.198" PError="0.03" MError="-0.03"/>
+</Particle>
+<Particle Name="D">
+  <data Name="PDGID" Value="411" />
+  <data Name="Mass" Value="1.8693" PError="5.0E-4" MError="-5.0E-4"/>
+  <data Name="Width" Value="6.23E-13" PError="9.0E-15" MError="-9.0E-15"/>
+</Particle>
+<Particle Name="D">
+  <data Name="PDGID" Value="421" />
+  <data Name="Mass" Value="1.8646" PError="5.0E-4" MError="-5.0E-4"/>
+  <data Name="Width" Value="1.586E-12" PError="1.6E-14" MError="-1.6E-14"/>
+</Particle>
+<Particle Name="D*(2007)">
+  <data Name="PDGID" Value="423" />
+  <data Name="Mass" Value="2.0067" PError="5.0E-4" MError="-5.0E-4"/>
+  <data Name="Width" Value="1.586E-12" PError="1.6E-14" MError="-1.6E-14"/>
+</Particle>
+<Particle Name="D*(2010)">
+  <data Name="PDGID" Value="413" />
+  <data Name="Mass" Value="2.01" PError="5.0E-4" MError="-5.0E-4"/>
+  <data Name="Width" Value="1.586E-12" PError="1.6E-14" MError="-1.6E-14"/>
+</Particle>
+<Particle Name="D(1)(2420)">
+  <data Name="PDGID" Value="10423" />
+  <data Name="Mass" Value="2.4222" PError="0.0018" MError="-0.0018"/>
+  <data Name="Width" Value="0.0189" PError="0.0046" MError="-0.0035"/>
+</Particle>
+<Particle Name="D(2)*(2460)">
+  <data Name="PDGID" Value="425" />
+  <data Name="Mass" Value="2.4589" PError="0.0020" MError="-0.0020"/>
+  <data Name="Width" Value="0.023" PError="0.0050" MError="-0.0050"/>
+</Particle>
+<Particle Name="D(2)*(2460)">
+  <data Name="PDGID" Value="415" />
+  <data Name="Mass" Value="2.459" PError="0.0040" MError="-0.0040"/>
+  <data Name="Width" Value="0.025" PError="0.0080" MError="-0.0070"/>
+</Particle>
+<Particle Name="D(s)">
+  <data Name="PDGID" Value="431" />
+  <data Name="Mass" Value="1.9685" PError="6.0E-4" MError="-6.0E-4"/>
+  <data Name="Width" Value="1.41E-12" PError="5.0E-14" MError="-5.0E-14"/>
+</Particle>
+<Particle Name="D(s)*">
+  <data Name="PDGID" Value="433" />
+  <data Name="Mass" Value="2.1124" PError="7.0E-4" MError="-7.0E-4"/>
+  <data Name="Width" Value="1.41E-12" PError="5.0E-14" MError="-5.0E-14"/>
+</Particle>
+<Particle Name="D(s1)(2536)">
+  <data Name="PDGID" Value="10433" />
+  <data Name="Mass" Value="2.5353" PError="6.0E-4" MError="-6.0E-4"/>
+  <data Name="Width" Value="1.41E-12" PError="5.0E-14" MError="-5.0E-14"/>
+</Particle>
+<Particle Name="B">
+  <data Name="PDGID" Value="521" />
+  <data Name="Mass" Value="5.2789" PError="0.0018" MError="-0.0018"/>
+  <data Name="Width" Value="3.99E-13" PError="1.0E-14" MError="-1.0E-14"/>
+</Particle>
+<Particle Name="B">
+  <data Name="PDGID" Value="511" />
+  <data Name="Mass" Value="5.2792" PError="0.0018" MError="-0.0018"/>
+  <data Name="Width" Value="4.22E-13" PError="1.1E-14" MError="-1.1E-14"/>
+</Particle>
+<Particle Name="B*">
+  <data Name="PDGID" Value="513" />
+  <data Name="Mass" Value="5.3249" PError="0.0018" MError="-0.0018"/>
+  <data Name="Width" Value="4.22E-13" PError="1.1E-14" MError="-1.1E-14"/>
+</Particle>
+<Particle Name="B(s)">
+  <data Name="PDGID" Value="531" />
+  <data Name="Mass" Value="5.3693" PError="0.0020" MError="-0.0020"/>
+  <data Name="Width" Value="4.27E-13" PError="1.9E-14" MError="-1.9E-14"/>
+</Particle>
+<Particle Name="eta(c)(1S)">
+  <data Name="PDGID" Value="441" />
+  <data Name="Mass" Value="2.9798" PError="0.0021" MError="-0.0021"/>
+  <data Name="Width" Value="0.0132" PError="0.0038" MError="-0.0032"/>
+</Particle>
+<Particle Name="J/psi(1S)">
+  <data Name="PDGID" Value="443" />
+  <data Name="Mass" Value="3.09688" PError="4.0E-5" MError="-4.0E-5"/>
+  <data Name="Width" Value="8.7E-5" PError="5.0E-6" MError="-5.0E-6"/>
+</Particle>
+<Particle Name="chi(c0)(1P)">
+  <data Name="PDGID" Value="10441" />
+  <data Name="Mass" Value="3.4173" PError="0.0028" MError="-0.0028"/>
+  <data Name="Width" Value="0.014" PError="0.0050" MError="-0.0050"/>
+</Particle>
+<Particle Name="chi(c1)(1P)">
+  <data Name="PDGID" Value="20443" />
+  <data Name="Mass" Value="3.51053" PError="1.2E-4" MError="-1.2E-4"/>
+  <data Name="Width" Value="8.8E-4" PError="1.4E-4" MError="-1.4E-4"/>
+</Particle>
+<Particle Name="chi(c2)(1P)">
+  <data Name="PDGID" Value="445" />
+  <data Name="Mass" Value="3.55617" PError="1.3E-4" MError="-1.3E-4"/>
+  <data Name="Width" Value="0.0020" PError="1.8E-4" MError="-1.8E-4"/>
+</Particle>
+<Particle Name="psi(2S)">
+  <data Name="PDGID" Value="100443" />
+  <data Name="Mass" Value="3.686" PError="9.0E-5" MError="-9.0E-5"/>
+  <data Name="Width" Value="2.77E-4" PError="3.1E-5" MError="-3.1E-5"/>
+</Particle>
+<Particle Name="psi(3770)">
+  <data Name="PDGID" Value="30443" />
+  <data Name="Mass" Value="3.7699" PError="0.0025" MError="-0.0025"/>
+  <data Name="Width" Value="0.0236" PError="0.0027" MError="-0.0027"/>
+</Particle>
+<Particle Name="psi(4040)">
+  <data Name="PDGID" Value="9000443" />
+  <data Name="Mass" Value="4.04" PError="0.01" MError="-0.01"/>
+  <data Name="Width" Value="0.052" PError="0.01" MError="-0.01"/>
+</Particle>
+<Particle Name="psi(4160)">
+  <data Name="PDGID" Value="9010443" />
+  <data Name="Mass" Value="4.159" PError="0.02" MError="-0.02"/>
+  <data Name="Width" Value="0.078" PError="0.02" MError="-0.02"/>
+</Particle>
+<Particle Name="psi(4415)">
+  <data Name="PDGID" Value="9020443" />
+  <data Name="Mass" Value="4.415" PError="0.0060" MError="-0.0060"/>
+  <data Name="Width" Value="0.043" PError="0.015" MError="-0.015"/>
+</Particle>
+<Particle Name="Upsilon(1S)">
+  <data Name="PDGID" Value="553" />
+  <data Name="Mass" Value="9.46037" PError="2.1E-4" MError="-2.1E-4"/>
+  <data Name="Width" Value="5.25E-5" PError="1.8E-6" MError="-1.8E-6"/>
+</Particle>
+<Particle Name="chi(b0)(1P)">
+  <data Name="PDGID" Value="10551" />
+  <data Name="Mass" Value="9.8598" PError="0.0013" MError="-0.0013"/>
+  <data Name="Width" Value="5.25E-5" PError="1.8E-6" MError="-1.8E-6"/>
+</Particle>
+<Particle Name="chi(b1)(1P)">
+  <data Name="PDGID" Value="20553" />
+  <data Name="Mass" Value="9.8919" PError="7.0E-4" MError="-7.0E-4"/>
+  <data Name="Width" Value="5.25E-5" PError="1.8E-6" MError="-1.8E-6"/>
+</Particle>
+<Particle Name="chi(b2)(1P)">
+  <data Name="PDGID" Value="555" />
+  <data Name="Mass" Value="9.9132" PError="6.0E-4" MError="-6.0E-4"/>
+  <data Name="Width" Value="5.25E-5" PError="1.8E-6" MError="-1.8E-6"/>
+</Particle>
+<Particle Name="Upsilon(2S)">
+  <data Name="PDGID" Value="100553" />
+  <data Name="Mass" Value="10.0233" PError="3.1E-4" MError="-3.1E-4"/>
+  <data Name="Width" Value="4.4E-5" PError="7.0E-6" MError="-7.0E-6"/>
+</Particle>
+<Particle Name="chi(b0)(2P)">
+  <data Name="PDGID" Value="110551" />
+  <data Name="Mass" Value="10.2321" PError="6.0E-4" MError="-6.0E-4"/>
+  <data Name="Width" Value="4.4E-5" PError="7.0E-6" MError="-7.0E-6"/>
+</Particle>
+<Particle Name="chi(b1)(2P)">
+  <data Name="PDGID" Value="120553" />
+  <data Name="Mass" Value="10.2552" PError="5.0E-4" MError="-5.0E-4"/>
+  <data Name="Width" Value="4.4E-5" PError="7.0E-6" MError="-7.0E-6"/>
+</Particle>
+<Particle Name="chi(b2)(2P)">
+  <data Name="PDGID" Value="100555" />
+  <data Name="Mass" Value="10.2685" PError="4.0E-4" MError="-4.0E-4"/>
+  <data Name="Width" Value="4.4E-5" PError="7.0E-6" MError="-7.0E-6"/>
+</Particle>
+<Particle Name="Upsilon(3S)">
+  <data Name="PDGID" Value="200553" />
+  <data Name="Mass" Value="10.3553" PError="5.0E-4" MError="-5.0E-4"/>
+  <data Name="Width" Value="2.63E-5" PError="3.5E-6" MError="-3.5E-6"/>
+</Particle>
+<Particle Name="Upsilon(4S)">
+  <data Name="PDGID" Value="300553" />
+  <data Name="Mass" Value="10.58" PError="0.0035" MError="-0.0035"/>
+  <data Name="Width" Value="0.01" PError="0.0040" MError="-0.0040"/>
+</Particle>
+<Particle Name="Upsilon(10860)">
+  <data Name="PDGID" Value="9000553" />
+  <data Name="Mass" Value="10.865" PError="0.0080" MError="-0.0080"/>
+  <data Name="Width" Value="0.11" PError="0.013" MError="-0.013"/>
+</Particle>
+<Particle Name="Upsilon(11020)">
+  <data Name="PDGID" Value="9010553" />
+  <data Name="Mass" Value="11.019" PError="0.0080" MError="-0.0080"/>
+  <data Name="Width" Value="0.0" PError="0.0" MError="-0.0"/>
+</Particle>
+<Particle Name="p">
+  <data Name="PDGID" Value="2212" />
+  <data Name="Mass" Value="0.93827231" PError="2.8E-7" MError="-2.8E-7"/>
+  <data Name="Width" Value="0.0" PError="0.0" MError="-0.0"/>
+</Particle>
+<Particle Name="n">
+  <data Name="PDGID" Value="2112" />
+  <data Name="Mass" Value="0.93956563" PError="2.8E-7" MError="-2.8E-7"/>
+  <data Name="Width" Value="7.424E-28" PError="1.6E-30" MError="-1.6E-30"/>
+</Particle>
+<Particle Name="N(1440)">
+  <data Name="PDGID" Value="12112" />
+  <data Name="Mass" Value="1.44" PError="0.03" MError="-0.01"/>
+  <data Name="Width" Value="0.35" PError="0.1" MError="-0.1"/>
+</Particle>
+<Particle Name="N(1520)">
+  <data Name="PDGID" Value="1214" />
+  <data Name="Mass" Value="1.52" PError="0.01" MError="-0.0050"/>
+  <data Name="Width" Value="0.12" PError="0.015" MError="-0.01"/>
+</Particle>
+<Particle Name="N(1535)">
+  <data Name="PDGID" Value="22112" />
+  <data Name="Mass" Value="1.535" PError="0.02" MError="-0.015"/>
+  <data Name="Width" Value="0.15" PError="0.1" MError="-0.05"/>
+</Particle>
+<Particle Name="N(1650)">
+  <data Name="PDGID" Value="32112" />
+  <data Name="Mass" Value="1.65" PError="0.03" MError="-0.01"/>
+  <data Name="Width" Value="0.15" PError="0.04" MError="-0.0050"/>
+</Particle>
+<Particle Name="N(1675)">
+  <data Name="PDGID" Value="2116" />
+  <data Name="Mass" Value="1.675" PError="0.01" MError="-0.0050"/>
+  <data Name="Width" Value="0.15" PError="0.03" MError="-0.01"/>
+</Particle>
+<Particle Name="N(1680)">
+  <data Name="PDGID" Value="12116" />
+  <data Name="Mass" Value="1.68" PError="0.01" MError="-0.0050"/>
+  <data Name="Width" Value="0.13" PError="0.01" MError="-0.01"/>
+</Particle>
+<Particle Name="N(1700)">
+  <data Name="PDGID" Value="21214" />
+  <data Name="Mass" Value="1.7" PError="0.05" MError="-0.05"/>
+  <data Name="Width" Value="0.1" PError="0.05" MError="-0.05"/>
+</Particle>
+<Particle Name="N(1710)">
+  <data Name="PDGID" Value="42112" />
+  <data Name="Mass" Value="1.71" PError="0.03" MError="-0.03"/>
+  <data Name="Width" Value="0.1" PError="0.15" MError="-0.05"/>
+</Particle>
+<Particle Name="N(1720)">
+  <data Name="PDGID" Value="31214" />
+  <data Name="Mass" Value="1.72" PError="0.03" MError="-0.07"/>
+  <data Name="Width" Value="0.15" PError="0.05" MError="-0.05"/>
+</Particle>
+<Particle Name="N(2190)">
+  <data Name="PDGID" Value="1218" />
+  <data Name="Mass" Value="2.19" PError="0.01" MError="-0.09"/>
+  <data Name="Width" Value="0.45" PError="0.1" MError="-0.1"/>
+</Particle>
+<Particle Name="Delta(1232)">
+  <data Name="PDGID" Value="1114" />
+  <data Name="Mass" Value="1.232" PError="0.0020" MError="-0.0020"/>
+  <data Name="Width" Value="0.12" PError="0.0050" MError="-0.0050"/>
+</Particle>
+<Particle Name="Delta(1600)">
+  <data Name="PDGID" Value="31114" />
+  <data Name="Mass" Value="1.6" PError="0.1" MError="-0.05"/>
+  <data Name="Width" Value="0.35" PError="0.1" MError="-0.1"/>
+</Particle>
+<Particle Name="Delta(1620)">
+  <data Name="PDGID" Value="1112" />
+  <data Name="Mass" Value="1.62" PError="0.06" MError="-0.0050"/>
+  <data Name="Width" Value="0.15" PError="0.03" MError="-0.03"/>
+</Particle>
+<Particle Name="Delta(1700)">
+  <data Name="PDGID" Value="11114" />
+  <data Name="Mass" Value="1.7" PError="0.07" MError="-0.03"/>
+  <data Name="Width" Value="0.3" PError="0.1" MError="-0.1"/>
+</Particle>
+<Particle Name="Delta(1905)">
+  <data Name="PDGID" Value="1116" />
+  <data Name="Mass" Value="1.905" PError="0.015" MError="-0.035"/>
+  <data Name="Width" Value="0.35" PError="0.09" MError="-0.07"/>
+</Particle>
+<Particle Name="Delta(1910)">
+  <data Name="PDGID" Value="21112" />
+  <data Name="Mass" Value="1.91" PError="0.01" MError="-0.04"/>
+  <data Name="Width" Value="0.25" PError="0.02" MError="-0.06"/>
+</Particle>
+<Particle Name="Delta(1920)">
+  <data Name="PDGID" Value="21114" />
+  <data Name="Mass" Value="1.92" PError="0.05" MError="-0.02"/>
+  <data Name="Width" Value="0.2" PError="0.1" MError="-0.05"/>
+</Particle>
+<Particle Name="Delta(1930)">
+  <data Name="PDGID" Value="11116" />
+  <data Name="Mass" Value="1.93" PError="0.04" MError="-0.01"/>
+  <data Name="Width" Value="0.35" PError="0.1" MError="-0.1"/>
+</Particle>
+<Particle Name="Delta(1950)">
+  <data Name="PDGID" Value="1118" />
+  <data Name="Mass" Value="1.95" PError="0.01" MError="-0.01"/>
+  <data Name="Width" Value="0.3" PError="0.05" MError="-0.01"/>
+</Particle>
+<Particle Name="Lambda">
+  <data Name="PDGID" Value="3122" />
+  <data Name="Mass" Value="1.115683" PError="6.0E-6" MError="-6.0E-6"/>
+  <data Name="Width" Value="2.501E-15" PError="1.9E-17" MError="-1.9E-17"/>
+</Particle>
+<Particle Name="Lambda(1405)">
+  <data Name="PDGID" Value="13122" />
+  <data Name="Mass" Value="1.407" PError="0.0040" MError="-0.0040"/>
+  <data Name="Width" Value="0.05" PError="0.0020" MError="-0.0020"/>
+</Particle>
+<Particle Name="Lambda(1520)">
+  <data Name="PDGID" Value="3124" />
+  <data Name="Mass" Value="1.5195" PError="0.0010" MError="-0.0010"/>
+  <data Name="Width" Value="0.0156" PError="0.0010" MError="-0.0010"/>
+</Particle>
+<Particle Name="Lambda(1600)">
+  <data Name="PDGID" Value="23122" />
+  <data Name="Mass" Value="1.6" PError="0.1" MError="-0.04"/>
+  <data Name="Width" Value="0.15" PError="0.1" MError="-0.1"/>
+</Particle>
+<Particle Name="Lambda(1670)">
+  <data Name="PDGID" Value="33122" />
+  <data Name="Mass" Value="1.67" PError="0.01" MError="-0.01"/>
+  <data Name="Width" Value="0.035" PError="0.015" MError="-0.01"/>
+</Particle>
+<Particle Name="Lambda(1690)">
+  <data Name="PDGID" Value="13124" />
+  <data Name="Mass" Value="1.69" PError="0.0050" MError="-0.0050"/>
+  <data Name="Width" Value="0.06" PError="0.01" MError="-0.01"/>
+</Particle>
+<Particle Name="Lambda(1800)">
+  <data Name="PDGID" Value="43122" />
+  <data Name="Mass" Value="1.8" PError="0.05" MError="-0.08"/>
+  <data Name="Width" Value="0.3" PError="0.1" MError="-0.1"/>
+</Particle>
+<Particle Name="Lambda(1810)">
+  <data Name="PDGID" Value="53122" />
+  <data Name="Mass" Value="1.81" PError="0.04" MError="-0.06"/>
+  <data Name="Width" Value="0.15" PError="0.1" MError="-0.1"/>
+</Particle>
+<Particle Name="Lambda(1820)">
+  <data Name="PDGID" Value="3126" />
+  <data Name="Mass" Value="1.82" PError="0.0050" MError="-0.0050"/>
+  <data Name="Width" Value="0.08" PError="0.01" MError="-0.01"/>
+</Particle>
+<Particle Name="Lambda(1830)">
+  <data Name="PDGID" Value="13126" />
+  <data Name="Mass" Value="1.83" PError="0.0" MError="-0.02"/>
+  <data Name="Width" Value="0.095" PError="0.015" MError="-0.035"/>
+</Particle>
+<Particle Name="Lambda(1890)">
+  <data Name="PDGID" Value="23124" />
+  <data Name="Mass" Value="1.89" PError="0.02" MError="-0.04"/>
+  <data Name="Width" Value="0.1" PError="0.1" MError="-0.04"/>
+</Particle>
+<Particle Name="Lambda(2100)">
+  <data Name="PDGID" Value="3128" />
+  <data Name="Mass" Value="2.1" PError="0.01" MError="-0.01"/>
+  <data Name="Width" Value="0.2" PError="0.05" MError="-0.1"/>
+</Particle>
+<Particle Name="Lambda(2110)">
+  <data Name="PDGID" Value="23126" />
+  <data Name="Mass" Value="2.11" PError="0.03" MError="-0.02"/>
+  <data Name="Width" Value="0.2" PError="0.05" MError="-0.05"/>
+</Particle>
+<Particle Name="Sigma">
+  <data Name="PDGID" Value="3222" />
+  <data Name="Mass" Value="1.18937" PError="7.0E-5" MError="-7.0E-5"/>
+  <data Name="Width" Value="8.24E-15" PError="4.0E-17" MError="-4.0E-17"/>
+</Particle>
+<Particle Name="Sigma">
+  <data Name="PDGID" Value="3212" />
+  <data Name="Mass" Value="1.192642" PError="2.4E-5" MError="-2.4E-5"/>
+  <data Name="Width" Value="8.9E-6" PError="9.0E-7" MError="-8.0E-7"/>
+</Particle>
+<Particle Name="Sigma">
+  <data Name="PDGID" Value="3112" />
+  <data Name="Mass" Value="1.197449" PError="3.0E-5" MError="-3.0E-5"/>
+  <data Name="Width" Value="4.45E-15" PError="3.2E-17" MError="-3.2E-17"/>
+</Particle>
+<Particle Name="Sigma(1385)">
+  <data Name="PDGID" Value="3224" />
+  <data Name="Mass" Value="1.3828" PError="4.0E-4" MError="-4.0E-4"/>
+  <data Name="Width" Value="4.45E-15" PError="3.2E-17" MError="-3.2E-17"/>
+</Particle>
+<Particle Name="Sigma(1385)">
+  <data Name="PDGID" Value="3214" />
+  <data Name="Mass" Value="1.3837" PError="0.0010" MError="-0.0010"/>
+  <data Name="Width" Value="4.45E-15" PError="3.2E-17" MError="-3.2E-17"/>
+</Particle>
+<Particle Name="Sigma(1385)">
+  <data Name="PDGID" Value="3114" />
+  <data Name="Mass" Value="1.3872" PError="5.0E-4" MError="-5.0E-4"/>
+  <data Name="Width" Value="0.0394" PError="0.0021" MError="-0.0021"/>
+</Particle>
+<Particle Name="Sigma(1660)">
+  <data Name="PDGID" Value="13112" />
+  <data Name="Mass" Value="1.66" PError="0.03" MError="-0.03"/>
+  <data Name="Width" Value="0.1" PError="0.1" MError="-0.06"/>
+</Particle>
+<Particle Name="Sigma(1670)">
+  <data Name="PDGID" Value="13114" />
+  <data Name="Mass" Value="1.67" PError="0.015" MError="-0.0050"/>
+  <data Name="Width" Value="0.06" PError="0.02" MError="-0.02"/>
+</Particle>
+<Particle Name="Sigma(1750)">
+  <data Name="PDGID" Value="23112" />
+  <data Name="Mass" Value="1.75" PError="0.05" MError="-0.02"/>
+  <data Name="Width" Value="0.09" PError="0.07" MError="-0.03"/>
+</Particle>
+<Particle Name="Sigma(1775)">
+  <data Name="PDGID" Value="3116" />
+  <data Name="Mass" Value="1.775" PError="0.0050" MError="-0.0050"/>
+  <data Name="Width" Value="0.12" PError="0.015" MError="-0.015"/>
+</Particle>
+<Particle Name="Sigma(1915)">
+  <data Name="PDGID" Value="13116" />
+  <data Name="Mass" Value="1.915" PError="0.02" MError="-0.015"/>
+  <data Name="Width" Value="0.12" PError="0.04" MError="-0.04"/>
+</Particle>
+<Particle Name="Sigma(1940)">
+  <data Name="PDGID" Value="23114" />
+  <data Name="Mass" Value="1.94" PError="0.01" MError="-0.04"/>
+  <data Name="Width" Value="0.22" PError="0.08" MError="-0.07"/>
+</Particle>
+<Particle Name="Sigma(2030)">
+  <data Name="PDGID" Value="3118" />
+  <data Name="Mass" Value="2.03" PError="0.01" MError="-0.0050"/>
+  <data Name="Width" Value="0.18" PError="0.02" MError="-0.03"/>
+</Particle>
+<Particle Name="Xi">
+  <data Name="PDGID" Value="3322" />
+  <data Name="Mass" Value="1.3149" PError="6.0E-4" MError="-6.0E-4"/>
+  <data Name="Width" Value="2.27E-15" PError="7.0E-17" MError="-7.0E-17"/>
+</Particle>
+<Particle Name="Xi">
+  <data Name="PDGID" Value="3312" />
+  <data Name="Mass" Value="1.32132" PError="1.3E-4" MError="-1.3E-4"/>
+  <data Name="Width" Value="4.02E-15" PError="4.0E-17" MError="-4.0E-17"/>
+</Particle>
+<Particle Name="Xi(1530)">
+  <data Name="PDGID" Value="3324" />
+  <data Name="Mass" Value="1.5318" PError="3.2E-4" MError="-3.2E-4"/>
+  <data Name="Width" Value="4.02E-15" PError="4.0E-17" MError="-4.0E-17"/>
+</Particle>
+<Particle Name="Xi(1530)">
+  <data Name="PDGID" Value="3314" />
+  <data Name="Mass" Value="1.535" PError="6.0E-4" MError="-6.0E-4"/>
+  <data Name="Width" Value="0.0099" PError="0.0017" MError="-0.0019"/>
+</Particle>
+<Particle Name="Xi(1820)">
+  <data Name="PDGID" Value="13314" />
+  <data Name="Mass" Value="1.823" PError="0.0050" MError="-0.0050"/>
+  <data Name="Width" Value="0.024" PError="0.015" MError="-0.01"/>
+</Particle>
+<Particle Name="Omega">
+  <data Name="PDGID" Value="3334" />
+  <data Name="Mass" Value="1.67245" PError="2.9E-4" MError="-2.9E-4"/>
+  <data Name="Width" Value="8.01E-15" PError="1.2E-16" MError="-1.2E-16"/>
+</Particle>
+<Particle Name="Lambda(c)">
+  <data Name="PDGID" Value="4122" />
+  <data Name="Mass" Value="2.2849" PError="6.0E-4" MError="-6.0E-4"/>
+  <data Name="Width" Value="3.19E-12" PError="1.8E-13" MError="-1.8E-13"/>
+</Particle>
+<Particle Name="Lambda(c)(2593)">
+  <data Name="PDGID" Value="14122" />
+  <data Name="Mass" Value="2.5939" PError="8.0E-4" MError="-8.0E-4"/>
+  <data Name="Width" Value="0.0036" PError="0.0020" MError="-0.0013"/>
+</Particle>
+<Particle Name="Sigma(c)(2455)">
+  <data Name="PDGID" Value="4222" />
+  <data Name="Mass" Value="2.4528" PError="6.0E-4" MError="-6.0E-4"/>
+  <data Name="Width" Value="0.0036" PError="0.0020" MError="-0.0013"/>
+</Particle>
+<Particle Name="Sigma(c)(2455)">
+  <data Name="PDGID" Value="4212" />
+  <data Name="Mass" Value="2.4536" PError="9.0E-4" MError="-9.0E-4"/>
+  <data Name="Width" Value="0.0036" PError="0.0020" MError="-0.0013"/>
+</Particle>
+<Particle Name="Sigma(c)(2455)">
+  <data Name="PDGID" Value="4112" />
+  <data Name="Mass" Value="2.4522" PError="6.0E-4" MError="-6.0E-4"/>
+  <data Name="Width" Value="0.0036" PError="0.0020" MError="-0.0013"/>
+</Particle>
+<Particle Name="Xi(c)">
+  <data Name="PDGID" Value="4232" />
+  <data Name="Mass" Value="2.4656" PError="0.0014" MError="-0.0014"/>
+  <data Name="Width" Value="1.86E-12" PError="2.7E-13" MError="-3.1E-13"/>
+</Particle>
+<Particle Name="Xi(c)">
+  <data Name="PDGID" Value="4132" />
+  <data Name="Mass" Value="2.4703" PError="0.0018" MError="-0.0018"/>
+  <data Name="Width" Value="6.7E-12" PError="1.3E-12" MError="-1.3E-12"/>
+</Particle>
+<Particle Name="Omega(c)">
+  <data Name="PDGID" Value="4332" />
+  <data Name="Mass" Value="2.704" PError="0.0040" MError="-0.0040"/>
+  <data Name="Width" Value="1.02E-11" PError="4.8E-12" MError="-2.4E-12"/>
+</Particle>
+<Particle Name="Lambda(b)">
+  <data Name="PDGID" Value="5122" />
+  <data Name="Mass" Value="5.624" PError="0.0090" MError="-0.0090"/>
+  <data Name="Width" Value="5.31E-13" PError="3.7E-14" MError="-3.2E-14"/>
+</Particle>
+</PPML>

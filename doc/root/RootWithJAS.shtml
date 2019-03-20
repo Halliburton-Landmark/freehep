@@ -1,0 +1,44 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Viewing Root Histograms with the JAS Plot Widget</title>
+</head>
+
+<body>
+
+<h1>          
+             
+          
+         
+          
+            
+      
+             
+    The <a href="index.shtml"> hep.io.root</a> Package</h1>
+<h2>Viewing Root Histograms with the JAS Plot Widget</h2>
+<p>The following example shows how to display root histograms using the JAS plot
+widget. You will need both root.jar and jas.jar (part of the <a href="http://jas.freehep.org/downloads.htm"> JAS
+distribution</a>)
+in your CLASSPATH to compile and run this, plus the <a href="ftp://ftp.slac.stanford.edu/software/jas/RootData/Example.root">Example.root</a>
+data file. The essential class is the RootHistogramAdapter which takes a Root
+histogram (TH1) and converts it to a JAS DataSource, which can be displayed by
+the JAS Plot widget. The <a href="http://jas.freehep.org/documentation/api/Root/jasext/root/RootHistogramAdapter.html"> RootHistogramAdapter</a> is quite crude at the moment, it
+only works for simple 1D and 2D plots, and ignores attributes such as line
+color, markers, date axis <i>etc</i>. (It should be easy to improve it,
+volunteers are welcome).</p>
+<p><!--webbot bot="HTMLMarkup" startspan --><servlet code="ColorizeServlet">
+<param name="source" value="examples/RootWithJAS.java">
+</servlet><!--webbot bot="HTMLMarkup" endspan -->
+</p>
+<p>Running the program will produce something like this:</p>
+<p><img border="0" src="RootWithJAS.gif" width="500" height="300"></p>
+<h2>A Root Histogram Browser</h2>
+<p>This code can easily be extended to create a <a href="http://java.freehep.org/demo/Root/"> Root Histogram Browser</a>.</p>
+
+</body>
+
+</html>

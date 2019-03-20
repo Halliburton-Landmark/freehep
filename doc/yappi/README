@@ -1,0 +1,21 @@
+The web of YaPPI is created and maintained
+using DreameWeaver 3. It uses a template
+in the Templates directory.
+=============================================
+The delivery of the web is now simply the
+building of the war file. Thus, when making
+the war file, include whatever you included 
+to make it, plus the doc/yappi dir which
+contains all the html stuff plus word, frame
+and so on. You can if you like exlude the 
+following files when making the war:
+
+.doc
+.fm
+.vsd
+.clp
+.wmk
+.emf
+.ppt
+
+=============================================

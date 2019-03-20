@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<PPML Source="handmade" xmlns:ppml="http://www.w3.org/1999/XMLSchema-instance" ppml:noNamespaceSchemaLocation='ppml2.xsd'>
+<Particle Name="MU">
+	<data Name="PDGID"    Value="13"/>
+	<data Name="Mass"     Value="0.106"/>
+	<data Name="Charge"   Value="-1"/>
+	<data Name="LifeTime" Value="0.2197E-05"/>
+	<data Name="MLow"     Value="0.106"/>
+	<data Name="MUp"      Value="0.106"/>
+	<data Name="Anti"     Value="T"/>
+</Particle>
+
+<Particle Name="PI">
+	<data Name="PDGID"    Value="211"/>
+	<data Name="Mass"     Value="0.140"/>
+	<data Name="Charge"   Value="1"/>
+	<data Name="LifeTime" Value="0.2603E-07"/>
+	<data Name="MLow"     Value="0.140"/>
+	<data Name="MUp"      Value="0.140"/>
+	<data Name="Anti"     Value="T"/>
+</Particle>
+
+<Particle Name="K">
+ 	<data Name="PDGID"    Value="321"/>
+	<data Name="Mass"     Value="0.494"/>
+	<data Name="Charge"   Value="1"/>
+	<data Name="LifeTime" Value="0.1237E-07"/>
+	<data Name="MLow"     Value="0.494"/>
+	<data Name="MUp"      Value="0.494"/>
+	<data Name="Anti"     Value="T"/>
+</Particle>
+
+<Particle Name="ETA">
+	<data Name="PDGID"    Value="221"/>
+	<data Name="Mass"     Value="0.549"/>
+	<data Name="Charge"   Value="0"/>
+	<data Name="LifeTime" Value="0.6269E-18"/>
+	<data Name="MLow"     Value="0.549"/>
+	<data Name="MUp"      Value="0.549"/>
+	<data Name="Anti"     Value="F"/>
+</Particle>
+
+<Particle Name="P">
+	<data Name="PDGID"    Value="2212"/>
+	<data Name="Mass"     Value="0.938"/>
+	<data Name="Charge"   Value="1"/>
+	<data Name="LifeTime" Value="0.1000E+13"/>
+	<data Name="MLow"     Value="0.938"/>
+	<data Name="MUp"      Value="0.938"/>
+	<data Name="Anti"     Value="T"/>
+</Particle>
+
+<Particle Name="LAMBDA">
+	<data Name="PDGID"    Value="3122"/>
+	<data Name="Mass"     Value="1.116"/>
+	<data Name="Charge"   Value="0"/>
+	<data Name="LifeTime" Value="0.2632E-09"/>
+	<data Name="MLow"     Value="1.116"/>
+	<data Name="MUp"      Value="1.116"/>
+	<data Name="Anti"     Value="T"/>
+</Particle>
+
+<Particle Name="SIGMAD">
+	<data Name="PDGID"    Value="3112"/>
+	<data Name="Mass"     Value="1.197"/>
+	<data Name="Charge"   Value="-1"/>
+	<data Name="LifeTime" Value="0.1482E-09"/>
+	<data Name="MLow"     Value="1.197"/>
+	<data Name="MUp"      Value="1.197"/>
+	<data Name="Anti"     Value="T"/>
+</Particle>
+
+<Particle Name="CASCA">
+	<data Name="PDGID"    Value="3312"/>
+	<data Name="Mass"     Value="1.321"/>
+	<data Name="Charge"   Value="-1"/>
+	<data Name="LifeTime" Value="0.1642E-09"/>
+	<data Name="MLow"     Value="1.321"/>
+	<data Name="MUp"      Value="1.321"/>
+	<data Name="Anti"     Value="T"/>
+</Particle>
+
+<Particle Name="OMEGA*">
+	<data Name="PDGID"    Value="3334"/>
+	<data Name="Mass"     Value="1.672"/>
+	<data Name="Charge"   Value="-1"/>
+	<data Name="LifeTime" Value="0.8220E-10"/>
+	<data Name="MLow"     Value="1.672"/>
+	<data Name="MUp"      Value="1.672"/>
+	<data Name="Anti"     Value="T"/>
+</Particle>
+</PPML>

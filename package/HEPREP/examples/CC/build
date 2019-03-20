@@ -1,0 +1,9 @@
+#
+# Build file for CC (SUN Solaris)
+#
+CC -c `heprep-config --include` ../HepRepExample.cpp
+CC -o HepRepExample HepRepExample.o `heprep-config --lib`
+
+CC -c `heprep-config --include` ../MultiWriteTest.cpp
+CC -o MultiWriteTest MultiWriteTest.o `heprep-config --lib`
+

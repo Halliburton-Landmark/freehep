@@ -1,0 +1,29 @@
+##############################################################
+# Copyright 2001, CERN, Geneva, Swizterland.
+#
+# frisbee.run 
+# Sample command line (assuming bash) for running frisbee.
+#
+# @author Mario Ruggier
+# @author Mark Donszelmann
+# @version $Id: frisbee.run,v 1.1 2001/02/26 10:41:23 duns Exp $
+##############################################################
+
+# How to set-up jdk1.3 (using bash) at CERN: 
+# . /afs/cern.ch/sw/java/share/bin/setjdk sun 1.3.0
+
+# environment set-up
+JDK_HOME=/afs/cern.ch/sw/java/sparc_solaris26/jdk/sun-1.3.0/
+WIRED_HOME=/afs/cern.ch/user/r/ruggier/work/frisbee/work/wired2
+export JDK_HOME WIRED_HOME
+
+# Sample frisbee command line 
+frisbee -c ":pserver:anoncvs@wiredcvs.cern.ch:/afs/cern.ch/sw/wired/src/master/wired2" \
+        -f wired2 \
+        -w /afs/cern.ch/user/r/ruggier/work/frisbee/work \
+        -e /afs/cern.ch/user/r/ruggier/work/frisbee/export \
+        -s /afs/cern.ch/user/r/ruggier/private/yappi/frisbee/extras \
+        -l /afs/cern.ch/user/r/ruggier/private/yappi/frisbee/extras 
+#        -u /afs/cern.ch/user/r/ruggier/work/frisbee/dofrisbeeupdate 
+
+##############################################################

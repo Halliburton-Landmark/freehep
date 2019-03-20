@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="MenuList">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="Menu" minOccurs="1" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Menu">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="MenuItem" minOccurs="1" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="name" use="required" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="SiteMap">
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:element ref="TabMenuList"/>
+				<xsd:element ref="MenuList"/>
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="TabMenu">
+		<xsd:complexType>
+			<xsd:attribute name="href" use="required" type="xsd:string"/>
+			<xsd:attribute name="name" use="required" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="TabMenuList">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="TabMenu" minOccurs="1" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="MenuItem">
+		<xsd:complexType>
+			<xsd:attribute name="offlinehref" use="optional" type="xsd:string"/>
+			<xsd:attribute name="href" use="optional" type="xsd:string"/>
+			<xsd:attribute name="name" use="required" type="xsd:string"/>
+			<xsd:attribute name="enabled" default="true" use="optional" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

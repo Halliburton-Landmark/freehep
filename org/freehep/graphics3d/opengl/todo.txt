@@ -1,0 +1,1 @@
+- add symbols, points, filled polygons to OpenGL canvas

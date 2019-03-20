@@ -1,0 +1,3 @@
+hep.aida.ref.optimizer.jminuit.JMinuitOptimizerFactory
+hep.aida.ref.optimizer.minuit.MinuitOptimizerFactory
+hep.aida.ref.optimizer.uncmin.UncminOptimizerFactory

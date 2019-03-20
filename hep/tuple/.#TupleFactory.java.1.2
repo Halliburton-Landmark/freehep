@@ -1,0 +1,83 @@
+package hep.tuple;
+
+import hep.tuple.interfaces.*;
+import java.util.Map;
+import org.freehep.util.Value;
+import org.freehep.util.OptionParser;
+import java.util.Date;
+
+/**
+ *
+ * @author The FreeHEP team @SLAC.
+ *
+ */
+public class TupleFactory implements FTupleFactory {
+    
+    public FillableTuple createFTuple(String name, String title) {
+        return createFTuple(name, title, "");
+    }
+    
+    public FillableTuple createFTuple(String name, String title, String options) {
+        return new Tuple(name, title, options);
+    }
+    
+    public FillableTupleColumn createFTupleColumn(String name, Class type, Value value) {
+        return createFTupleColumn(name, type, value, "");
+    }
+    
+    public FillableTupleColumn createFTupleColumn(String name, Class type, Value value, String options) {
+        Map optionMap = OptionParser.parseOptions(options);
+
+        int columnLength = Tuple.COLUMN_ROWS;
+        int columnMaxLength = -1;
+        
+        if ( optionMap.containsKey( "length" ) ) columnLength = Integer.parseInt( ( String ) ( optionMap.get( "length" ) ) );
+
+        if ( optionMap.containsKey( "maxlength" ) ) {
+            columnMaxLength = Integer.parseInt( ( String ) ( optionMap.get( "maxlength" ) ) );
+            if ( ! optionMap.containsKey( "length" ) )
+                columnLength = columnMaxLength;
+        } 
+
+        if ( type == Integer.TYPE ) return new TupleColumnInt( name, value, columnLength, columnMaxLength );
+        else if ( type == Short.TYPE ) return new TupleColumnShort( name, value, columnLength, columnMaxLength );
+        else if ( type == Long.TYPE ) return new TupleColumnLong( name, value, columnLength, columnMaxLength );
+        else if ( type == Float.TYPE ) return new TupleColumnFloat( name, value, columnLength, columnMaxLength );
+        else if ( type == Double.TYPE ) return new TupleColumnDouble( name, value, columnLength, columnMaxLength );
+        else if ( type == Boolean.TYPE ) return new TupleColumnBoolean( name, value, columnLength, columnMaxLength );
+        else if ( type == Byte.TYPE ) return new TupleColumnByte( name, value, columnLength, columnMaxLength );
+        else if ( type == Character.TYPE ) return new TupleColumnChar( name, value, columnLength, columnMaxLength );
+        else if ( type == String.class ) return new TupleColumnString( name, value, columnLength, columnMaxLength );
+        else if ( type == Date.class ) return new TupleColumnDate( name, value, columnLength, columnMaxLength );
+        else return new TupleColumnObject( name, type, value, columnLength, columnMaxLength );
+    }
+    
+    public FTuple createInMemoryTuple( FTuple tuple ) {
+
+        Tuple newTuple = new Tuple(tuple.name(),tuple.title());
+        
+        Value value = new Value();
+        
+        int nColumns = tuple.columns();
+	String[] columnNames = new String[nColumns];
+	Class[] columnTypes  = new Class[nColumns];
+	for (int i=0; i<nColumns; i++) {
+	    columnNames[i] = tuple.columnName(i);
+	    columnTypes[i] = tuple.columnType(i);
+            tuple.column(i).defaultValue(value);            
+            newTuple.addColumn( this.createFTupleColumn( columnNames[i], columnTypes[i], value ) );
+        }
+        
+        FTupleCursor cursor = tuple.cursor();
+        cursor.start();
+        while( cursor.next() ) {
+            for (int i=0; i<nColumns; i++) {
+                tuple.columnValue(i,cursor,value);
+                newTuple.fill(i, value);
+            }
+            newTuple.addRow();
+        }
+        return newTuple;
+    }
+        
+}

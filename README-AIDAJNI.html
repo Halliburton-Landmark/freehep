@@ -1,0 +1,62 @@
+<html>
+<head>
+<title>AIDAJNI Build Procedure</title>
+</head>
+<body>
+<h1>AIDAJNI (Re-)Build Procedure</h1>
+To compile, link and package AIDAJNI for a different operating system and or 
+compiler do the following. 
+<p>You may need to add a new <i>OS</i>-<i>COMPILER</i>.gmk 
+file for your system or rename one of the current ones.</p>
+<h2>On Unix style systems</h2>
+<h3>Linux, Solaris, MacOS X:</h3>
+<pre>Open a terminal window and:</pre>
+<pre>setenv FREEHEP <i>	&lt;top-level-dir of this distribution&gt;</i>
+setenv JDK_HOME <i>&lt;top-level-dir of the JDK 1.4.x&gt;</i>
+setenv PATH 	$FREEHEP/bin:$JDK_HOME/bin:$PATH
+setenv OS <i>	&lt;choice of Operating System [</i><b>Linux</b>, <b>Darwin</b>, <b>SUN</b><i>]&gt;</i>
+setenv COMPILER <i>&lt;choice of Compiler [</i><b>g++</b>, <b>g++2</b>, <b>g++3</b>, <b>CC</b>,<i> <b>icc</b>]&gt;</i>
+chmod +x tools/ant
+</pre>
+<pre>tools/ant -Djar=aidajni
+gmake -f GNUmakefile-AIDAJNI
+gmake -f GNUmakefile-AIDAJNI dist</pre>
+<p>This will produce a AIDAJNI-*.*.*-<i>OS</i>-<i>COMPILER</i>.tar.gz file, 
+ready for distribution and installation.</p>
+<p>Note: on MacOS use make instead of gmake and JDK_HOME is in /Library/Java/Home.</p>
+<h2>On Windows systems:</h2>
+<h3><b>Visual C++ version 6 or 7:</b></h3>
+<p>Open a MSDOS window and:</p>
+<pre>set FREEHEP	=<i>&lt;top-level-dir of this distribution&gt;</i>
+set JDK_HOME	=<i>&lt;top-level-dir of the JDK 1.4.x&gt;</i>
+set PATH	=%FREEHEP%\bin;%JDK_HOME%\bin;%PATH%
+set OS	        =Windows_NT
+set COMPILER	=<i>&lt;choice of Compiler [</i><b>VC</b>, <b>VC7</b><i>]&gt;
+</i><font size="2">set templib	=%LIB%
+set LIB 	=
+set lib		=%templib%
+set templib	=</font></pre>
+<pre>tools\ant -Djar=aidajni
+gmake -f GNUmakefile-AIDAJNI
+gmake -f GNUmakefile-AIDAJNI dist</pre>
+<p>This will produce a AIDAJNI-*.*.*-WIN32-<i>COMPILER</i>.zip file, ready for 
+distribution and installation.</p>
+<h3><b> g++ and Cygwin:</b></h3>
+<p>Open a MSDOS window and:</p>
+<pre>set FREEHEP	=<i>&lt;top-level-dir of this distribution&gt;</i>
+set JDK_HOME	=<i>&lt;top-level-dir of the JDK 1.4.x&gt;</i>
+set PATH	=%FREEHEP%\bin;%JDK_HOME%\bin;%PATH%</pre>
+<pre>tools\ant -Djar=aidajni</pre>
+<p>then open 
+a Cygwin window and:</p>
+<pre>export FREEHEP	=<i>&lt;top-level-dir of this distribution using cygwin syntax&gt;</i>
+export JDK_HOME	=<i>&lt;top-level-dir of the JDK 1.4.x using cygwin syntax&gt;</i>
+export PATH	=$JDK_HOME/bin:$PATH
+export OS	=Windows_NT
+export COMPILER	=<b>g++</b></pre>
+<pre>make -f GNUmakefile-AIDAJNI
+make -f GNUmakefile-AIDAJNI dist</pre>
+<p>This will produce a AIDAJNI-*.*.*-WIN32-<i>g++</i>.tar.gz file, ready for 
+distribution and installation.</p>
+</body>
+</html>

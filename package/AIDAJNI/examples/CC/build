@@ -1,0 +1,6 @@
+#
+# Build file for CC (SUN Solaris)
+#
+CC -c `aida-config --include` ../AidaTest.cc
+CC -o AidaTest AidaTest.o `aida-config --lib`
+

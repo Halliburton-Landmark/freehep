@@ -1,0 +1,89 @@
+#
+# WIN32 - g++
+#
+
+ARCH = i386
+
+#
+# Defines __int64 which is not defined under WIN32-g++
+#
+INCFLAGS += -I$(FREEHEP)/org/freehep/jni/include/win32-g++
+
+#
+# Compiler
+#
+ifneq ($(DEBUG),)
+	DEBUGSUFFIX =
+	CFLAGS += -g
+else    # DEBUG
+	DEBUGSUFFIX =
+	CFLAGS += -O
+endif   # DEBUG
+
+CXX = g++
+CC = gcc
+F77 = g77
+F77FLAGS += -O99 -c -fno-automatic -fno-backslash -fno-second-underscore
+F77TARGET = -o # leave the space!
+# FIXME: Check what to define for __int64
+CFLAGS += -c -Wall -Wno-long-long -Wpointer-arith -Wconversion -pipe \
+          -DGNU_GCC -Df2cFortran -DWIN32 -D_WIN32
+CCFLAGS += -D__NO_STRING_INLINES -Wnested-externs -Wbad-function-cast
+CXXFLAGS += -Woverloaded-virtual -fno-for-scope
+CXXTARGET = -o # leave the space!
+
+#
+# Librarian
+#
+LIB = ar
+LIBTARGET = -r # leave the space!
+
+#
+# Linker
+#
+LINK = $(CXX)
+LINKCC = $(CC)
+DLLFLAGS += -shared -Wl,--kill-at -Wl,--add-stdcall-alias
+#
+#
+# Generic Unix
+#
+LINKFLAGS += $(addsuffix  /$(REF), $(addprefix -L, $(EXTLIBDIRS)))
+LINKFLAGS += $(addsuffix  /$(DST), $(addprefix -L, $(LIBDIRS)))
+LINKFLAGS += $(addprefix -L, $(UNIXLIBDIRS))
+LINKLIBS += $(addsuffix $(DEBUGSUFFIX), $(addprefix -l, $(INCLUDELIBS)))
+LINKLIBS += $(addsuffix $(DEBUGSUFFIX), $(addprefix -l, $(INCLUDEUNIXLIBS)))
+
+LINKTARGET = -o # leave ths space
+DLL = ld
+
+#
+# CERN Lib
+#
+ifneq ($(CERN_ROOT),)
+    LINKLIBS += -L$(CERN_ROOT)/lib -lpacklib -lcrypt
+endif   # CERN_ROOT
+
+ifeq ($(LINKNOJAVA),)
+    # IMPORTANT, we actually look for our libjvm.dll.a which will connect to jvm.dll
+    LINKLIBS += -L$(FREEHEP)/lib/WIN32-g++ -ljvm.dll
+endif   # LINKNOJAVA
+
+#
+# Extra for fortran...
+#
+ifneq ($(LINKFORTRAN),)
+    LINKLIBS += -lg2c
+endif   # LINKFORTRAN
+
+#
+# System
+#
+OBJEXT = .o
+LIBEXT = .a
+DLLEXT = .so
+LIBPRE = lib
+EXEEXT =
+TAREXT = .tar.gz
+DTMP = /tmp/$(DST)
+DTAR = tar z

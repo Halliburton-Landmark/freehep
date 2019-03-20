@@ -1,0 +1,3 @@
+#!/bin/sh 
+
+java $JACO_FLAGS -classpath $FREEHEP/lib/freehep-base.jar:$FREEHEP/lib/freehep-tools.jar:$CLASSPATH org.freehep.jaco.Jaco $*

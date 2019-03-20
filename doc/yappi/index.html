@@ -1,0 +1,145 @@
+<html><!-- #BeginTemplate "/Templates/yappi.dwt" -->
+<head>
+<!-- #BeginEditable "doctitle" --> 
+<title>YaPPI, Yet another Particle Property Interface</title>
+<!-- #EndEditable --> 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="images/site.css">
+</head>
+
+<body bgcolor="#FFFFFF">
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr> 
+    <td width="171" valign="top" align="left" class="nav"> 
+      <p align="center"> <a href="index.html"><img src="images/yappi.gif" width="150" height="46" border="0"></a><br>
+        <span class="YaPPIsubtext">The XML Particle Property Database</span> </p>
+      <table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#FF6666" align="right">
+        <tr> 
+          <td bgcolor="#FF6666"><img src="images/1bit.gif" width="100" height="2"></td>
+        </tr>
+      </table>
+      <br>
+      <table border="0" cellspacing="0" cellpadding="2" width="100%">
+        <tr> 
+          <td colspan="2" class="nav1"><a href="http://java.freehep.org/">FreeHEP 
+            Home <img src="images/out.gif" width="17" height="11" border="0"></a> 
+          </td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="index.html">YaPPI Home</a></td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">&nbsp;</td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">YaPPI Java API </td>
+        </tr>
+        <tr class="nav2"> 
+          <td width="20">&nbsp;</td>
+          <td class="nav2"> 
+            <p><a href="api/guide.html">Mini User's Guide</a><br>
+              <a href="api/xmlschema.html">XML Schema</a> <br>
+              <a href="api/classdiagram.html">Class Diagram</a> <br>
+              <a href="http://java.freehep.org/lib/freehep/api/hep/physics/yappi/package-summary.html">YaPPI&nbsp;JavaDocs 
+              <img src="images/out.gif" width="17" height="11" border="0"> 
+              </a> <br>
+              <a href="http://java.freehep.org/servlet/fhcvs/list/freehep/hep/physics/yappi">Source 
+              Code <img src="images/out.gif" width="17" height="11" border="0"></a> 
+            </p>
+          </td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="api/browsedata.html">Browse&nbsp;Particle&nbsp;Data</a> 
+          </td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="http://java.freehep.org/download.thtml">Downlaod&nbsp;<img src="images/out.gif" width="17" height="11" border="0"> 
+            </a></td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1"><a href="project/authors.html">Authors</a></td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">&nbsp;</td>
+        </tr>
+        <tr> 
+          <td colspan="2" class="nav1">For&nbsp;YaPPI&nbsp;Developers</td>
+        </tr>
+        <tr class="nav2"> 
+          <td>&nbsp;</td>
+          <td class="nav2"> 
+            <p><a href="http://java.freehep.org/rules.thtml">FreeHEP&nbsp;Rules&nbsp;<img src="images/out.gif" width="17" height="10" border="0"></a> 
+              <br>
+              <a href="report/YaPPI.pdf">Project Report</a> [PDF]<br>
+              <a href="http://java.freehep.org/source.thtml">Get Sources&nbsp;<img src="images/out.gif" width="17" height="11" border="0"></a> 
+              <br>
+              <a href="api/todo.html">To Do List </a></p>
+            </td>
+        </tr>
+      </table>
+      <br>
+    </td>
+    <td width="14" valign="top" align="left"> 
+      <table width="14" border="0" cellspacing="0" cellpadding="0" >
+        <tr> 
+          <td bgcolor="#FF6666" width="2"><img src="images/1bit.gif" width="2" height="360"></td>
+          <td width="12">&nbsp;</td>
+        </tr>
+      </table>
+    </td>
+    <td width="*" valign="top"> 
+      <h1 class="pageHeading"><!-- #BeginEditable "pageHeading" --> <span class="YaPPIheading"><span class="YaPPI">Y</span>et 
+        <span class="YaPPI">a</span>nother <span class="YaPPI">P</span>article 
+        <span class="YaPPI">P</span>roperty <span class="YaPPI">I</span>nterface</span> 
+        <!-- #EndEditable --></h1>
+      <!-- #BeginEditable "pageContent" --> 
+      <p align=left style='text-align:left'>This is the home page of YaPPI, an 
+        XML database of particle properties. YaPPI is a part of the open source 
+        <a href="http://java.freehep.org/">FreeHEP Java Library</a>.</p>
+      <p align=left style='text-align:left'><strong>What is YaPPI?</strong><br>
+        YaPPI is an XML database of particle properties, accessible through a 
+        Java API. The goal is to provide particle property data to physicists' 
+        analysis programs in a way that is independent of platform, environment, 
+        or analysis package being used. Available components of YaPPI include: 
+      </p>
+      <ul>
+        <li> 
+          <p align="left" style="text-align:left">A set of XML files derived from 
+            derived directly from the from the Review of Particle Physics (RPP) 
+            of the <a href="http://pdg.lbl.gov/">Particle Data Group</a> (PDG). 
+            The XML data files are designed to be easy for users to modify or 
+            extend for their own purposes. 
+        </li>
+        <li> 
+          <p align="left" style="text-align:left">A Java API for reading (and 
+            writing) the XML database. 
+        </li>
+        <li> 
+          <p align="left" style="text-align:left">An implementation of the ParticlePropertyProvider 
+            interface of the <a href="http://jas.freehep.org/">Java Analysis Studio</a> 
+            (JAS), a High Energy Physics analysis software package. JAS users 
+            may access particle properties in XML directly from within JAS,. 
+        </li>
+        <li>A <a href="api/browsedata.html">web servlet</a> to allow online browsing 
+          of particle data. </li>
+      </ul>
+      <p align=left style='text-align:left'>The implementation was created by 
+        Patrick Hellwig and is currently maintained by Mark Donszelmann and Paolo 
+        Palazzi (CERN) and Tony Johnson (SLAC).</p>
+      <p>&nbsp;</p>
+      <!-- #EndEditable --> </td>
+  </tr>
+  <tr>
+    <td width="171" valign="top" align="left" class="nav">&nbsp;</td>
+    <td width="14" valign="top" align="left">&nbsp;</td>
+    <td width="*" valign="top" align="right"> 
+      <table border="0" cellspacing="0" cellpadding="0" width="121" bgcolor="#FF6666">
+        <tr> 
+          <td bgcolor="#FF6666"><img src="images/1bit.gif" width="121" height="2"></td>
+        </tr>
+      </table>
+      <a href="mailto:developers@freehep.org" class="nav2">developers@freehep.org</a></td>
+  </tr>
+</table>
+</body>
+<!-- #EndTemplate --></html>

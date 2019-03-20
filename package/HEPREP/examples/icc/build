@@ -1,0 +1,9 @@
+#
+# Build file for icc (Linux)
+#
+icc -c `heprep-config --include` ../HepRepExample.cpp
+icc -o HepRepExample HepRepExample.o -i_dynamic `heprep-config --lib`
+
+icc -c `heprep-config --include` ../MultiWriteTest.cpp
+icc -o MultiWriteTest MultiWriteTest.o -i_dynamic `heprep-config --lib`
+

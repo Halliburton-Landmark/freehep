@@ -1,0 +1,98 @@
+/*
+ * AIDAFunctionAdapter.java
+ *
+ * Created on February 8, 2002, 12:01 AM
+ */
+
+package hep.aida.ref.plotter.adapter;
+import hep.aida.*;
+import jas.hist.*;
+import jas.util.DoubleWithError;
+
+/**
+ *
+ * @author Tony Johnson
+ * @version $Id: AIDAFunctionAdapter.java,v 1.3 2003/05/31 00:14:10 turri Exp $
+ */
+class AIDAFunctionAdapter extends Basic1DFunction implements ExtendedStatistics
+{
+   private IFunction function;
+   private double[] d = new double[1];
+   private final static String chi2 = "\u03c7\u00b2";
+   
+   static DataSource create(IFunction function)
+   {
+      if (function.dimension() == 1) return new AIDAFunctionAdapter(function);
+      else throw new IllegalArgumentException("Only 1-D functions supported");
+   }
+   private AIDAFunctionAdapter(IFunction function)
+   {
+      this.function = function;
+   }
+   public void setParameter(int index, double value) throws jas.hist.InvalidFunctionParameter
+   {
+      function.setParameter(function.parameterNames()[index], value);
+   }
+   public String[] getParameterNames()
+   {
+      return function.parameterNames();
+   }
+   public double[] getParameterValues()
+   {
+      return function.parameters();
+   }
+   public double valueAt(double x) throws FunctionValueUndefined
+   {
+      d[0] = x;
+      double result = function.value(d);
+      if (Double.isNaN(result)) throw new FunctionValueUndefined();
+      return result;
+   }
+   public String getTitle()
+   {
+       if ( function instanceof IManagedObject )
+           return ((IManagedObject)function).name();
+       return "function";
+   }
+   private boolean hasFit()
+   {
+       /*
+      if (function instanceof IFunction)
+      {
+         double chisq = ((IFitFunction) function).chiSquare();
+         return !Double.isNaN(chisq) && chisq > 0;
+      }
+      */
+      return false;
+   }
+   public String[] getStatisticNames()
+   {
+      //adding Chi squared to end of statnames array
+      String[] statnames = super.getStatisticNames();
+      
+      if (hasFit())
+      {
+         String[] newStatNames = new String[statnames.length+1];
+         System.arraycopy(statnames,0,newStatNames,0,statnames.length);
+         newStatNames[statnames.length] = chi2;
+         statnames = newStatNames;
+      }
+      return statnames;
+   }
+   public double getStatistic(String name)
+   {
+      if (name.equals(chi2)) return 0;//((IFitFunction) function).chiSquare();
+      else return super.getStatistic(name);
+   }
+   public Object getExtendedStatistic(String name)
+   {
+      if (hasFit())
+      {
+         for(int i=0;i<getParameterNames().length ;i++)
+            if (name.equals(getParameterNames()[i]))
+//               return new DoubleWithError(function.parameterValues()[i],((IFitFunction) function).errors()[i]);
+               return new DoubleWithError(function.parameters()[i],0);
+      }
+      return null;
+   }
+}

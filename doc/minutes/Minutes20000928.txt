@@ -1,0 +1,146 @@
+6 Hours discussion among: Mark Donszelmann, Charles Loomis and Tony Johnson.
+
+The minutes:
+
+Infrastructure:
+==============
+
+web site:
+* home page, with news and statement
+- components and status, packages description, stable build #
+- download, source code access, cvs instructions, reference to how to build
+- authors, rules, howto contribute, strategy, mailing list, bug reports,
+license
+- Technologies and libraries used
+- Documentation: api doc, papers, talks, user documentation
+
+rules:
+- test cases
+- adopt junit
+- author should be included in apidoc, as well as version
+- copyright, check if one has to be acknowledged
+- usage of external libraries, dependencies kept to minimum, document them
+(TJ)
+
+Mailing list for bug reports with archiving.
+
+Add doclet with source stuff.
+(MD)
+
+Move to ANT
+(MD)
+
+Tags through full cvs with build numbers
+
+Jar files:
+freehep.jar all
+freehep-2d, freehep-3d, freehep-hep, freehep-tools, freehep-base
+
+graphics2d goes in freehep-2d
+... goes in freehep-3d
+hep... goes in freehep-hep
+jaco, jmk and ant, goes in freehep-tools
+jaco-rt and rest goes in freehep-base
+
+Distribution:
+tar and zip files, should auto build
+(MD)
+
+========================================================================================
+Graphics:
+========
+- move 3d projection and matrix stuff into FreeHep, for LegoPlot usage.
+(MD)
+
+- Java3D printing component.
+(CL)
+
+========================================================================================
+Data Access:
+===========
+- XML/RMI/CORBA an HepRep
+- Event Selection / Partial loading of event.
+- Layering ???
+- Plugin Services ???
+
+- Single event at a time.
+- We need the DIM module to support Random and/or Sequential event access.
+- Lists of (tagged) events.
+- Event should support a getHepRep method.
+- The returned HepRep, supplied by a specific DIM, is capable of getting
+more data via the DIM.
+- Logical sub-set of datasets should be displayable and saved, referring to
+the orinal dataset.
+- RMI needs connections in both directions, which is a problem with
+Firewalls.
+- BasicStudio and HEPStudio, BS supporting plugins, HEPS supporting dims.
+
+========================================================================================
+UI/Studio:
+=========
+- DeskTop pane could be used both for internal windows and for page layout.
+- Wired View, should use new-code from JAS for its resize/move handles.
+- Layers: 2: MDI type layout, HEP studio: getting and processing events.
+- Screen estate: have menu, multi-toolbar, controls, desktop, consoles and
+status bar.
+- Ability to shrink or switch off any of them, except the desktop.
+- Tony has a TreeTable example, for our TextView.
+- HTML pages with embeddable objects stays a feature of JAS for now.
+- CommandDispatcher may need multi-selection, for the moment we leave it at
+single selection
+and try to gather some use cases for which it does not work.
+- Studio part and some examples go into freehep. (TJ)
+- Plugins: need to create toolbars, need to add java helpsets, need
+plugin-loaded commumication
+notifications mechanisms
+- Popup Menus: need a newer implementation of add-on-popup menus.
+- Follow-Help connected to Menu.
+
+========================================================================================
+Scripting:
+=========
+- to be looked at.
+
+========================================================================================
+XML Persistency:
+===============
+- saving state of the app
+- Interface
+- Property files (user and system) for configuration.
+- XMLWriter should be extended to handle escaping of strings, and should not
+give access to
+the standard print methods.
+- XMLWriter should have a writeDom method, so one can also pass in a dom.
+- XMLIO.XMLWrite should be given XMLWriter.
+- Studio needs a tag to delimit different plugins, the contained text/tags
+are then forwarded
+to the plugin XMLReader.
+- XMLReader is based on SAX.
+- The XML file contains a section <plugin> which contains for each plugin
+its global state
+- The XML file contains a section <view> which contains for each view its
+state
+- The XMLIO needs two methods to deal with the writing.
+- The SAX driver methods (5?) should be implemented (XMLIO can inherit from
+SAX...)
+- An extra method to setView(view) will be called, after the plugin-section,
+and before the definition
+of every view.
+- openDoc should be called on the first occurence of the plugin.
+- closeDoc should be called after restoring the last view.
+- position and sizes are under the responsability of the studio.
+
+========================================================================================
+Export:
+======
+- plugin support, formats
+- Studio should maintain the ExportChooser for producing output formats
+- Plugins should be able to register extra output formats
+- Plugins should support painting, and printing
+- Other formats which do no use paint should be possible
+- Add PNGExportType to add PNG to standard export formats
+
+====================================================================
+Extra:
+=====
+- WebStart version of JAS and WIRED

@@ -1,0 +1,59 @@
+Frisbee To Do List
+------------------
+
+- when running frisbee for the first time, if
+  status.frisbee does not exist do not quit, 
+  but just create an empty one. 
+
+  NOTE: the same subroutine is called to read 
+  both distribute.frisbee and status.frisbee. 
+  It check for existence, and quits if any problem
+  (which is OK for dist.frisbee). Thus i suggest
+  just to add a "if -e $file" prior to calling
+  this function to read status.frisbee, and if 
+  not found to open it wit ">", and to close it
+  again immediately. 
+  
+- support multiple submodules.
+
+  NOTE: I am only taking the first 4 pieces of 
+  text in a line. I sugges you change this to
+  take all, assigning the 3rd piece and anything 
+  that follows to the variable value (in var lines).
+  Change the name of the "resreved" variable to
+  "submodules", and when yu meet it, you must parse
+  its value and do the required action per submodule. 
+
+- add email notification in case of problems
+  during execution.
+
+- implement "<target>.clean" fully
+  (need to call ant with command instead of just
+   logging what pubs need to be cleaned up.)
+
+- add frisbee lock file, not to have frisbee run more than 
+  once simultaneaously on the same configuration
+
+- document what the reserved variable names in dist.frisbbe
+  are: 
+
+  <target>.module
+  <target>.submodules    # after modif above is done
+  <target.antrundir
+
+  Plus, the <tag> and <version> of a target are treated 
+  as any other variables (in the way they are passed to ant),
+  and thus are also "reserved" variables: 
+
+  <target>.tag
+  <target.version
+
+- document install of frisbee
+  - modify frisbee.run to:
+    - include set-up for the JDK & build stuff
+    - include set-up for Ant
+  - have enough disk space for cvs co's
+  - user has write access
+  - create work dir manually
+
+------------------

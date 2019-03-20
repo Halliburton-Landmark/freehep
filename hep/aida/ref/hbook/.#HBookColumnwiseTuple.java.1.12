@@ -1,0 +1,202 @@
+package hep.aida.ref.hbook;
+
+import hep.aida.ref.tuple.ReadOnlyAbstractTuple;
+import hep.io.hbook.ColumnwiseTuple;
+import hep.io.hbook.ColumnwiseTupleColumn;
+import org.freehep.util.Value;
+import hep.tuple.interfaces.*;
+import hep.tuple.Cursor;
+import hep.tuple.interfaces.FTuple;
+
+/**
+ * An implementation of ITuple backed by a PAW column wise tuple.
+ * @author tonyj
+ * @version $Id: HBookColumnwiseTuple.java,v 1.12 2005/06/04 00:38:01 turri Exp $
+ */
+class HBookColumnwiseTuple extends ReadOnlyAbstractTuple {
+
+    private ColumnwiseTuple tuple;
+    private HBookColumnwiseTupleColumn[] columns;
+    private Cursor cursor;
+    
+    HBookColumnwiseTuple(ColumnwiseTuple tuple) {
+        super(String.valueOf(tuple.id()));
+        setTitle(tuple.getName());
+        this.tuple = tuple;
+        
+        int nCols = tuple.nChildren();
+        columns = new HBookColumnwiseTupleColumn[nCols];
+        for ( int i = 0; i < nCols; i++ )
+            columns[i] = new HBookColumnwiseTupleColumn( (ColumnwiseTupleColumn) tuple.getChild(i), tuple );
+        
+        cursor = new Cursor(0,rows(),true);
+    }
+    
+    public double columnMax(int column) throws java.lang.IllegalArgumentException {
+        ColumnwiseTupleColumn child = (ColumnwiseTupleColumn) tuple.getChild(column);
+        return child.getMax();
+    }
+    
+    public double columnMean(int column) throws java.lang.IllegalArgumentException {
+        return Double.NaN;
+    }
+    
+    public double columnMin(int column) throws java.lang.IllegalArgumentException {
+        ColumnwiseTupleColumn child = (ColumnwiseTupleColumn) tuple.getChild(column);
+        return child.getMin();
+    }
+    
+    public String columnName(int column) throws java.lang.IllegalArgumentException {
+        return columns[column].name();
+    }
+
+    public double columnRms(int column) throws java.lang.IllegalArgumentException {
+        return Double.NaN;
+    }
+    
+    public Class columnType(int column) throws java.lang.IllegalArgumentException {
+        return columns[column].type();
+    }
+    
+    public int columns() {
+        return columns.length;
+    }
+    
+    public int findColumn(String name) throws java.lang.IllegalArgumentException {
+        int index = tuple.getIndex(name);
+        if ( index < 0 ) throw new IllegalArgumentException("Column "+name+" does not exist");
+        return index;
+    }
+    
+    public boolean getBoolean(int index) throws java.lang.ClassCastException {
+        ColumnwiseTupleColumn child = (ColumnwiseTupleColumn) tuple.getChild(index);
+        return child.getBoolean();
+    }
+    
+    public byte getByte(int index) throws java.lang.ClassCastException {
+        ColumnwiseTupleColumn child = (ColumnwiseTupleColumn) tuple.getChild(index);
+        return (byte) child.getInt();
+    }
+    
+    public char getChar(int index) throws java.lang.ClassCastException {
+        ColumnwiseTupleColumn child = (ColumnwiseTupleColumn) tuple.getChild(index);
+        return (char) child.getInt();
+    }
+    
+    public double getDouble(int index) throws java.lang.ClassCastException {
+        ColumnwiseTupleColumn child = (ColumnwiseTupleColumn) tuple.getChild(index);
+        return child.getDouble();
+    }
+    
+    public float getFloat(int index) throws java.lang.ClassCastException {
+        ColumnwiseTupleColumn child = (ColumnwiseTupleColumn) tuple.getChild(index);
+        return (float) child.getDouble();
+    }
+    
+    public int getInt(int index) throws java.lang.ClassCastException {
+        ColumnwiseTupleColumn child = (ColumnwiseTupleColumn) tuple.getChild(index);
+        return child.getInt();
+    }
+    
+    public long getLong(int index) throws java.lang.ClassCastException {
+        ColumnwiseTupleColumn child = (ColumnwiseTupleColumn) tuple.getChild(index);
+        return child.getInt();
+    }
+    
+    public Object getObject(int index) throws java.lang.ClassCastException {
+        ColumnwiseTupleColumn child = (ColumnwiseTupleColumn) tuple.getChild(index);
+        return child.getObject();
+    }
+    
+    public short getShort(int index) throws java.lang.ClassCastException {
+        ColumnwiseTupleColumn child = (ColumnwiseTupleColumn) tuple.getChild(index);
+        return (short) child.getInt();
+    }
+    
+    public String getString(int index) throws java.lang.ClassCastException {
+        ColumnwiseTupleColumn child = (ColumnwiseTupleColumn) tuple.getChild(index);
+        return child.getString();
+    }
+    
+    public hep.aida.ITuple findTuple(int param) {
+        throw new UnsupportedOperationException();
+    }
+    
+    public boolean next() {
+        boolean advanced = cursor.next();
+        if ( advanced ) tuple.setCurrentRow( cursor.row()+1 );
+        return advanced;
+    }
+
+    public int rows() {
+        return tuple.getRows();
+    }
+    
+    public int getRow() {
+        return cursor.row();
+    }
+    
+    public void setRow(int row) throws java.lang.IllegalArgumentException {
+       //FIXME: Dont we need to increment the cursor here??
+        if (row < 0 || row >= rows()) throw new IllegalArgumentException("Invalid ntuple row: "+row);
+        tuple.setCurrentRow(row+1);
+    }
+    
+    public void skip(int n) throws java.lang.IllegalArgumentException {
+        cursor.skip(n);
+        tuple.setCurrentRow(cursor.row()+1);
+    }
+    
+    public void start() {
+        cursor.start();
+    }
+        
+    public int columnIndexByName(String name) {
+        return findColumn( name );
+    }
+    
+    public String columnDefaultString(int index) {
+        throw new UnsupportedOperationException();
+    }
+    
+    public Object columnDefaultValue(int index) {
+        throw new UnsupportedOperationException();        
+    }
+    
+/*    
+    public FTuple tuple( int index ) {
+        return (FTuple)getTuple( index );
+    }
+    
+    public boolean supportsRandomAccess() {
+        return true;
+    }
+    
+    public boolean supportsMultipleCursors() {
+        return true;
+    }
+    
+    public FTupleColumn column(int index) {
+        return columns[index];
+    }
+    
+    public FTupleColumn columnByName(String name) {
+        return columns[ columnIndexByName( name ) ];
+    }
+    
+    public void columnValue(int column, FTupleCursor cursor, Value value) {
+        columns[column].value( cursor, value );
+    }
+    
+    public FTupleCursor cursor() {
+        return new Cursor(0,rows(),true);
+    }
+    
+    public void close() {
+    }
+
+    public boolean isInMemory() {
+        return false;
+    }
+  */  
+}
